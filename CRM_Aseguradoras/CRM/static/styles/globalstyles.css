@@ -23,7 +23,7 @@ h4 {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #1e3a8a;
+    background-color: #00202c;
     color: white;
     padding: 1rem 2rem;
 }
@@ -49,6 +49,16 @@ h4 {
     padding: 0.5rem 1rem;
     border-radius: 6px;
     font-weight: bold;
+
+}
+
+.btn-secondary {
+    background-color: #2563eb;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-weight: bold;
+
 }
 
 .btn-outline {
@@ -60,12 +70,62 @@ h4 {
 }
 
 /* ===== Hero Section ===== */
-.hero {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 3rem 2rem;
-    background-color: #e0f2fe;
+/* Secciones de 2 columnas (texto + imagen) */
+.hero,
+.pricing {
+    display: flex;
     align-items: center;
+    justify-content: center;
+    gap: 40px;
+    padding: 60px 40px;
+    min-height: 70vh;
+    background-color: #e0f2fe;
+}
+
+.hero-left,
+.pricing-right {
+    flex: 1;
+    text-align: left;
+}
+
+.hero-right,
+.pricing-left {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.hero-right img {
+    max-width: 80%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.pricing-left img {
+    max-width: 60%;
+    height: auto;
+    border-radius: 8px;
+}
+
+/* Responsive: en móvil se vuelven una sola columna */
+@media (max-width: 768px) {
+
+    .hero,
+    .pricing {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .hero-left,
+    .pricing-right {
+        text-align: center;
+    }
+
+    .hero-right img,
+    .pricing-left img {
+        max-width: 60%;
+    }
 }
 
 .hero-text {
@@ -77,11 +137,6 @@ h4 {
     color: #1e3a8a;
 }
 
-.hero-img img {
-    max-width: 100%;
-    border: 2px solid #cbd5e1;
-    border-radius: 8px;
-}
 
 /* ===== Features ===== */
 .features {
@@ -112,10 +167,11 @@ h4 {
 .pricing {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    padding: 3rem 2rem;
-    background-color: #f8fafc;
+    padding: 1rem 1rem;
+    background-color: #e0f2fe;
     gap: 2rem;
     align-items: center;
+
 }
 
 .pricing-text h3 {
@@ -129,6 +185,12 @@ h4 {
 
 .pricing ul li {
     margin-bottom: 0.5rem;
+}
+
+.pricing-img img {
+    width: 30%;
+    height: 30%;
+    border-radius: 8px;
 }
 
 /* ===== Companies ===== */
@@ -147,7 +209,13 @@ h4 {
 
 .company-card img {
     max-width: 100px;
-    margin-bottom: 1rem;
+
+}
+
+.company-card p {
+    margin-top: 0;
+    font-size: 0.9rem;
+    color: #475569;
 }
 
 /* ===== Footer ===== */

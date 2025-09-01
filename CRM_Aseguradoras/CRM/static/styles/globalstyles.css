@@ -1,0 +1,179 @@
+/* ===== General ===== */
+body {
+    margin: 0;
+    font-family: 'Ubuntu', sans-serif;
+    background-color: #f9fafb;
+    color: #1e293b;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+h1,
+h2,
+h3,
+h4 {
+    margin: 0.5em 0;
+}
+
+/* ===== Header ===== */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #1e3a8a;
+    color: white;
+    padding: 1rem 2rem;
+}
+
+.header .logo {
+    height: 40px;
+    margin-right: 10px;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+}
+
+.header-right a {
+    margin-left: 1rem;
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: #2563eb;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+.btn-outline {
+    border: 2px solid white;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    color: white;
+    font-weight: bold;
+}
+
+/* ===== Hero Section ===== */
+.hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 3rem 2rem;
+    background-color: #e0f2fe;
+    align-items: center;
+}
+
+.hero-text {
+    max-width: 500px;
+}
+
+.hero-text h2 {
+    font-size: 2rem;
+    color: #1e3a8a;
+}
+
+.hero-img img {
+    max-width: 100%;
+    border: 2px solid #cbd5e1;
+    border-radius: 8px;
+}
+
+/* ===== Features ===== */
+.features {
+    text-align: center;
+    padding: 3rem 2rem;
+    background-color: white;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.feature-card {
+    background: #f1f5f9;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.feature-card h4 {
+    color: #1e3a8a;
+}
+
+/* ===== Pricing Section ===== */
+.pricing {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 3rem 2rem;
+    background-color: #f8fafc;
+    gap: 2rem;
+    align-items: center;
+}
+
+.pricing-text h3 {
+    color: #1e3a8a;
+}
+
+.pricing ul {
+    list-style: none;
+    padding: 0;
+}
+
+.pricing ul li {
+    margin-bottom: 0.5rem;
+}
+
+/* ===== Companies ===== */
+.companies {
+    padding: 3rem 2rem;
+    text-align: center;
+    background: white;
+}
+
+.companies-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.company-card img {
+    max-width: 100px;
+    margin-bottom: 1rem;
+}
+
+/* ===== Footer ===== */
+.footer {
+    background-color: #1e3a8a;
+    color: white;
+    padding: 2rem;
+    margin-top: 3rem;
+}
+
+.footer-top {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid #3b82f6;
+    padding-top: 1rem;
+    font-size: 0.9rem;
+}
+
+.footer a {
+    color: #cbd5e1;
+    font-size: 0.9rem;
+}

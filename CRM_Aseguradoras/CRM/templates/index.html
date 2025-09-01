@@ -1,0 +1,83 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block content %}
+<main class="crm-home">
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-text">
+            <h2>ZuluAris CRM</h2>
+            <p>Experience seamless financial management with our secure and user-friendly banking solutions. Access your accounts anytime, anywhere.</p>
+            <button class="btn-primary">Comienza ya</button>
+        </div>
+        <div class="hero-img">
+            <img src="{% static 'images/logo.png' %}" alt="Hero Image">
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features">
+        <h3>Digitaliza tu gestión, asegura tu crecimiento.</h3>
+        <p>Nuestras funciones innovadoras simplifican tu gestión financiera y te brindan las herramientas que necesitas para el éxito.</p>
+        <div class="features-grid">
+            <div class="feature-card">
+                <span class="icon">ℹ️</span>
+                <h4>Gestiona fácilmente la información</h4>
+                <p>Transfiere datos de manera rápida y flexible, sin procesos complicados o largos períodos de espera.</p>
+            </div>
+            <div class="feature-card">
+                <span class="icon">📊</span>
+                <h4>Obtén reportes de tus clientes</h4>
+                <p>Genera reportes personalizados que te permiten analizar las transacciones que realizas a diario.</p>
+            </div>
+            <div class="feature-card">
+                <span class="icon">📱</span>
+                <h4>La información al alcance de tu mano</h4>
+                <p>Accede desde cualquier dispositivo y gestiona tu negocio a nivel global con seguridad.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Plans -->
+    <section class="pricing">
+        <div class="pricing-img">
+            <img src="{% static 'images/pricing-placeholder.png' %}" alt="Pricing Image">
+        </div>
+        <div class="pricing-text">
+            <h3>Consulta nuestros planes y decide cuál se adapta mejor a tu empresa</h3>
+            <ul>
+                <li>✔️ Características de gestión personalizadas</li>
+                <li>✔️ Cero costos de mantenimiento ocultos</li>
+                <li>✔️ Alertas de seguridad avanzadas</li>
+                <li>✔️ Descuentos y beneficios exclusivos</li>
+            </ul>
+            <button class="btn-secondary">Explorar planes</button>
+        </div>
+    </section>
+
+    <!-- Companies -->
+    <section class="companies">
+        <h3>Empresas que mejoraron con ZuluAris</h3>
+        <div class="companies-grid">
+            <div class="company-card">
+                {% comment %} <img src="{% static 'images/company1.png' %}" alt="Company 1"> {% endcomment %}
+                <p>Real-time market insights and analytics</p>
+            </div>
+            <div class="company-card">
+                {% comment %} <img src="{% static 'images/company2.png' %}" alt="Company 2"> {% endcomment %}
+                <p>Real-time market insights and analytics</p>
+            </div>
+            <div class="company-card">
+                {% comment %} <img src="{% static 'images/company3.png' %}" alt="Company 3"> {% endcomment %}
+                <p>Real-time market insights and analytics</p>
+            </div>
+            <div class="company-card">
+                {% comment %} <img src="{% static 'images/company4.png' %}" alt="Company 4"> {% endcomment %}
+                <p>Real-time market insights and analytics</p>
+            </div>
+        </div>
+    </section>
+
+</main>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block content %}
+<section class="register-section">
+    <div class="register-container">
+        <div class="register-form">
+            <h2>Regístrate</h2>
+            <p>Completa los datos para crear tu cuenta y comenzar a disfrutar de los servicios de ZuluAris CRM.</p>
+
+            <form>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nombre*</label>
+                        <input type="text" placeholder="Ingresa tu nombre" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Apellido*</label>
+                        <input type="text" placeholder="Ingresa tu apellido" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Correo electrónico*</label>
+                    <input type="email" placeholder="Ingresa tu correo" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Número de teléfono*</label>
+                    <input type="tel" placeholder="Ingresa tu número" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Contraseña*</label>
+                    <input type="password" placeholder="Crea una contraseña segura" required>
+                    <small>Debe tener al menos 8 caracteres con letras, números y símbolos.</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Confirmar contraseña*</label>
+                    <input type="password" placeholder="Confirma tu contraseña" required>
+                </div>
+
+                <div class="form-check">
+                    <input type="checkbox" id="terms" required>
+                    <label for="terms">Acepto los <a href="#">Términos del servicio</a> y la <a href="#">Política de privacidad</a></label>
+                </div>
+
+                <button type="submit" class="btn-solid">Crear cuenta</button>
+                <p class="login-link">¿Ya tienes una cuenta? <a href="#">Inicia sesión</a></p>
+            </form>
+        </div>
+
+        <div class="register-image">
+            <img src="{% static 'images/register.png' %}" alt="Registro ilustración">
+        </div>
+    </div>
+</section>
+{% endblock %}

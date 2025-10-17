@@ -54,7 +54,7 @@ p {
 
 /* ===== Footer ===== */
 .footer {
-    background-color: #1e3a8a;
+    background-color: #00081b;
     color: white;
     padding: 2rem;
     margin-top: 3rem;
@@ -401,4 +401,290 @@ p {
     color: #132558;
     margin-top: 0px;
     font-size: 27px;
+}
+
+/* ===== Register Section ===== */
+.register-section {
+    background-color: #f9fafb;
+    padding: 4rem 2rem;
+    display: flex;
+    justify-content: center;
+}
+
+.register-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    max-width: 1100px;
+    width: 100%;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.register-container:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.register-form {
+    padding: 3rem;
+}
+
+.register-form h2 {
+    color: #1e3a8a;
+    margin-bottom: 0.5rem;
+}
+
+.register-form p {
+    color: #4b5563;
+    margin-bottom: 1.5rem;
+    text-align: justify;
+}
+
+.form-row {
+    display: flex;
+    gap: 1rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+    width: 100%;
+}
+
+.form-group label {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: #1e3a8a;
+}
+
+.form-group input {
+    padding: 0.6rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 6px rgba(37, 99, 235, 0.3);
+    outline: none;
+}
+
+.form-check {
+    margin: 1rem 0;
+    font-size: 0.9rem;
+    color: #4b5563;
+}
+
+.form-check a {
+    color: #2563eb;
+    text-decoration: none;
+}
+
+.form-check a:hover {
+    text-decoration: underline;
+}
+
+.login-link {
+    margin-top: 1rem;
+    text-align: center;
+}
+
+.login-link a {
+    color: #2563eb;
+    text-decoration: none;
+}
+
+.login-link a:hover {
+    text-decoration: underline;
+}
+
+.register-image {
+    background-color: #e0f2fe;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.register-image img {
+    width: 80%;
+    max-width: 400px;
+    transition: transform 0.4s ease;
+    border-radius: 20px;
+}
+
+.register-image img:hover {
+    transform: scale(1.05);
+}
+
+/* ===== Botón sólido principal ===== */
+.btn-solid {
+    display: inline-block;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: #fff;
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 0.8rem 2.2rem;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
+    width: -webkit-fill-available;
+}
+
+.btn-solid:hover {
+    background: linear-gradient(135deg, #1e40af, #2563eb);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(37, 99, 235, 0.35);
+}
+
+.btn-solid:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
+}
+
+.btn-solid:focus {
+    outline: 3px solid rgba(37, 99, 235, 0.3);
+    outline-offset: 2px;
+}
+
+/* ===== SECCIÓN DE PLANES ===== */
+.pricing-container {
+    text-align: center;
+    padding: 70px 20px;
+    background-color: #f4f8fc;
+}
+
+.pricing-container h2 {
+    font-size: 1.9rem;
+    color: #0a1f33;
+}
+
+.pricing-container p {
+    color: #52607b;
+    margin-bottom: 40px;
+}
+
+.plans {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 25px;
+}
+
+.plan-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.08);
+    padding: 35px 25px;
+    width: 290px;
+    text-align: left;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-top: 4px solid transparent;
+    position: relative;
+}
+
+.plan-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 22px rgba(0, 0, 0, 0.15);
+    border-top: 4px solid #2b6ff3;
+}
+
+.plan-card.popular .badge {
+    position: absolute;
+    top: -12px;
+    right: 15px;
+    background-color: #2b6ff3;
+    color: #fff;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    animation: float 2s ease-in-out infinite;
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-3px);
+    }
+}
+
+.plan-card h3 {
+    color: #0a1f33;
+    margin-bottom: 5px;
+}
+
+.price {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #153e75;
+    margin-bottom: 10px;
+}
+
+.price span {
+    font-size: 0.9rem;
+    color: #607497;
+}
+
+.features,
+.benefits {
+    list-style: none;
+    padding: 0;
+    margin: 15px 0;
+    color: #2f3c56;
+}
+
+.features li::before,
+.benefits li::before {
+    content: "✔ ";
+    color: #2b6ff3;
+    font-weight: bold;
+}
+
+/* ===== BOTÓN SOLID ===== */
+.btn-solid {
+    display: block;
+    text-align: center;
+    background: linear-gradient(90deg, #2055e8, #3a8dfb);
+    color: white;
+    padding: 12px 0;
+    border-radius: 6px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-solid::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.25);
+    transition: all 0.4s ease;
+}
+
+.btn-solid:hover::before {
+    left: 100%;
+}
+
+.btn-solid:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(58, 141, 251, 0.4);
 }

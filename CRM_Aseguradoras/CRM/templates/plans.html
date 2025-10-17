@@ -1,0 +1,68 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block title %}Planes | ZuluAris CRM{% endblock %}
+
+{% block content %}
+<section class="pricing-container">
+  <h2>Elige el plan que más se adapte a tu empresa</h2>
+  <p>Selecciona el plan bancario que mejor se adapte a tus necesidades empresariales.</p>
+
+  <div class="plans">
+    <!-- PLAN EASY -->
+    <div class="plan-card">
+      <h3>Easy</h3>
+      <p class="price">$4.99 <span>/mes</span></p>
+      <ul class="features">
+        <li>Cuenta básica</li>
+        <li>Tarjeta sin cuota anual</li>
+        <li>Aplicación móvil bancaria</li>
+        <li>Hasta 5 retiros ATM</li>
+        <li>Herramientas básicas de presupuesto</li>
+      </ul>
+      <ul class="benefits">
+        <li>Soporte 24/7</li>
+        <li>Protección antifraude</li>
+      </ul>
+      <a href="#" class="btn-solid">Seleccionar Plan</a>
+    </div>
+
+    <!-- PLAN MEDIUM -->
+    <div class="plan-card popular">
+      <div class="badge">Más popular</div>
+      <h3>Medium</h3>
+      <p class="price">$9.99 <span>/mes</span></p>
+      <ul class="features">
+        <li>Cuenta premium</li>
+        <li>Recompensas en tarjeta</li>
+        <li>App avanzada</li>
+        <li>Retiros ilimitados</li>
+        <li>Planificación avanzada</li>
+      </ul>
+      <ul class="benefits">
+        <li>Soporte prioritario</li>
+        <li>Boletín financiero mensual</li>
+      </ul>
+      <a href="#" class="btn-solid">Seleccionar Plan</a>
+    </div>
+
+    <!-- PLAN SUPER -->
+    <div class="plan-card">
+      <h3>Super</h3>
+      <p class="price">$19.99 <span>/mes</span></p>
+      <ul class="features">
+        <li>Cuentas premium y de ahorro</li>
+        <li>Tarjeta metálica exclusiva</li>
+        <li>Reintegro global ATM</li>
+        <li>Gestión patrimonial completa</li>
+        <li>Herramientas de inversión</li>
+      </ul>
+      <ul class="benefits">
+        <li>Asesor personal dedicado</li>
+        <li>Webinars exclusivos</li>
+      </ul>
+      <a href="#" class="btn-solid">Seleccionar Plan</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

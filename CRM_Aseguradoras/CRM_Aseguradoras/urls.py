@@ -5,4 +5,6 @@ from django.urls import path
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', CRM.views.index),
+    path('register/', CRM.views.register),
+    path('plans/', CRM.views.plans),
 ]

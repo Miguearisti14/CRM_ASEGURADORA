@@ -688,3 +688,437 @@ p {
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(58, 141, 251, 0.4);
 }
+
+/* -------------------------------
+   ESTILOS GENERALES DEL PANEL
+---------------------------------*/
+
+/* Estilo base del documento */
+body {
+    margin: 0;
+    /* Elimina márgenes por defecto del navegador */
+    font-family: 'Segoe UI', sans-serif;
+    /* Fuente moderna y limpia */
+    background-color: #f4f6fa;
+    /* Fondo gris claro para contraste con el panel */
+}
+
+/* Contenedor principal: divide el espacio entre el sidebar y el contenido */
+.container {
+    display: flex;
+    /* Coloca sidebar y contenido en la misma línea */
+    height: 100vh;
+    /* Ocupa toda la altura de la pantalla */
+}
+
+/* -------------------------------
+   SIDEBAR / MENÚ LATERAL
+---------------------------------*/
+
+.sidebar {
+    width: 220px;
+    /* Ancho fijo del panel lateral */
+    background-color: #2a4d96;
+    /* Azul corporativo */
+    color: #fff;
+    /* Texto blanco para contraste */
+    display: flex;
+    flex-direction: column;
+    /* Alinea los elementos en columna */
+}
+
+/* Logo o nombre del sistema en la parte superior */
+.logo {
+    font-weight: bold;
+    /* Resalta el texto */
+    text-align: center;
+    /* Centra el texto */
+    padding: 6%;
+    /* Espaciado interno */
+    background-color: #213b78;
+    /* Azul un poco más oscuro */
+}
+
+/* Quita los estilos predeterminados de las listas */
+.sidebar nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Cada elemento del menú lateral */
+.sidebar nav ul li {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    /* Línea separadora tenue */
+}
+
+/* Enlaces del menú */
+.sidebar nav ul li a {
+    display: block;
+    /* Hace que todo el bloque sea clickeable */
+    color: #fff;
+    /* Texto blanco */
+    padding: 0.8rem 1rem;
+    /* Espaciado interno */
+    text-decoration: none;
+    /* Quita subrayado */
+    transition: background 0.3s;
+    /* Suaviza el efecto hover */
+}
+
+/* Efecto al pasar el mouse sobre un enlace */
+.sidebar nav ul li a:hover {
+    background-color: #1e3572;
+    /* Azul más oscuro al hacer hover */
+}
+
+/* -------------------------------
+   CONTENIDO PRINCIPAL DEL PANEL
+---------------------------------*/
+
+.main-content {
+    flex: 1;
+    /* Ocupa todo el espacio restante */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Barra superior (navbar) */
+.navbar {
+    background-color: #fff;
+    /* Fondo blanco */
+    border-bottom: 1px solid #ddd;
+    /* Línea divisoria gris */
+    padding: 0.8rem 1.5rem;
+    /* Espaciado interno */
+    display: flex;
+    justify-content: flex-end;
+    /* Alinea el usuario a la derecha */
+    align-items: center;
+    /* Centra verticalmente */
+}
+
+/* Nombre o icono del usuario en la barra */
+.user {
+    font-weight: 500;
+    /* Semi-negrita */
+}
+
+/* Contenedor del contenido dinámico (cada vista del CRM) */
+.content {
+    padding: 2rem;
+    /* Espaciado interno amplio */
+}
+
+/* -------------------------------
+   ELEMENTOS OPCIONALES / TABLAS
+---------------------------------*/
+
+/* Ejemplo de estilo general para una tarjeta de contenido */
+.card {
+    background-color: #fff;
+    border-radius: 8px;
+    /* Bordes suaves */
+    padding: 1.5rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    /* Sombra ligera */
+}
+
+/* Estilo de títulos dentro del contenido */
+.card h2 {
+    color: #2a4d96;
+    /* Mismo azul corporativo */
+    margin-bottom: 1rem;
+}
+
+/* Tabla de datos */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    /* Unifica bordes */
+    margin-top: 1rem;
+}
+
+table th,
+table td {
+    border: 1px solid #ddd;
+    /* Bordes grises suaves */
+    padding: 0.6rem;
+    text-align: left;
+    font-size: 0.95rem;
+}
+
+table th {
+    background-color: #f0f3f8;
+    /* Fondo gris claro en encabezados */
+    font-weight: 600;
+}
+
+/* Fila alterna para mejor legibilidad */
+table tr:nth-child(even) {
+    background-color: #fafbfc;
+}
+
+/* Filtros o campo de búsqueda */
+.filters {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    /* Separación entre elementos */
+}
+
+.filters input {
+    flex: 1;
+    /* Ocupa el espacio restante */
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.filters button {
+    background-color: #2a4d96;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.filters button:hover {
+    background-color: #1e3572;
+    /* Oscurece al pasar el mouse */
+}
+
+/* --- Sidebar --- */
+.sidebar {
+    background-color: #2a4d96;
+    color: #fff;
+    width: 220px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+
+    /* 🔹 Nuevo: la hace fija en pantalla */
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+}
+
+/* --- Contenido principal --- */
+.main-content {
+    /* 🔹 Nuevo: empuja el contenido a la derecha */
+    margin-left: 220px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* --- Barra superior --- */
+.topbar {
+    background-color: #e9eef8;
+    height: 60px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 0 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.user {
+    font-weight: 600;
+    color: #2a4d96;
+}
+
+/* --- Contenido general --- */
+.content-area {
+    padding: 2rem;
+    background-color: #f5f7fb;
+    min-height: calc(100vh - 60px);
+    overflow-y: auto;
+}
+
+/* --- Contenedor principal del formulario --- */
+.formulario-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 3rem 2rem;
+}
+
+/* --- Tarjeta del formulario --- */
+.formulario-card {
+    background-color: #eaf0fb;
+    padding: 2.5rem 3rem;
+    border-radius: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    width: 650px;
+}
+
+/* --- Título del formulario --- */
+.titulo-formulario {
+    text-align: center;
+    color: #244a8d;
+    font-weight: 600;
+    margin-bottom: 1.8rem;
+}
+
+/* --- Campos del formulario --- */
+.formulario input,
+.formulario select,
+.formulario textarea {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: none;
+    border-radius: 1rem;
+    background-color: #ffffff;
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.formulario input::placeholder,
+.formulario textarea::placeholder {
+    color: #a0a0a0;
+}
+
+/* --- Grupos de dos campos por fila --- */
+.grupo-doble {
+    display: flex;
+    gap: 1rem;
+}
+
+.grupo-doble input,
+.grupo-doble select {
+    flex: 1;
+}
+
+/* --- Textarea --- */
+.formulario textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+/* --- Botones de acción --- */
+.acciones-formulario {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1.2rem;
+}
+
+.btn-guardar,
+.btn-cancelar {
+    padding: 0.6rem 1.4rem;
+    border: none;
+    border-radius: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-guardar {
+    background-color: #244a8d;
+    color: #fff;
+}
+
+.btn-guardar:hover {
+    background-color: #1e3d77;
+}
+
+.btn-cancelar {
+    background-color: #ffffff;
+    color: #244a8d;
+    border: 1px solid #244a8d;
+}
+
+.btn-cancelar:hover {
+    background-color: #f0f4ff;
+}
+
+/* === CONTENEDOR PRINCIPAL === */
+.interacciones-container {
+    padding: 2.5rem;
+}
+
+/* === TÍTULO DE LA SECCIÓN === */
+.titulo-seccion {
+    color: #244a8d;
+    text-align: center;
+    font-weight: 600;
+    margin-bottom: 2rem;
+}
+
+/* === GRID DE TARJETAS === */
+.interacciones-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 2rem;
+    justify-content: center;
+}
+
+/* === TARJETA DE CADA INTERACCIÓN === */
+.interaccion-card {
+    background-color: #eaf0fb;
+    border-radius: 1rem;
+    padding: 2rem 1.5rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* --- Efecto hover suave --- */
+.interaccion-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* === TÍTULOS DE LAS TARJETAS === */
+.interaccion-card h3 {
+    color: #244a8d;
+    font-weight: 600;
+    margin-bottom: 1.2rem;
+}
+
+/* === BOTONES DENTRO DE LAS TARJETAS === */
+.acciones {
+    display: flex;
+    gap: 0.8rem;
+}
+
+/* --- Botón primario (Agregar) --- */
+.btn-primario {
+    background-color: #244a8d;
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1.2rem;
+    border-radius: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primario:hover {
+    background-color: #1e3d77;
+}
+
+/* --- Botón secundario (Editar) --- */
+.btn-secundario {
+    background-color: #ffffff;
+    color: #244a8d;
+    border: 1px solid #244a8d;
+    padding: 0.5rem 1.2rem;
+    border-radius: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-secundario:hover {
+    background-color: #f0f4ff;
+}

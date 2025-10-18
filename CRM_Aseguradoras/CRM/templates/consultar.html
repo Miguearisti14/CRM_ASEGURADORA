@@ -1,0 +1,37 @@
+{% extends 'layout_panel.html' %}
+
+{% block title %}Consultar - ZuluAris CRM{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Búsqueda y filtrado</h2>
+    <div class="filters">
+        <!-- Aquí tus campos de búsqueda -->
+        <input type="text" placeholder="Nombre o DNI del cliente">
+        <button>🔍 Buscar</button>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th># Serie</th>
+                <th>Cliente</th>
+                <th>Contacto</th>
+                <th>Producto</th>
+                <th>Fecha vigencia</th>
+                <th>Observaciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>001</td>
+                <td>Juan Pérez</td>
+                <td>juan@example.com</td>
+                <td>Seguro de vida</td>
+                <td>2026-01-10</td>
+                <td>Renovado</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}

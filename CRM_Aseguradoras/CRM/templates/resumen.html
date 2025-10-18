@@ -1,0 +1,81 @@
+{% extends "layout_panel.html" %}
+
+{% block content %}
+<div class="dashboard">
+
+    <!-- Encabezado -->
+    <h1 class="dashboard-title">Resumen general</h1>
+    <p class="dashboard-subtitle">Aquí puedes visualizar el estado actual de tu empresa y las métricas más relevantes.</p>
+
+    <!-- Tarjetas de métricas -->
+    <div class="cards-container">
+        <div class="card">
+            <h2>Clientes Activos</h2>
+            <p class="card-number">256</p>
+            <span class="card-detail">+12 este mes</span>
+        </div>
+        <div class="card">
+            <h2>Reclamos Pendientes</h2>
+            <p class="card-number">8</p>
+            <span class="card-detail warning">3 nuevos hoy</span>
+        </div>
+        <div class="card">
+            <h2>Polizas Vigentes</h2>
+            <p class="card-number">142</p>
+            <span class="card-detail">Renovación 5%</span>
+        </div>
+        <div class="card">
+            <h2>Ingresos del Mes</h2>
+            <p class="card-number">$12,450</p>
+            <span class="card-detail success">+9% respecto al mes pasado</span>
+        </div>
+    </div>
+
+    <!-- Sección de gráficas o tablas -->
+    <div class="data-section">
+        <div class="data-card">
+            <h2>Actividad Reciente</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Usuario</th>
+                        <th>Acción</th>
+                        <th>Detalle</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>17/10/2025</td>
+                        <td>Ana López</td>
+                        <td>Ingreso de cliente</td>
+                        <td>Cliente: "Carlos Pérez"</td>
+                    </tr>
+                    <tr>
+                        <td>17/10/2025</td>
+                        <td>Juan Gómez</td>
+                        <td>Actualización de póliza</td>
+                        <td>ID #4587</td>
+                    </tr>
+                    <tr>
+                        <td>16/10/2025</td>
+                        <td>Laura Ruiz</td>
+                        <td>Reclamo cerrado</td>
+                        <td>Cliente: "Seguros Alfa"</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="data-card">
+            <h2>Recordatorios</h2>
+            <ul class="reminders">
+                <li>🔹 Reunión semanal - 9:00 AM</li>
+                <li>🔹 Revisar reclamos nuevos</li>
+                <li>🔹 Enviar reporte financiero</li>
+                <li>🔹 Validar actualizaciones de pólizas</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

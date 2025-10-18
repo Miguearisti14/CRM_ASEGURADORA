@@ -1,0 +1,46 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZuluAris CRM</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'styles/globalstyles.css' %}">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="logo">ZuluAris CRM</div>
+            <nav>
+                <ul>
+                    <li><a href="/consultar/">Consultar</a></li>
+                    <li><a href="/client_form/">Ingresar Cliente</a></li>
+                    <li><a href="/interacciones/">Interacciones</a></li>
+
+                    
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="navbar">
+                <span class="user">👤 Usuario</span>
+            </header>
+
+            <section class="content">
+                {% block content %}
+                <!-- Aquí va el contenido de cada sección -->
+                {% endblock %}
+            </section>
+        </main>
+    </div>
+</body>
+</html>

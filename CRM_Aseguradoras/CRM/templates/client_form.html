@@ -1,0 +1,55 @@
+{% extends 'layout_panel.html' %}
+
+{% block content %}
+<section class="formulario-container">
+    <div class="formulario-card">
+        <h2 class="titulo-formulario">Formulario de clientes</h2>
+
+        <form class="formulario" method="POST">
+            {% csrf_token %}
+
+            <input type="text" name="nombre" placeholder="Nombre completo del cliente" required>
+
+            <div class="grupo-doble">
+                <input type="text" name="dni" placeholder="DNI" required>
+                <select name="tipo_dni" required>
+                    <option value="" disabled selected>Tipo DNI</option>
+                    <option value="CC">Cédula de ciudadanía</option>
+                    <option value="CE">Cédula de extranjería</option>
+                    <option value="NIT">NIT</option>
+                    <option value="PAS">Pasaporte</option>
+                </select>
+            </div>
+
+            <input type="email" name="correo" placeholder="Correo electrónico">
+            <input type="text" name="telefono" placeholder="Teléfono de contacto">
+            <input type="text" name="empresa" placeholder="Empresa (si aplica)">
+            <input type="text" name="direccion" placeholder="Dirección">
+
+            <div class="grupo-doble">
+                <select name="producto">
+                    <option value="" disabled selected>Producto</option>
+                    <option>Seguro de vida</option>
+                    <option>Vehicular</option>
+                    <option>Hogar</option>
+                    <option>Salud</option>
+                </select>
+
+                <select name="poliza">
+                    <option value="" disabled selected>Tipo de póliza</option>
+                    <option>Anual</option>
+                    <option>Semestral</option>
+                    <option>Mensual</option>
+                </select>
+            </div>
+
+            <textarea name="notas" placeholder="Notas o comentarios adicionales"></textarea>
+
+            <div class="acciones-formulario">
+                <button type="button" class="btn-cancelar">Cancelar</button>
+                <button type="submit" class="btn-guardar">Guardar</button>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}

@@ -9,3 +9,15 @@ def register(request):
 
 def plans(request):
     return render(request, 'plans.html')
+
+def consultar(request):
+    return render(request, 'consultar.html')
+
+def resumen(request):
+    return render(request, 'resumen.html')
+
+def nuevoCliente(request):
+    return render(request, 'client_form.html')
+
+def interacciones(request):
+    return render(request, 'interacciones.html')

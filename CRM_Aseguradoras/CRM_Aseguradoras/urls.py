@@ -7,4 +7,8 @@ urlpatterns = [
     path('', CRM.views.index),
     path('register/', CRM.views.register),
     path('plans/', CRM.views.plans),
+    path('consultar/', CRM.views.consultar),
+    path('resumen/', CRM.views.resumen),
+    path('client_form/', CRM.views.nuevoCliente),
+    path('interacciones/', CRM.views.interacciones),
 ]

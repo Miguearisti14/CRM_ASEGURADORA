@@ -1,0 +1,60 @@
+{% extends 'layout_panel.html' %}
+
+{% block content %}
+<section class="reclamaciones-container">
+    <h2 class="titulo-seccion">Buscar Reclamaciones</h2>
+
+    <div class="busqueda-box">
+        <input type="text" placeholder="Ingrese el número de radicado">
+        <button class="btn-buscar">
+            <i class="fas fa-search"></i>
+        </button>
+    </div>
+
+    <div class="tabla-contenedor">
+        <table class="tabla-reclamaciones">
+            <thead>
+                <tr>
+                    <th>ID Reclamo</th>
+                    <th>Cliente</th>
+                    <th>Tipo de Reclamación</th>
+                    <th>Fecha</th>
+                    <th>Estado</th>
+                    <th>Monto Estimado</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>R-001</td>
+                    <td>Juan Pérez</td>
+                    <td>Daños materiales</td>
+                    <td>2025-08-01</td>
+                    <td><span class="estado aprobado">Aprobado</span></td>
+                    <td>$4,500,000</td>
+                </tr>
+                <tr>
+                    <td>R-002</td>
+                    <td>María Gómez</td>
+                    <td>Robo de vehículo</td>
+                    <td>2025-08-05</td>
+                    <td><span class="estado proceso">En proceso</span></td>
+                    <td>$32,000,000</td>
+                </tr>
+                <tr>
+                    <td>R-003</td>
+                    <td>Carlos López</td>
+                    <td>Daños personales</td>
+                    <td>2025-08-07</td>
+                    <td><span class="estado rechazado">Rechazado</span></td>
+                    <td>$8,000,000</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="paginacion">
+        <button class="flecha">&#10094;</button>
+        <button class="flecha">&#10095;</button>
+    </div>
+</section>
+{% endblock %}

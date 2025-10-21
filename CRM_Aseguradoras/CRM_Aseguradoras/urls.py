@@ -11,4 +11,6 @@ urlpatterns = [
     path('resumen/', CRM.views.resumen),
     path('client_form/', CRM.views.nuevoCliente),
     path('interacciones/', CRM.views.interacciones),
+    path('reclamaciones/', CRM.views.reclamaciones),
+    path('reportes/', CRM.views.reportes),
 ]

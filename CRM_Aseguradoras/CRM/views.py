@@ -21,3 +21,9 @@ def nuevoCliente(request):
 
 def interacciones(request):
     return render(request, 'interacciones.html')
+
+def reclamaciones(request):
+    return render(request, 'reclamaciones.html')
+
+def reportes(request):
+    return render(request, 'reportes.html')

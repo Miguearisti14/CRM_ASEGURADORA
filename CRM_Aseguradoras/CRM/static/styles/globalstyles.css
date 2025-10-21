@@ -1122,3 +1122,340 @@ table tr:nth-child(even) {
 .btn-secundario:hover {
     background-color: #f0f4ff;
 }
+
+/* === CONTENEDOR PRINCIPAL === */
+.reclamaciones-container {
+    padding: 2.5rem;
+}
+
+/* === TÍTULO === */
+.titulo-seccion {
+    color: #244a8d;
+    text-align: center;
+    font-weight: 600;
+    margin-bottom: 2rem;
+}
+
+/* === CUADRO DE BÚSQUEDA === */
+.busqueda-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #dfe8fa;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+}
+
+.busqueda-box input {
+    width: 300px;
+    padding: 0.7rem 1rem;
+    border: none;
+    border-radius: 0.8rem;
+    outline: none;
+    background-color: #fff;
+    font-size: 0.95rem;
+    color: #555;
+}
+
+.busqueda-box input::placeholder {
+    color: #b3b3b3;
+}
+
+.btn-buscar {
+    background-color: #244a8d;
+    color: white;
+    border: none;
+    border-radius: 0.8rem;
+    padding: 0.7rem 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-buscar:hover {
+    background-color: #1e3d77;
+}
+
+/* === TABLA === */
+.tabla-contenedor {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+}
+
+.tabla-reclamaciones {
+    border-collapse: collapse;
+    width: 90%;
+    background-color: white;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.tabla-reclamaciones th {
+    background-color: #f2f6ff;
+    color: #244a8d;
+    padding: 0.8rem;
+    text-align: left;
+    font-weight: 600;
+}
+
+.tabla-reclamaciones td {
+    padding: 0.8rem;
+    border-bottom: 1px solid #ddd;
+}
+
+/* === ESTADOS CON COLORES === */
+.estado {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-weight: 500;
+    border-radius: 1rem;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.9rem;
+}
+
+.estado::before {
+    content: "●";
+    font-size: 1rem;
+}
+
+.aprobado {
+    background-color: #e5f8ec;
+    color: #2d8a4e;
+}
+
+.proceso {
+    background-color: #fff5e1;
+    color: #c47c00;
+}
+
+.rechazado {
+    background-color: #fdeaea;
+    color: #c73535;
+}
+
+/* === PAGINACIÓN === */
+.paginacion {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.flecha {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #244a8d;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.flecha:hover {
+    color: #1e3d77;
+}
+
+/* === SECCIÓN PRINCIPAL DE GESTIÓN DE REPORTES === */
+.reports-section {
+    background-color: #d7e0fa;
+    /* Fondo suave similar al resto del CRM */
+    padding: 30px;
+    /* Espaciado interior */
+    border-radius: 15px;
+    /* Bordes redondeados del contenedor */
+    margin: 20px auto;
+    /* Centrar sección dentro del layout */
+    width: 85%;
+    /* Ocupa gran parte del área principal */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    /* Ligera sombra para relieve */
+}
+
+/* Título principal de la sección */
+.reports-section h2 {
+    text-align: center;
+    color: #2d4373;
+    /* Azul oscuro consistente con la app */
+    margin-bottom: 25px;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+/* === FILTROS DE BÚSQUEDA Y GENERACIÓN === */
+.filters {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    /* Para que se adapte en pantallas pequeñas */
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.filters label {
+    font-weight: 500;
+    color: #333;
+}
+
+.filters select,
+.filters input[type="date"] {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #c3c6d1;
+    font-size: 0.9rem;
+    background-color: #fff;
+}
+
+.btn-generar {
+    background-color: #3a5691;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 7px 14px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.btn-generar:hover {
+    background-color: #2d4373;
+}
+
+/* === TABLA DE REPORTES === */
+.reports-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    /* Asegura que los bordes redondeados afecten toda la tabla */
+}
+
+.reports-table th {
+    background-color: #f3f6fc;
+    color: #3a5691;
+    text-align: left;
+    padding: 10px;
+    font-weight: 600;
+    border-bottom: 2px solid #e0e4f1;
+}
+
+.reports-table td {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    color: #333;
+    font-size: 0.95rem;
+}
+
+.reports-table tr:hover {
+    background-color: #eef3ff;
+    /* Efecto hover para resaltar filas */
+}
+
+/* === ESTADOS === */
+.status {
+    font-weight: 600;
+}
+
+.status.success {
+    color: #28a745;
+    /* Verde para reportes generados */
+}
+
+.status.pending {
+    color: #ff9800;
+    /* Naranja para pendientes */
+}
+
+/* === BOTONES DE ACCIÓN === */
+.btn-view,
+.btn-delete {
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: background-color 0.2s;
+}
+
+.btn-view {
+    background-color: #4a7de4;
+    color: #fff;
+}
+
+.btn-view:hover {
+    background-color: #3c6fd1;
+}
+
+.btn-delete {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+.btn-delete:hover {
+    background-color: #b52a37;
+}
+
+/* ==============================
+   Estilos para página de Reportes
+   ============================== */
+
+/* Contenedor general */
+.reportes-container {
+    padding: 2rem;
+    text-align: center;
+}
+
+/* Título principal */
+.reportes-titulo {
+    color: #2a4c9c;
+    font-size: 1.6rem;
+    font-weight: 600;
+    margin-bottom: 2rem;
+}
+
+/* Panel principal con fondo azul claro */
+.reportes-panel {
+    background-color: #dbe4fa;
+    border-radius: 10px;
+    padding: 2rem;
+    max-width: 900px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+/* Cada bloque individual */
+.reporte-item {
+    background-color: #e6ecfb;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    font-weight: 600;
+    color: #2a4c9c;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+/* Efecto hover de los bloques */
+.reporte-item:hover {
+    background-color: #cdd9f9;
+    transform: translateY(-3px);
+}
+
+/* Botón "Generar" */
+.btn-generar {
+    background-color: white;
+    border: none;
+    border-radius: 15px;
+    padding: 0.4rem 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btn-generar:hover {
+    background-color: #f0f3ff;
+}

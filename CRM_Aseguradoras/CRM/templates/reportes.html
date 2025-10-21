@@ -1,0 +1,32 @@
+{% extends 'layout_panel.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/reportes.css' %}">
+
+<section class="reportes-container">
+    <h2 class="reportes-titulo">Genera tus reportes</h2>
+
+    <div class="reportes-panel">
+        <div class="reporte-item">
+            <span class="reporte-nombre">Mis Clientes</span>
+            <button class="btn-generar">Generar</button>
+        </div>
+
+        <div class="reporte-item">
+            <span class="reporte-nombre">Mis Pólizas</span>
+            <button class="btn-generar">Generar</button>
+        </div>
+
+        <div class="reporte-item">
+            <span class="reporte-nombre">Mis Reclamaciones</span>
+            <button class="btn-generar">Generar</button>
+        </div>
+
+        <div class="reporte-item">
+            <span class="reporte-nombre">Mis Ventas</span>
+            <button class="btn-generar">Generar</button>
+        </div>
+    </div>
+</section>
+{% endblock %}

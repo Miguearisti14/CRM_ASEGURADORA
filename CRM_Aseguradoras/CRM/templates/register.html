@@ -2,48 +2,62 @@
 {% load static %}
 
 {% block content %}
-<section class="register-section">
-    <div class="register-container">
-        <div class="register-form">
-            <h2>Regístrate</h2>
-            <p>Completa los datos para crear tu cuenta y comenzar a disfrutar de los servicios de ZuluAris CRM.</p>
+<main class="register-container">
+    <div class="register-card">
+        <!-- Formulario -->
+        <div class="form-section">
+            <h2>Crea tu cuenta</h2>
+            <p>Completa los siguientes datos para registrarte en ZuluAris CRM.</p>
 
-            <form>
+            <form method="POST">
+                {% csrf_token %}
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Nombre*</label>
-                        <input type="text" placeholder="Ingresa tu nombre" required>
+                        <label for="first_name">Nombre*</label>
+                        <input type="text" name="first_name" placeholder="Tu nombre" required>
                     </div>
                     <div class="form-group">
-                        <label>Apellido*</label>
-                        <input type="text" placeholder="Ingresa tu apellido" required>
+                        <label for="last_name">Apellido*</label>
+                        <input type="text" name="last_name" placeholder="Tu apellido" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="dni">DNI*</label>
+                        <input type="text" name="dni" placeholder="Número de identificación" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="tipo_dni">Tipo de DNI*</label>
+                        <select name="tipo_dni" required>
+                            <option value="">Selecciona una opción</option>
+                            {% for tipo in tipo_dni %}
+                                <option value="{{ tipo.id }}">{{ tipo.nombre }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label>Nombre de la organización*</label>
-                    <input type="text" placeholder="Ingresa el nombre de tu organización" required>
+                    <label for="email">Correo electrónico*</label>
+                    <input type="email" name="email" placeholder="ejemplo@correo.com" required>
                 </div>
 
                 <div class="form-group">
-                    <label>Correo electrónico*</label>
-                    <input type="email" placeholder="Ingresa tu correo" required>
+                    <label for="celular">Celular*</label>
+                    <input type="tel" name="celular" placeholder="+57 300 000 0000" required>
                 </div>
 
-                <div class="form-group">
-                    <label>Número de teléfono*</label>
-                    <input type="tel" placeholder="Ingresa tu número" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Contraseña*</label>
-                    <input type="password" placeholder="Crea una contraseña segura" required>
-                    <small>Debe tener al menos 8 caracteres con letras, números y símbolos.</small>
-                </div>
-
-                <div class="form-group">
-                    <label>Confirmar contraseña*</label>
-                    <input type="password" placeholder="Confirma tu contraseña" required>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="password">Contraseña*</label>
+                        <input type="password" name="password" placeholder="Crea una contraseña" required>
+                        <small>Debe tener al menos 8 caracteres, incluyendo letras, números y símbolos.</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm_password">Confirmar contraseña*</label>
+                        <input type="password" name="confirm_password" placeholder="Repite tu contraseña" required>
+                    </div>
                 </div>
 
                 <div class="form-check">
@@ -52,13 +66,14 @@
                 </div>
 
                 <button type="submit" class="btn-solid">Crear cuenta</button>
-                <p class="login-link">¿Ya tienes una cuenta? <a href="#">Inicia sesión</a></p>
+                <p class="login-footer">¿Ya tienes una cuenta? <a href="/login">Inicia sesión</a></p>
             </form>
         </div>
 
-        <div class="register-image">
-            <img src="{% static 'images/register.png' %}" alt="Registro ilustración">
+        <!-- Imagen lateral -->
+        <div class="image-section">
+            <img src="{% static 'images/register_side.png' %}" alt="Registro ilustración">
         </div>
     </div>
-</section>
+</main>
 {% endblock %}

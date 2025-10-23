@@ -1,4 +1,6 @@
 from django.db import models
+from django.contrib.auth.models import User
+
 
 # ==============================
 # TABLA DE ROLES
@@ -142,13 +144,11 @@ class Clientes(models.Model):
 # TABLA DE USUARIOS
 # ==============================
 class Usuarios(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     dni = models.CharField(max_length=50, primary_key=True)
     tipo_dni = models.ForeignKey(Tipo_DNI, on_delete=models.CASCADE)
-    nombre = models.CharField(max_length=200)
     celular = models.CharField(max_length=50)
-    email = models.EmailField(unique=True)
     id_rol = models.ForeignKey(Roles, on_delete=models.CASCADE)
-    contrasena = models.CharField(max_length=100)
 
     class Meta:
         db_table = "usuarios"

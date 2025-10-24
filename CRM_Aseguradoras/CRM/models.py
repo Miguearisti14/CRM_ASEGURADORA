@@ -13,6 +13,19 @@ class Roles(models.Model):
         db_table = "roles"
 
 # ==============================
+# TABLA DE EMPRESAS
+# ==============================
+class Empresa(models.Model):
+    id = models.AutoField(primary_key=True)
+    nombre = models.CharField(max_length=100, unique=True)
+    usuario_admin = models.OneToOneField(
+        "Usuarios", on_delete=models.SET_NULL, null=True, blank=True, related_name="empresa_admin"
+    )
+    
+    class Meta:
+        db_table = "empresas"
+
+# ==============================
 # TABLA DE TIPO DE DNI
 # ==============================
 class Tipo_DNI(models.Model):
@@ -149,6 +162,7 @@ class Usuarios(models.Model):
     tipo_dni = models.ForeignKey(Tipo_DNI, on_delete=models.CASCADE)
     celular = models.CharField(max_length=50)
     id_rol = models.ForeignKey(Roles, on_delete=models.CASCADE)
+    empresa = models.CharField(max_length=50)
 
     class Meta:
         db_table = "usuarios"

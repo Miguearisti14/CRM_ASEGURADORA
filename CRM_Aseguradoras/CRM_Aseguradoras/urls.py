@@ -14,4 +14,5 @@ urlpatterns = [
     path('reclamaciones/', CRM.views.reclamaciones),
     path('reportes/', CRM.views.reportes),
     path('login/', CRM.views.login_view),
+    path('crear_admin/', CRM.views.crear_admin_view, name='crear_admin'),
 ]

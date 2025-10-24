@@ -11,6 +11,12 @@
 
             <form method="POST">
                 {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="empresa">Nombre de la empresa*</label>
+                        <input type="text" name="empresa" placeholder="Ej: Fincasas" required>
+                </div>
+
                 <div class="form-row">
                     <div class="form-group">
                         <label for="first_name">Nombre*</label>
@@ -21,6 +27,7 @@
                         <input type="text" name="last_name" placeholder="Tu apellido" required>
                     </div>
                 </div>
+
 
                 <div class="form-row">
                     <div class="form-group">
@@ -72,7 +79,7 @@
 
         <!-- Imagen lateral -->
         <div class="image-section">
-            <img src="{% static 'images/register_side.png' %}" alt="Registro ilustración">
+            <img src="{% static 'images/register.png' %}" alt="Registro ilustración">
         </div>
     </div>
 </main>

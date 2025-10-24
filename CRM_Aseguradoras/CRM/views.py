@@ -14,8 +14,6 @@ def index(request):
 def register(request):
     tipos_dni = Tipo_DNI.objects.all()
 
-    print("Tipos DNI:", tipos_dni)
-
     if request.method == "POST":
         first_name = request.POST["first_name"]
         last_name = request.POST["last_name"]
@@ -54,10 +52,10 @@ def register(request):
             celular=celular,
             id_rol=rol_default
         )
-
+        print("Tipos DNI:", tipos_dni)
         messages.success(request, "Registro exitoso. Ahora puedes iniciar sesión.")
-        return redirect("login")
-    print("Tipos DNI:", tipos_dni)
+        return redirect("login.html")
+    
 
     return render(request, "register.html", {"tipos_dni": tipos_dni})
 

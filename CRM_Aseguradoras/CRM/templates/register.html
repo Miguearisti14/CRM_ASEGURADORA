@@ -31,7 +31,7 @@
                         <label for="tipo_dni">Tipo de DNI*</label>
                         <select name="tipo_dni" required>
                             <option value="">Selecciona una opción</option>
-                            {% for tipo in tipo_dni %}
+                            {% for tipo in tipos_dni %}
                                 <option value="{{ tipo.id }}">{{ tipo.nombre }}</option>
                             {% endfor %}
                         </select>

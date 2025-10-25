@@ -10,9 +10,6 @@ from .models import Usuarios, Tipo_DNI, Roles, Empresa
 def index(request):
     return render(request, 'index.html')
 
-
-
-
 def plans(request):
     return render(request, 'plans.html')
 
@@ -35,7 +32,6 @@ def reportes(request):
     return render(request, 'reportes.html')
 
 # Autenticación e inicio de sesión
-
 def login_view(request):
     if request.method == "POST":
         username = request.POST.get("username")
@@ -80,6 +76,7 @@ def logout_view(request):
     logout(request)
     return redirect('login')
 
+# Registro de nuevas empresas
 def register(request):
     tipos_dni = Tipo_DNI.objects.all()
 
@@ -121,17 +118,17 @@ def register(request):
         if not rol_default:
             rol_default = Roles.objects.create(nombre="Administrador")
 
-        # --- Crear empresa (sin usuario admin todavía) ---
+        # --- Crear empresa ---
         empresa = Empresa.objects.create(nombre=empresa_nombre)
 
-        # --- Crear registro extendido (Usuarios) ---
+        # --- Crear registro extendido ---
         usuario = Usuarios.objects.create(
             user=user,
             dni=dni,
             tipo_dni_id=tipo_dni_id,
             celular=celular,
             id_rol=rol_default,
-            empresa=empresa  # ← CORRECTO: relación FK, no string
+            empresa=empresa 
         )
 
         # --- Actualizar empresa con su administrador ---
@@ -151,7 +148,7 @@ def register(request):
 
 
 
-
+# Vista para crear un usuario administrador desde una interfaz web
 def crear_admin_view(request):
     if request.method == "POST":
         username = request.POST.get("username")
@@ -159,7 +156,7 @@ def crear_admin_view(request):
         password = request.POST.get("password")
         confirm_password = request.POST.get("confirm_password")
 
-        # Validaciones básicas
+        # Validaciones
         if password != confirm_password:
             messages.error(request, "Las contraseñas no coinciden.")
             return redirect("crear_admin")
@@ -172,6 +169,5 @@ def crear_admin_view(request):
         user = User.objects.create_superuser(username=username, email=email, password=password)
         messages.success(request, f"Usuario administrador '{username}' creado con éxito. Puedes iniciar sesión en /admin")
 
-        return redirect("login_admin")  # o al home, si prefieres
-
+        return 
     return render(request, "crear_admin.html")

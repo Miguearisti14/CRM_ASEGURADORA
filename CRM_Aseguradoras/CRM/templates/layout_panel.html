@@ -15,6 +15,22 @@
         href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap"
         rel="stylesheet">
 </head>
+
+<!-- Mensajes de Django -->
+    {% if messages %}
+<div class="messages-container">
+    {% for message in messages %}
+        <div class="message {{ message.tags }}">
+            <span class="icon">
+                {% if message.tags == "success" %}✅{% elif message.tags == "error" %}❌{% elif message.tags == "warning" %}⚠️{% else %}ℹ️{% endif %}
+            </span>
+            <span class="text">{{ message }}</span>
+            <button class="close-message">&times;</button>
+        </div>
+    {% endfor %}
+</div>
+{% endif %}
+
 <body>
     <div class="container">
         <aside class="sidebar">
@@ -43,5 +59,6 @@
             </section>
         </main>
     </div>
+    <script src="{% static 'js/messages.js' %}"></script>
 </body>
 </html>

@@ -1697,3 +1697,108 @@ small {
     max-width: 400px;
     border-radius: 20px;
 }
+
+/* ============================
+   Mensajes del sistema (Django)
+   ============================ */
+
+.messages-container {
+    position: fixed;
+    top: 90px;
+    /* debajo del header */
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Caja del mensaje */
+.message {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    min-width: 320px;
+    max-width: 400px;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    transform: translateY(-10px);
+    animation: fadeInSlide 0.4s forwards ease;
+}
+
+/* Animaciones */
+@keyframes fadeInSlide {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeOutSlide {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+}
+
+/* Colores según tipo */
+.message.success {
+    background-color: #e0f2fe;
+    border-left: 5px solid #2563eb;
+    color: #1e3a8a;
+}
+
+.message.error {
+    background-color: #fee2e2;
+    border-left: 5px solid #dc2626;
+    color: #991b1b;
+}
+
+.message.warning {
+    background-color: #fef3c7;
+    border-left: 5px solid #f59e0b;
+    color: #92400e;
+}
+
+.message.info {
+    background-color: #e0f7fa;
+    border-left: 5px solid #0284c7;
+    color: #075985;
+}
+
+/* Icono e interacción */
+.message .icon {
+    font-size: 1.2rem;
+    margin-right: 10px;
+}
+
+.message .text {
+    flex: 1;
+}
+
+.close-message {
+    background: transparent;
+    border: none;
+    font-size: 1rem;
+    color: inherit;
+    cursor: pointer;
+    margin-left: 10px;
+    transition: transform 0.2s;
+}
+
+.close-message:hover {
+    transform: scale(1.2);
+}

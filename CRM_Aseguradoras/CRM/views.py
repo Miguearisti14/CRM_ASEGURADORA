@@ -66,18 +66,13 @@ def login_view(request):
                 request.session["empresa_id"] = None
                 request.session["empresa_nombre"] = "Sin empresa"
 
-            # Mensaje de bienvenida opcional
             messages.success(request, f"Bienvenido {user.first_name}! Empresa: {request.session['empresa_nombre']}")
 
-            # Redirigir al panel principal
-            return redirect("panel_resumen")
-
+            return redirect("/resumen")
         else:
-            # Credenciales inválidas
             messages.error(request, "Credenciales inválidas. Por favor, intenta nuevamente.")
-            return render(request, "login.html")
+            return redirect("/login")
 
-    # Renderizar el formulario en GET
     return render(request, "login.html")
 
 # Cierre de sesión
@@ -102,16 +97,16 @@ def register(request):
         # Validaciones
         if password != confirm_password:
             messages.error(request, "Las contraseñas no coinciden.")
-            return redirect("register")
+            return redirect("/register")
 
         if User.objects.filter(username=email).exists():
             messages.error(request, "Este correo ya está registrado.")
-            return redirect("register")
+            return redirect("/register")
 
         if Empresa.objects.filter(nombre=empresa_nombre).exists():
             messages.error(request, "Ya existe una empresa registrada con ese nombre.")
-            return redirect("register")
-
+            return redirect("/register")
+        
         # Crear usuario base de Django
         user = User.objects.create_user(
             username=email,
@@ -121,29 +116,30 @@ def register(request):
             password=password
         )
 
-        # Asignar un rol por defecto (por ejemplo "Administrador")
+         # --- Asignar un rol por defecto ---
         rol_default = Roles.objects.filter(nombre__icontains="admin").first()
         if not rol_default:
             rol_default = Roles.objects.create(nombre="Administrador")
 
-        # Crear registro en tabla Usuarios
+        # --- Crear empresa (sin usuario admin todavía) ---
+        empresa = Empresa.objects.create(nombre=empresa_nombre)
+
+        # --- Crear registro extendido (Usuarios) ---
         usuario = Usuarios.objects.create(
             user=user,
             dni=dni,
             tipo_dni_id=tipo_dni_id,
             celular=celular,
             id_rol=rol_default,
-            empresa = empresa_nombre
+            empresa=empresa  # ← CORRECTO: relación FK, no string
         )
 
-        # Crear la empresa asociada
-        empresa = Empresa.objects.create(
-            nombre=empresa_nombre,
-            usuario_admin=usuario
-        )
+        # --- Actualizar empresa con su administrador ---
+        empresa.usuario_admin = usuario
+        empresa.save()
 
         messages.success(request, "Registro exitoso. Ahora puedes iniciar sesión.")
-        return redirect("login")
+        return redirect("/login")
 
     return render(request, "register.html", {"tipos_dni": tipos_dni})
 

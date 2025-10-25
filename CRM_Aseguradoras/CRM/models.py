@@ -162,7 +162,7 @@ class Usuarios(models.Model):
     tipo_dni = models.ForeignKey(Tipo_DNI, on_delete=models.CASCADE)
     celular = models.CharField(max_length=50)
     id_rol = models.ForeignKey(Roles, on_delete=models.CASCADE)
-    empresa = models.CharField(max_length=50)
+    empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE, null=True, blank=True, related_name="usuarios")
 
     class Meta:
         db_table = "usuarios"

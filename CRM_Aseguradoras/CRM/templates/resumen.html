@@ -3,6 +3,7 @@
 {% block content %}
 <div class="dashboard">
 
+    <p>Empresa actual: {{ request.session.empresa_nombre }}</p>
     <!-- Encabezado -->
     <h1 class="dashboard-title">Resumen general</h1>
     <p class="dashboard-subtitle">Aquí puedes visualizar el estado actual de tu empresa y las métricas más relevantes.</p>

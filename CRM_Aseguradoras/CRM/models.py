@@ -65,15 +65,6 @@ class Ramos(models.Model):
     class Meta:
         db_table = "ramos"
 
-# ==============================
-# TABLA DE RAMOS
-# ==============================
-class Ramos(models.Model):
-    id = models.AutoField(primary_key=True)
-    descripcion = models.CharField(max_length=50, unique=True)
-
-    class Meta:
-        db_table = "ramos"
 
 # ==============================
 # TABLA DE TIPO DE POLIZA
@@ -135,7 +126,7 @@ class Productos(models.Model):
     id_ramo = models.ForeignKey(Ramos, on_delete=models.CASCADE)
 
     class Meta:
-        db_table = " productos"
+        db_table = "productos"
 
 # ==============================
 # TABLA DE CLIENTES
@@ -149,7 +140,8 @@ class Clientes(models.Model):
     telefono = models.CharField(max_length=50, blank=True, null=True)
     celular = models.CharField(max_length=50)
     correo = models.EmailField(blank=True, null=True)
- 
+    asesor = models.ForeignKey("Usuarios", on_delete=models.SET_NULL, null=True, blank=True, related_name="clientes")
+    
     class Meta:
         db_table = "clientes"
 

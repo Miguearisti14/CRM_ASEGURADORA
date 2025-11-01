@@ -3,36 +3,37 @@
 {% block content %}
 <div class="dashboard">
 
-    <p>Empresa actual: {{ request.session.empresa_nombre }}</p>
-    <!-- Encabezado -->
-    <h1 class="dashboard-title">Resumen general</h1>
-    <p class="dashboard-subtitle">Aquí puedes visualizar el estado actual de tu empresa y las métricas más relevantes.</p>
+    <p>Empresa actual: <strong>{{ empresa.nombre }}</strong></p>
 
-    <!-- Tarjetas de métricas -->
+    <h1 class="dashboard-title">Resumen general</h1>
+    <p class="dashboard-subtitle">Visualiza el estado actual de tu empresa y las métricas más relevantes.</p>
+
     <div class="cards-container">
         <div class="card">
             <h2>Clientes Activos</h2>
-            <p class="card-number">256</p>
-            <span class="card-detail">+12 este mes</span>
+            <p class="card-number">{{ clientes_count }}</p>
+            <span class="card-detail">Registrados en el sistema</span>
         </div>
+
         <div class="card">
             <h2>Reclamos Pendientes</h2>
-            <p class="card-number">8</p>
-            <span class="card-detail warning">3 nuevos hoy</span>
+            <p class="card-number">{{ reclamos_pendientes }}</p>
+            <span class="card-detail warning">Actualizado al {{ now|date:"d/m/Y" }}</span>
         </div>
+
         <div class="card">
-            <h2>Polizas Vigentes</h2>
-            <p class="card-number">142</p>
-            <span class="card-detail">Renovación 5%</span>
+            <h2>Pólizas Vigentes</h2>
+            <p class="card-number">{{ polizas_vigentes }}</p>
+            <span class="card-detail">Con fecha de vencimiento futura</span>
         </div>
+
         <div class="card">
             <h2>Ingresos del Mes</h2>
-            <p class="card-number">$12,450</p>
+            <p class="card-number">${{ ingresos_mes|floatformat:0 }}</p>
             <span class="card-detail success">+9% respecto al mes pasado</span>
         </div>
     </div>
 
-    <!-- Sección de gráficas o tablas -->
     <div class="data-section">
         <div class="data-card">
             <h2>Actividad Reciente</h2>
@@ -46,24 +47,14 @@
                     </tr>
                 </thead>
                 <tbody>
+                    {% for item in actividad_reciente %}
                     <tr>
-                        <td>17/10/2025</td>
-                        <td>Ana López</td>
-                        <td>Ingreso de cliente</td>
-                        <td>Cliente: "Carlos Pérez"</td>
+                        <td>{{ item.fecha }}</td>
+                        <td>{{ item.usuario }}</td>
+                        <td>{{ item.accion }}</td>
+                        <td>{{ item.detalle }}</td>
                     </tr>
-                    <tr>
-                        <td>17/10/2025</td>
-                        <td>Juan Gómez</td>
-                        <td>Actualización de póliza</td>
-                        <td>ID #4587</td>
-                    </tr>
-                    <tr>
-                        <td>16/10/2025</td>
-                        <td>Laura Ruiz</td>
-                        <td>Reclamo cerrado</td>
-                        <td>Cliente: "Seguros Alfa"</td>
-                    </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>

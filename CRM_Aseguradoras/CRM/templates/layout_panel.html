@@ -11,13 +11,11 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap" rel="stylesheet">
 </head>
 
 <!-- Mensajes de Django -->
-    {% if messages %}
+{% if messages %}
 <div class="messages-container">
     {% for message in messages %}
         <div class="message {{ message.tags }}">
@@ -42,23 +40,30 @@
                     <li><a href="/interacciones/">Interacciones</a></li>
                     <li><a href="/reclamaciones/">Reclamaciones</a></li>
                     <li><a href="/reportes/">Reportes</a></li>
-                    
                 </ul>
             </nav>
         </aside>
 
         <main class="main-content">
             <header class="navbar">
-                <span class="user">👤 Usuario</span>
+                <div class="navbar-left">
+                    <span class="user">👤 {{ request.user.first_name }} {{ request.user.last_name }}</span>
+                </div>
+                <div class="navbar-right">
+                    <li class="btn-logout">
+                        <a href="/logout/">Cerrar sesión</a>
+                    </li>
+                    </form>
+                </div>
             </header>
 
             <section class="content">
                 {% block content %}
-                <!-- Aquí va el contenido de cada sección -->
                 {% endblock %}
             </section>
         </main>
     </div>
+
     <script src="{% static 'js/messages.js' %}"></script>
 </body>
 </html>

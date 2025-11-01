@@ -5,7 +5,7 @@ from CRM.models import Usuarios
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib import messages
-from .models import Usuarios, Tipo_DNI, Roles, Empresa, Clientes, Ciudades, Productos, Canal_venta, Tipo_Poliza, Polizas, Departamentos
+from .models import Usuarios, Tipo_DNI, Roles, Empresa, Clientes, Ciudades, Productos, Canal_venta, Tipo_Poliza, Polizas, Departamentos, Reclamaciones
 
 # Create your views here.
 def index(request):
@@ -18,7 +18,49 @@ def consultar(request):
     return render(request, 'consultar.html')
 
 def resumen(request):
-    return render(request, 'resumen.html')
+    # Validar autenticación
+    if not request.user.is_authenticated:
+        messages.error(request, "Debes iniciar sesión para acceder al panel.")
+        return redirect("/login")
+
+    # Obtener el perfil del usuario
+    try:
+        usuario = Usuarios.objects.select_related("empresa").get(user=request.user)
+        empresa = usuario.empresa
+    except Usuarios.DoesNotExist:
+        messages.error(request, "Tu cuenta no está asociada a una empresa.")
+        return redirect("/login")
+
+    # Obtener datos reales asociados a la empresa
+    clientes_count = Clientes.objects.filter(asesor__empresa=empresa).count()
+    reclamos_pendientes = Reclamaciones.objects.filter(
+        dni_asesor__empresa=empresa,
+        id_estado__descripcion__icontains="pendiente"
+    ).count()
+    polizas_vigentes = Polizas.objects.filter(
+    dni_cliente__asesor__empresa=empresa
+    ).count()
+
+    # Opcional: puedes calcular ingresos o métricas adicionales si tienes campos monetarios
+    ingresos_mes = 12450  # placeholder — lo puedes reemplazar con un cálculo real
+
+    # Actividad reciente simulada (luego puedes reemplazar con una tabla de logs)
+    actividad_reciente = [
+        {"fecha": "2025-10-17", "usuario": "Ana López", "accion": "Ingreso de cliente", "detalle": "Carlos Pérez"},
+        {"fecha": "2025-10-17", "usuario": "Juan Gómez", "accion": "Actualización de póliza", "detalle": "ID #4587"},
+        {"fecha": "2025-10-16", "usuario": "Laura Ruiz", "accion": "Reclamo cerrado", "detalle": "Seguros Alfa"},
+    ]
+
+    context = {
+        "empresa": empresa,
+        "clientes_count": clientes_count,
+        "reclamos_pendientes": reclamos_pendientes,
+        "polizas_vigentes": polizas_vigentes,
+        "ingresos_mes": ingresos_mes,
+        "actividad_reciente": actividad_reciente
+    }
+
+    return render(request, "resumen.html", context)
 
 def nuevoCliente(request):
     # Asegurar autenticación
@@ -228,6 +270,10 @@ def register(request):
     return render(request, "register.html", {"tipos_dni": tipos_dni})
 
 
+def logout_view(request):
+    logout(request)
+    messages.success(request, "Has cerrado sesión correctamente.")
+    return redirect("/login")
 
 
 

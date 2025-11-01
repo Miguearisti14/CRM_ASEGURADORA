@@ -1,53 +1,129 @@
 {% extends 'layout_panel.html' %}
+{% load static %}
 
 {% block content %}
-<section class="formulario-container">
-    <div class="formulario-card">
-        <h2 class="titulo-formulario">Formulario de clientes</h2>
+<link rel="stylesheet" href="{% static 'css/form_cliente.css' %}">
 
-        <form class="formulario" method="POST">
+<section class="cliente-formulario-container">
+    <div class="cliente-formulario-card">
+        <h2 class="cliente-titulo-formulario">Registrar nuevo cliente</h2>
+        <p class="cliente-descripcion">Completa los datos del cliente y su póliza asociada.</p>
+
+        <form class="cliente-formulario" method="POST">
             {% csrf_token %}
 
-            <input type="text" name="nombre" placeholder="Nombre completo del cliente" required>
+            <!-- 🧍 Datos personales -->
+            <h3 class="cliente-subtitulo">Datos personales</h3>
 
-            <div class="grupo-doble">
-                <input type="text" name="dni" placeholder="DNI" required>
-                <select name="tipo_dni" required>
-                    <option value="" disabled selected>Tipo DNI</option>
-                    <option value="CC">Cédula de ciudadanía</option>
-                    <option value="CE">Cédula de extranjería</option>
-                    <option value="NIT">NIT</option>
-                    <option value="PAS">Pasaporte</option>
-                </select>
+            <div class="cliente-grupo-doble">
+                <div class="cliente-form-group">
+                    <label for="nombre">Nombre completo*</label>
+                    <input type="text" id="nombre" name="nombre" placeholder="Ej: Juan Pérez" required>
+                </div>
+
+                <div class="cliente-form-group">
+                    <label for="dni">Número de documento*</label>
+                    <input type="text" id="dni" name="dni" placeholder="Ej: 1032456789" required>
+                </div>
             </div>
 
-            <input type="email" name="correo" placeholder="Correo electrónico">
-            <input type="text" name="telefono" placeholder="Teléfono de contacto">
-            <input type="text" name="empresa" placeholder="Empresa (si aplica)">
-            <input type="text" name="direccion" placeholder="Dirección">
+            <div class="cliente-grupo-doble">
+                <div class="cliente-form-group">
+                    <label for="tipo_dni">Tipo de documento*</label>
+                    <select id="tipo_dni" name="tipo_dni" required>
+                        <option value="">Selecciona una opción</option>
+                        {% for tipo in tipos_dni %}
+                            <option value="{{ tipo.id }}">{{ tipo.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
 
-            <div class="grupo-doble">
-                <select name="producto">
-                    <option value="" disabled selected>Producto</option>
-                    <option>Seguro de vida</option>
-                    <option>Vehicular</option>
-                    <option>Hogar</option>
-                    <option>Salud</option>
-                </select>
-
-                <select name="poliza">
-                    <option value="" disabled selected>Tipo de póliza</option>
-                    <option>Anual</option>
-                    <option>Semestral</option>
-                    <option>Mensual</option>
-                </select>
+                <div class="cliente-form-group">
+                    <label for="telefono">Teléfono / Celular*</label>
+                    <input type="text" id="telefono" name="telefono" placeholder="+57 300 123 4567" required>
+                </div>
             </div>
 
-            <textarea name="notas" placeholder="Notas o comentarios adicionales"></textarea>
+            <div class="cliente-grupo-doble">
+                <div class="cliente-form-group">
+                    <label for="correo">Correo electrónico</label>
+                    <input type="email" id="correo" name="correo" placeholder="correo@ejemplo.com">
+                </div>
 
-            <div class="acciones-formulario">
-                <button type="button" class="btn-cancelar">Cancelar</button>
-                <button type="submit" class="btn-guardar">Guardar</button>
+                <div class="cliente-form-group">
+                    <label for="direccion">Dirección</label>
+                    <input type="text" id="direccion" name="direccion" placeholder="Calle 10 #45-23, Medellín">
+                </div>
+            </div>
+
+            <div class="cliente-grupo-doble">
+                <div class="cliente-form-group">
+                    <label for="departamento">Departamento*</label>
+                    <select id="departamento" name="departamento" required>
+                        <option value="">Selecciona un departamento</option>
+                        {% for depto in departamentos %}
+                            <option value="{{ depto.id }}">{{ depto.descripcion }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="cliente-form-group">
+                    <label for="ciudad">Ciudad*</label>
+                    <select id="ciudad" name="ciudad" required>
+                        <option value="">Selecciona una ciudad</option>
+                        {% for ciudad in ciudades %}
+                            <option value="{{ ciudad.id }}">{{ ciudad.descripcion }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <!-- 🧾 Datos de la póliza -->
+            <h3 class="cliente-subtitulo">Datos de la póliza</h3>
+
+            <div class="cliente-grupo-doble">
+                <div class="cliente-form-group">
+                    <label for="producto">Producto*</label>
+                    <select id="producto" name="producto" required>
+                        <option value="">Selecciona una opción</option>
+                        {% for producto in productos %}
+                            <option value="{{ producto.id }}">{{ producto.descripcion }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="cliente-form-group">
+                    <label for="poliza">Tipo de póliza*</label>
+                    <select id="poliza" name="poliza" required>
+                        <option value="">Selecciona una opción</option>
+                        <option value="Mensual">Mensual</option>
+                        <option value="Trimestral">Trimestral</option>
+                        <option value="Semestral">Semestral</option>
+                        <option value="Anual">Anual</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="cliente-grupo-doble">
+                <div class="cliente-form-group">
+                    <label for="canal">Canal de venta*</label>
+                    <select id="canal" name="canal" required>
+                        <option value="">Selecciona una opción</option>
+                        {% for canal in canales %}
+                            <option value="{{ canal.id }}">{{ canal.descripcion }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="cliente-form-group">
+                    <label for="notas">Notas o comentarios</label>
+                    <textarea id="notas" name="notas" placeholder="Información adicional sobre el cliente o la póliza"></textarea>
+                </div>
+            </div>
+
+            <div class="cliente-acciones-formulario">
+                <button type="button" class="cliente-btn-cancelar" onclick="window.history.back()">Cancelar</button>
+                <button type="submit" class="cliente-btn-guardar">Guardar cliente</button>
             </div>
         </form>
     </div>

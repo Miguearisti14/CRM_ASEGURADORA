@@ -179,7 +179,6 @@ class Interacciones(models.Model):
 class Polizas(models.Model):
     id = models.AutoField(primary_key=True)
     id_producto = models.ForeignKey(Productos, on_delete=models.CASCADE)
-    id_tipo_poliza = models.ForeignKey(Tipo_Poliza, on_delete=models.CASCADE)
     id_canal_venta = models.ForeignKey(Canal_venta, on_delete=models.CASCADE)
     dni_cliente = models.ForeignKey(Clientes, on_delete=models.CASCADE)
     fecha_inicio = models.DateField()

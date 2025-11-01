@@ -1,36 +1,71 @@
 {% extends 'layout_panel.html' %}
+{% load static %}
 
-{% block title %}Consultar - ZuluAris CRM{% endblock %}
+{% block title %}Consultar Clientes - ZuluAris CRM{% endblock %}
 
 {% block content %}
 <div class="card">
-    <h2>Búsqueda y filtrado</h2>
-    <div class="filters">
-        <!-- Aquí tus campos de búsqueda -->
-        <input type="text" placeholder="Nombre o DNI del cliente">
-        <button>🔍 Buscar</button>
-    </div>
+    <h2>Consultar Clientes</h2>
 
+    <!-- 🔍 Buscador -->
+    <form class="filters" method="get" action="">
+        <input 
+            type="text" 
+            name="q" 
+            value="{{ query }}" 
+            placeholder="Buscar por nombre o DNI"
+        >
+        <button type="submit">🔍 Buscar</button>
+    </form>
+
+    <!-- Tabla de resultados -->
     <table>
         <thead>
             <tr>
-                <th># Serie</th>
+                <th>DNI</th>
                 <th>Cliente</th>
-                <th>Contacto</th>
+                <th>Correo</th>
                 <th>Producto</th>
-                <th>Fecha vigencia</th>
-                <th>Observaciones</th>
+                <th>Vigencia</th>
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>001</td>
-                <td>Juan Pérez</td>
-                <td>juan@example.com</td>
-                <td>Seguro de vida</td>
-                <td>2026-01-10</td>
-                <td>Renovado</td>
-            </tr>
+            {% if datos_clientes %}
+                {% for item in datos_clientes %}
+                <tr>
+                    <td>{{ item.cliente.dni }}</td>
+                    <td>
+                        <a href="{% url 'detalle_cliente' item.cliente.dni %}" class="cliente-link">
+                            {{ item.cliente.nombre }}
+                        </a>
+                    </td>
+                    <td>{{ item.cliente.correo|default:"-" }}</td>
+                    
+
+                    <!-- Producto -->
+                    <td>
+                        {% if item.poliza %}
+                            {{ item.poliza.id_producto.descripcion }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+
+                    <!-- Vigencia -->
+                    <td>
+                        {% if item.poliza %}
+                            {{ item.poliza.fecha_inicio }} → {{ item.poliza.fecha_fin }}
+                        {% else %}
+                            Sin póliza
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="6" style="text-align:center;">No hay clientes registrados.</td>
+                </tr>
+            {% endif %}
         </tbody>
     </table>
 </div>

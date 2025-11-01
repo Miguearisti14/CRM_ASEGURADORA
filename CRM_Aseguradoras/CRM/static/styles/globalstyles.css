@@ -1994,3 +1994,194 @@ small {
     font-weight: 500;
     color: #333;
 }
+
+.consulta-container {
+    padding: 20px;
+}
+
+.filters {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.filters input {
+    flex: 1;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+.filters button {
+    background-color: #0078d7;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.filters button:hover {
+    background-color: #005fa3;
+}
+
+.tabla-clientes {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.tabla-clientes th,
+.tabla-clientes td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #eee;
+}
+
+.tabla-clientes th {
+    background-color: #f5f7fa;
+    text-align: left;
+    font-weight: 600;
+}
+
+.vacio,
+.mensaje-vacio {
+    text-align: center;
+    color: #888;
+    padding: 15px;
+}
+
+.cliente-link {
+    color: #1976d2;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.cliente-link:hover {
+    text-decoration: underline;
+}
+
+/* Estilos detalle clientes */
+.detalle-cliente-container {
+    display: flex;
+    justify-content: center;
+    padding: 30px;
+}
+
+.detalle-cliente-card {
+    background: #fff;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 900px;
+}
+
+.titulo-seccion {
+    font-size: 1.8em;
+    color: #1a1a1a;
+    margin-bottom: 10px;
+}
+
+.descripcion-seccion {
+    color: #555;
+    margin-bottom: 20px;
+}
+
+.formulario-cliente {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.grupo-doble {
+    display: flex;
+    gap: 20px;
+}
+
+.form-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.form-group input,
+.form-group select,
+textarea {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 0.95em;
+    transition: border 0.3s;
+    max-height: 42px;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+textarea:focus {
+    border-color: #1976d2;
+    outline: none;
+}
+
+.acciones-formulario {
+    margin-top: 20px;
+    display: flex;
+    gap: 15px;
+}
+
+.btn-guardar {
+    background-color: #1976d2;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-guardar:hover {
+    background-color: #0f4aa0;
+}
+
+.btn-cancelar {
+    background-color: #ccc;
+    padding: 10px 18px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #333;
+    transition: background 0.3s;
+}
+
+.btn-cancelar:hover {
+    background-color: #bbb;
+}
+
+.btn-eliminar {
+    background-color: #d32f2f;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: background 0.3s;
+}
+
+.btn-eliminar:hover {
+    background-color: #9a2222;
+}
+
+.poliza-card {
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 15px;
+    margin-top: 25px;
+}

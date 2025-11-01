@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from datetime import date, timedelta
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
@@ -14,8 +15,109 @@ def index(request):
 def plans(request):
     return render(request, 'plans.html')
 
-def consultar(request):
-    return render(request, 'consultar.html')
+def obtener_ciudades(request, departamento_id):
+    ciudades = Ciudades.objects.filter(id_departamento_id=departamento_id).values("id", "descripcion")
+    return JsonResponse(list(ciudades), safe=False)
+
+def consultar_clientes(request):
+    if not request.user.is_authenticated:
+        messages.error(request, "Debes iniciar sesión para acceder a esta sección.")
+        return redirect("/login")
+
+    try:
+        asesor = Usuarios.objects.get(user=request.user)
+    except Usuarios.DoesNotExist:
+        messages.error(request, "Tu cuenta no está asociada a un perfil válido.")
+        return redirect("/")
+
+    clientes = Clientes.objects.filter(asesor=asesor).select_related("asesor")
+
+    query = request.GET.get("q")
+    if query:
+        clientes = clientes.filter(nombre__icontains=query) | clientes.filter(dni__icontains=query)
+
+    # 🔧 Quitamos "id_tipo_poliza" del select_related
+    polizas = Polizas.objects.filter(dni_cliente__in=clientes).select_related("id_producto", "id_canal_venta")
+
+    datos_clientes = []
+    for cliente in clientes:
+        poliza = polizas.filter(dni_cliente=cliente).order_by("-fecha_inicio").first()
+        datos_clientes.append({
+            "cliente": cliente,
+            "poliza": poliza
+        })
+
+    return render(request, "consultar.html", {
+        "datos_clientes": datos_clientes,
+        "query": query or "",
+    })
+
+
+def detalle_cliente(request, dni):
+    if not request.user.is_authenticated:
+        messages.error(request, "Debes iniciar sesión.")
+        return redirect("/login")
+
+    # Recuperar el asesor y su empresa
+    try:
+        asesor = Usuarios.objects.get(user=request.user)
+    except Usuarios.DoesNotExist:
+        messages.error(request, "Tu perfil no está asociado correctamente.")
+        return redirect("/")
+
+    # Buscar el cliente dentro de la misma empresa del asesor
+    cliente = get_object_or_404(Clientes, dni=dni, asesor__empresa=asesor.empresa)
+    poliza = Polizas.objects.filter(dni_cliente=cliente).order_by("-fecha_inicio").first()
+    tipos_dni = Tipo_DNI.objects.all()
+    departamentos = Departamentos.objects.all()
+    ciudades = Ciudades.objects.filter(id_departamento=cliente.id_ciudad.id_departamento)
+
+    # === ACTUALIZACIÓN DE DATOS ===
+    if request.method == "POST":
+        cliente.celular = request.POST.get("telefono")
+        cliente.telefono = request.POST.get("telefono")
+        cliente.correo = request.POST.get("correo")
+        cliente.direccion = request.POST.get("direccion")
+
+        tipo_dni_id = request.POST.get("tipo_dni")
+        ciudad_id = request.POST.get("ciudad")
+
+        if tipo_dni_id:
+            cliente.id_tipo_dni_id = tipo_dni_id
+        if ciudad_id:
+            cliente.id_ciudad_id = ciudad_id
+
+        cliente.save()
+        messages.success(request, f"Cliente '{cliente.nombre}' actualizado correctamente.")
+        return redirect("detalle_cliente", dni=dni)
+
+    context = {
+        "cliente": cliente,
+        "poliza": poliza,
+        "tipos_dni": tipos_dni,
+        "departamentos": departamentos,
+        "ciudades": ciudades,
+    }
+    return render(request, "cliente_detalle.html", context)
+
+
+def eliminar_cliente(request, dni):
+    if not request.user.is_authenticated:
+        messages.error(request, "Debes iniciar sesión.")
+        return redirect("/login")
+
+    asesor = get_object_or_404(Usuarios, user=request.user)
+    cliente = get_object_or_404(Clientes, dni=dni, asesor__empresa=asesor.empresa)
+
+    if request.method == "POST":
+        cliente.delete()
+        messages.success(request, "El cliente ha sido eliminado correctamente.")
+        return redirect("consultar_clientes")
+
+    messages.error(request, "Operación no permitida.")
+    return redirect("detalle_cliente", dni=dni)
+
+
 
 def resumen(request):
     # Validar autenticación

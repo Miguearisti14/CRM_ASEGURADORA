@@ -90,11 +90,9 @@
         <div class="form-group">
             <label for="poliza">Tipo de póliza*</label>
             <select id="poliza" name="poliza" required>
-                <option value="">Selecciona una opción</option>
-                <option value="Mensual">Mensual</option>
-                <option value="Trimestral">Trimestral</option>
-                <option value="Semestral">Semestral</option>
-                <option value="Anual">Anual</option>
+                {% for tipo in tipos %}
+                    <option value="{{ tipo.id }}">{{ tipo.descripcion }}</option>
+                {% endfor %}
             </select>
         </div>
     </div>
@@ -111,8 +109,13 @@
         </div>
 
         <div class="form-group">
-            <label for="notas">Notas o comentarios</label>
-            <textarea id="notas" name="notas" placeholder="Información adicional sobre el cliente o la póliza"></textarea>
+            <label for="metodo">Metodo de pago*</label>
+            <select id="metodo" name="metodo" required>
+                <option value="">Selecciona una opción</option>
+                {% for metodo in metodos %}
+                    <option value="{{ metodo.id }}">{{ metodo.descripcion }}</option>
+                {% endfor %}
+            </select>
         </div>
     </div>
 
@@ -124,6 +127,4 @@
 </form>
 {% endblock %}
 
-{% block extra_scripts %}
-<script src="{% static 'js/dependencias.js' %}"></script>
-{% endblock %}
+

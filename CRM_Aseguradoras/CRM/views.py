@@ -1,12 +1,12 @@
 from django.http import JsonResponse
-from datetime import date, timedelta
+from datetime import date, timedelta, timezone
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from CRM.models import Usuarios
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib import messages
-from .models import Usuarios, Tipo_DNI, Roles, Empresa, Clientes, Ciudades, Productos, Canal_venta, Tipo_Poliza, Polizas, Departamentos, Reclamaciones
+from .models import Usuarios,Formas_pago, Tipo_Poliza, Canal_venta, Tipo_DNI, Roles, Empresa, Clientes, Ciudades, Productos, Canal_venta, Tipo_Poliza, Polizas, Departamentos, Reclamaciones
 from django.db.models import Q
 
 # Create your views here.
@@ -20,7 +20,27 @@ def obtener_ciudades(request, departamento_id):
     ciudades = Ciudades.objects.filter(id_departamento_id=departamento_id).values("id", "descripcion")
     return JsonResponse(list(ciudades), safe=False)
 
-def consultar_clientes(request):
+def listar_polizas(request):
+    if not request.user.is_authenticated:
+        messages.error(request, "Debes iniciar sesión.")
+        return redirect("/login")
+
+    query = request.GET.get("q", "")
+    polizas = Polizas.objects.select_related("dni_cliente", "id_producto", "id_canal_venta")
+
+    if query:
+        polizas = polizas.filter(
+            dni_cliente__nombre__icontains=query
+        ) | polizas.filter(
+            id_producto__descripcion__icontains=query
+        )
+
+    return render(request, "polizas_panel.html", {
+        "polizas": polizas,
+        "query": query
+    })
+
+def gestionar_clientes(request):
     if not request.user.is_authenticated:
         messages.error(request, "Debes iniciar sesión para acceder a esta sección.")
         return redirect("/login")
@@ -140,7 +160,7 @@ def eliminar_cliente(request, dni):
     if request.method == "POST":
         cliente.delete()
         messages.success(request, "El cliente ha sido eliminado correctamente.")
-        return redirect("consultar_clientes")
+        return redirect("gestionar_clientes")
 
     messages.error(request, "Operación no permitida.")
     return redirect("detalle_cliente", dni=dni)
@@ -200,10 +220,12 @@ def nuevoCliente(request):
 
     # Datos para los selects
     tipos_dni = Tipo_DNI.objects.all()
+    tipo_polizas = Tipo_Poliza.objects.all()
     productos = Productos.objects.all()
     canales = Canal_venta.objects.all()
     departamentos = Departamentos.objects.all()
     ciudades = Ciudades.objects.all()
+    metodos = Formas_pago.objects.all()
 
     if request.method == "POST":
         nombre = request.POST.get("nombre")
@@ -213,11 +235,11 @@ def nuevoCliente(request):
         telefono = request.POST.get("telefono")
         direccion = request.POST.get("direccion")
         producto_id = request.POST.get("producto")
-        tipo_poliza_nombre = request.POST.get("poliza")
+        tipo_poliza_id = request.POST.get("poliza")
         canal_id = request.POST.get("canal")
-        notas = request.POST.get("notas")
         ciudad_id = request.POST.get("ciudad")
         departamento_id = request.POST.get("departamento")
+        metodo_pago_id = request.POST.get("metodo")
 
         # Recuperar asesor logueado
         try:
@@ -247,18 +269,16 @@ def nuevoCliente(request):
         # Calcular fecha de finalización según tipo de póliza
         fecha_inicio = date.today()
 
-        tipo = tipo_poliza_nombre.lower()
-        if tipo == "mensual":
+        tipo =  get_object_or_404(Tipo_Poliza, id=tipo_poliza_id).valor
+        if tipo == 1:  # mensual
             fecha_fin = fecha_inicio + timedelta(days=30)
-        elif tipo == "trimestral":
+        elif tipo == 3:  # trimestral"
             fecha_fin = fecha_inicio + timedelta(days=90)
-        elif tipo == "semestral":
+        elif tipo == 6:  # semestral
             fecha_fin = fecha_inicio + timedelta(days=180)
         else:  # anual u otro
             fecha_fin = fecha_inicio + timedelta(days=365)
 
-        # Obtener o crear el tipo de póliza
-        tipo_poliza, _ = Tipo_Poliza.objects.get_or_create(descripcion=tipo_poliza_nombre)
 
         # Crear la póliza asociada al cliente y a la empresa del asesor
         Polizas.objects.create(
@@ -266,7 +286,9 @@ def nuevoCliente(request):
             id_canal_venta_id=canal_id,
             dni_cliente=cliente,
             fecha_inicio=fecha_inicio,
-            fecha_fin=fecha_fin
+            fecha_fin=fecha_fin,
+            id_tipo_poliza_id=tipo_poliza_id,
+            id_forma_pago_id=metodo_pago_id
         )
 
         messages.success(request, f"Cliente '{cliente.nombre}' y su póliza se registraron correctamente.")
@@ -278,8 +300,81 @@ def nuevoCliente(request):
         "tipos_dni": tipos_dni,
         "canales": canales,
         "departamentos": departamentos,
-        "ciudades": ciudades
+        "ciudades": ciudades,
+        "tipos": tipo_polizas,
+        "metodos": metodos
     })
+
+
+# Crear poliza para usuario ya existente
+def crear_poliza(request):
+    if not request.user.is_authenticated:
+        messages.error(request, "Debes iniciar sesión para registrar una póliza.")
+        return redirect("/login")
+
+    # Obtener el asesor logueado
+    asesor = get_object_or_404(Usuarios, user=request.user)
+
+
+    clientes = Clientes.objects.filter(asesor__empresa=asesor.empresa)
+
+
+    # Cargar datos para los selects
+    productos = Productos.objects.all()
+    tipos_poliza = Tipo_Poliza.objects.all()
+    canales = Canal_venta.objects.all()
+    metodos = Formas_pago.objects.all()
+
+    if request.method == "POST":
+        dni_cliente_id = request.POST.get("cliente")
+        producto_id = request.POST.get("producto")
+        tipo_poliza_id = request.POST.get("tipo_poliza")
+        canal_id = request.POST.get("canal")
+        metodo_pago_id = request.POST.get("metodo")
+
+        # Validación básica
+        if not dni_cliente_id or not producto_id or not tipo_poliza_id:
+            messages.error(request, "Por favor completa todos los campos obligatorios.")
+            return redirect("crear_poliza")
+
+        cliente = get_object_or_404(Clientes, dni=dni_cliente_id)
+
+        fecha_inicio = date.today()
+
+        tipo =  get_object_or_404(Tipo_Poliza, id=tipo_poliza_id).valor
+        if tipo == 1:  # mensual
+            fecha_fin = fecha_inicio + timedelta(days=30)
+        elif tipo == 3:  # trimestral"
+            fecha_fin = fecha_inicio + timedelta(days=90)
+        elif tipo == 6:  # semestral
+            fecha_fin = fecha_inicio + timedelta(days=180)
+        else:  # anual u otro
+            fecha_fin = fecha_inicio + timedelta(days=365)
+
+        # Crear póliza
+        poliza = Polizas.objects.create(
+            id_producto_id=producto_id,
+            id_canal_venta_id=canal_id,
+            dni_cliente_id=dni_cliente_id,
+            fecha_inicio=fecha_inicio,
+            fecha_fin=fecha_fin,
+            id_tipo_poliza_id=tipo_poliza_id,
+            id_forma_pago_id=metodo_pago_id
+        )
+
+        messages.success(request, f"La póliza para {cliente.nombre} se registró correctamente.")
+        return redirect("gestionar_clientes")
+
+    return render(request, "crear_poliza.html", {
+        "titulo": "Registrar nueva póliza",
+        "descripcion": "Asigna una nueva póliza a un cliente existente.",
+        "clientes": clientes,
+        "productos": productos,
+        "tipos_poliza": tipos_poliza,
+        "canales": canales,
+        "metodos": metodos 
+    })
+
 
 def interacciones(request):
     return render(request, 'interacciones.html')

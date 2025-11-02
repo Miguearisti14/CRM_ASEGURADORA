@@ -72,6 +72,7 @@ class Ramos(models.Model):
 class Tipo_Poliza(models.Model):
     id = models.AutoField(primary_key=True)
     descripcion = models.CharField(max_length=50, unique=True)
+    valor = models.IntegerField(unique=True)
 
     class Meta:
         db_table = "tipo_poliza"
@@ -180,6 +181,8 @@ class Polizas(models.Model):
     id = models.AutoField(primary_key=True)
     id_producto = models.ForeignKey(Productos, on_delete=models.CASCADE)
     id_canal_venta = models.ForeignKey(Canal_venta, on_delete=models.CASCADE)
+    id_tipo_poliza = models.ForeignKey(Tipo_Poliza, on_delete=models.CASCADE)
+    id_forma_pago = models.ForeignKey(Formas_pago, on_delete=models.CASCADE)
     dni_cliente = models.ForeignKey(Clientes, on_delete=models.CASCADE)
     fecha_inicio = models.DateField()
     fecha_fin = models.DateField()

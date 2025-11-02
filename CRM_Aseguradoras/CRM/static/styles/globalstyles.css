@@ -28,7 +28,7 @@ h2 {
 p {
     margin-bottom: 17px;
     line-height: 1.6;
-    font-size: 18px;
+    font-size: 16px;
     text-align: justify;
 }
 
@@ -2229,7 +2229,7 @@ textarea:focus {
 }
 
 .titulo-seccion {
-    font-size: 1.8em;
+    font-size: 24px;
     color: #2a4d96;
     font-weight: bold;
     margin-bottom: 10px;
@@ -2368,4 +2368,29 @@ textarea:focus {
 .acciones-formulario.eliminar {
     justify-content: flex-end;
     margin-top: 10px;
+}
+
+/* Gestionar Polizas CSS */
+.acciones-polizas {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    margin-top: 30px;
+}
+
+.btn-mini {
+    font-size: 0.85em;
+    padding: 6px 10px;
+    border-radius: 6px;
+}
+
+.filters {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.limpiar-btn {
+    background-color: #e0e0e0;
+    color: #333;
 }

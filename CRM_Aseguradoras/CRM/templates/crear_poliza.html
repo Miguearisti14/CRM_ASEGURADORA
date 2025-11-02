@@ -1,0 +1,75 @@
+{% extends 'layout_form_base.html' %}
+{% load static %}
+
+{% block form_content %}
+<form method="POST" class="panel-formulario">
+    {% csrf_token %}
+
+    <div class="grupo-doble">
+        <div class="form-group">
+            <label for="cliente">Cliente asociado*</label>
+            {% if cliente %}
+                <input type="text" id="cliente" name="cliente" value="{{ cliente.nombre }} ({{ cliente.dni }})" readonly style="background-color: #e7e9eaff;">
+                <input type="hidden" name="cliente" value="{{ cliente.dni }}">
+            {% else %}
+                <select name="cliente" id="cliente" required>
+                    <option value="">Selecciona un cliente</option>
+                    {% for c in clientes %}
+                        <option value="{{ c.dni }}">{{ c.nombre }}</option>
+                    {% endfor %}
+                </select>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="producto">Producto*</label>
+            <select name="producto" id="producto" required>
+                <option value="">Selecciona un producto</option>
+                {% for producto in productos %}
+                    <option value="{{ producto.id }}">{{ producto.descripcion }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <div class="grupo-doble">
+        <div class="form-group">
+            <label for="tipo_poliza">Tipo de póliza*</label>
+            <select name="tipo_poliza" id="tipo_poliza" required>
+                <option value="">Selecciona una opción</option>
+                {% for tipo in tipos_poliza %}
+                    <option value="{{ tipo.id }}">{{ tipo.descripcion }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="canal">Canal de venta*</label>
+            <select name="canal" id="canal" required>
+                <option value="">Selecciona una opción</option>
+                {% for canal in canales %}
+                    <option value="{{ canal.id }}">{{ canal.descripcion }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <div class="grupo-doble">
+        <div class="form-group">
+            <label for="metodo">Metodo de pago*</label>
+            <select id="metodo" name="metodo" required>
+                <option value="">Selecciona una opción</option>
+                {% for metodo in metodos %}
+                    <option value="{{ metodo.id }}">{{ metodo.descripcion }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+
+    <div class="acciones-formulario">
+        <a href="{% url 'gestionar_clientes' %}" class="btn-cancelar">Cancelar</a>
+        <button type="submit" class="btn-guardar">Guardar póliza</button>
+    </div>
+</form>
+{% endblock %}

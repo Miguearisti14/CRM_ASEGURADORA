@@ -2185,3 +2185,261 @@ textarea:focus {
     padding: 15px;
     margin-top: 25px;
 }
+
+/* Busqueda y filtrado */
+.consulta-container {
+    padding: 2rem;
+    display: flex;
+    justify-content: center;
+}
+
+.consulta-card {
+    width: 100%;
+    max-width: 1100px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+    padding: 2rem;
+}
+
+.titulo-consulta {
+    font-size: 1.6rem;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+}
+
+.descripcion-consulta {
+    font-size: 0.95rem;
+    color: #666;
+    margin-bottom: 1.5rem;
+}
+
+/* 🔍 Filtros */
+.consulta-filtros {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    margin-bottom: 1.5rem;
+}
+
+.grupo-busqueda {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.input-busqueda,
+.input-select {
+    padding: 0.6rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    flex: 1;
+    min-width: 180px;
+}
+
+.btn-buscar {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 0.6rem 1.2rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-size: 14px;
+}
+
+.btn-buscar:hover {
+    background-color: #0056b3;
+}
+
+/* 📋 Tabla */
+.tabla-container {
+    overflow-x: auto;
+}
+
+.tabla-consulta {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tabla-consulta th,
+.tabla-consulta td {
+    text-align: left;
+    padding: 0.8rem;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.tabla-consulta th {
+    background: #f8f8f8;
+    font-weight: 600;
+    color: #333;
+}
+
+.cliente-link {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.cliente-link:hover {
+    text-decoration: underline;
+}
+
+.sin-resultados {
+    text-align: center;
+    color: #777;
+    padding: 1rem 0;
+}
+
+.btn-limpiar {
+    background-color: #5183f0;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 0.6rem 1.2rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-size: 14px;
+}
+
+.btn-limpiar:hover {
+    background-color: #0056b3;
+}
+
+.card-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.panel-formulario-container {
+    display: flex;
+    justify-content: center;
+    padding: 30px;
+}
+
+.panel-formulario-card {
+    background: #fff;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 900px;
+}
+
+.titulo-seccion {
+    font-size: 1.8em;
+    color: #1a1a1a;
+    margin-bottom: 10px;
+}
+
+.descripcion-seccion {
+    color: #555;
+    margin-bottom: 20px;
+}
+
+.panel-formulario {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.grupo-doble {
+    display: flex;
+    gap: 20px;
+}
+
+.form-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.form-group input,
+.form-group select,
+textarea {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 0.95em;
+    transition: border 0.3s;
+    max-height: 42px;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+textarea:focus {
+    border-color: #1976d2;
+    outline: none;
+}
+
+.acciones-formulario {
+    margin-top: 20px;
+    display: flex;
+    gap: 15px;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Ubuntu", sans-serif;
+    font-weight: 500;
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    border: none;
+    transition: all 0.25s ease-in-out;
+    text-decoration: none;
+    min-width: 120px;
+}
+
+/* ===== Botón GUARDAR ===== */
+.btn-guardar {
+    background-color: #1976d2;
+    color: #fff;
+}
+
+.btn-guardar:hover {
+    background-color: #145da0;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(25, 118, 210, 0.25);
+}
+
+/* ===== Botón CANCELAR ===== */
+.btn-cancelar {
+    background-color: #f1f1f1;
+    color: #333;
+    border: 1px solid #ccc;
+}
+
+.btn-cancelar:hover {
+    background-color: #e2e2e2;
+    border-color: #bbb;
+    transform: translateY(-1px);
+}
+
+/* ===== Botón ELIMINAR ===== */
+.btn-eliminar {
+    background-color: #d32f2f;
+    color: #fff;
+}
+
+.btn-eliminar:hover {
+    background-color: #9a2222;
+    box-shadow: 0 3px 8px rgba(211, 47, 47, 0.25);
+    transform: translateY(-1px);
+}

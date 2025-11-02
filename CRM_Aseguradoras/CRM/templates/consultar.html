@@ -5,18 +5,35 @@
 
 {% block content %}
 <div class="card">
-    <h2>Consultar Clientes</h2>
+    <div class="card-header">
+        <h2>Consultar Clientes</h2>
+    </div>
 
     <!-- 🔍 Buscador -->
-    <form class="filters" method="get" action="">
-        <input 
-            type="text" 
-            name="q" 
-            value="{{ query }}" 
-            placeholder="Buscar por nombre o DNI"
-        >
-        <button type="submit">🔍 Buscar</button>
-    </form>
+    <form class="consulta-filtros" method="get" action="">
+            <div class="grupo-busqueda">
+                <input 
+                    type="text" 
+                    name="q" 
+                    value="{{ query }}" 
+                    placeholder="Buscar por nombre o DNI..."
+                    class="input-busqueda"
+                >
+
+                <select name="producto" class="input-select">
+                    <option value="">Producto</option>
+                    {% for producto in productos %}
+                        <option value="{{ producto.id }}" {% if producto.id|stringformat:"s" == request.GET.producto %}selected{% endif %}>
+                            {{ producto.descripcion }}
+                        </option>
+                    {% endfor %}
+                </select>
+
+                <button type="submit" class="btn-buscar">Buscar</button>
+                    <a href="{% url 'consultar_clientes' %}" class="btn-limpiar">Limpiar filtro</a>
+
+            </div>
+        </form>
 
     <!-- Tabla de resultados -->
     <table>
@@ -45,11 +62,15 @@
                     <!-- Producto -->
                     <td>
                         {% if item.poliza %}
-                            {{ item.poliza.id_producto.descripcion }}
+                            <a href="{% url 'detalle_poliza' item.cliente.dni %}" class="cliente-link">
+                                {{ item.poliza.id_producto.descripcion }}
+                            </a>
                         {% else %}
                             -
                         {% endif %}
                     </td>
+
+                    
 
                     <!-- Vigencia -->
                     <td>

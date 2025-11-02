@@ -7,10 +7,11 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib import messages
 from .models import Usuarios, Tipo_DNI, Roles, Empresa, Clientes, Ciudades, Productos, Canal_venta, Tipo_Poliza, Polizas, Departamentos, Reclamaciones
+from django.db.models import Q
 
 # Create your views here.
 def index(request):
-    return render(request, 'index.html')
+    return render(request, 'layout_form_base.html')
 
 def plans(request):
     return render(request, 'plans.html')
@@ -30,27 +31,31 @@ def consultar_clientes(request):
         messages.error(request, "Tu cuenta no está asociada a un perfil válido.")
         return redirect("/")
 
-    clientes = Clientes.objects.filter(asesor=asesor).select_related("asesor")
-
+    clientes = Clientes.objects.filter(asesor=asesor)
     query = request.GET.get("q")
-    if query:
-        clientes = clientes.filter(nombre__icontains=query) | clientes.filter(dni__icontains=query)
+    producto_id = request.GET.get("producto")
 
-    # 🔧 Quitamos "id_tipo_poliza" del select_related
+    if query:
+        clientes = clientes.filter(
+            Q(nombre__icontains=query) | Q(dni__icontains=query)
+        )
+
     polizas = Polizas.objects.filter(dni_cliente__in=clientes).select_related("id_producto", "id_canal_venta")
+
+    if producto_id:
+        polizas = polizas.filter(id_producto_id=producto_id)
 
     datos_clientes = []
     for cliente in clientes:
         poliza = polizas.filter(dni_cliente=cliente).order_by("-fecha_inicio").first()
-        datos_clientes.append({
-            "cliente": cliente,
-            "poliza": poliza
-        })
+        datos_clientes.append({"cliente": cliente, "poliza": poliza})
 
     return render(request, "consultar.html", {
         "datos_clientes": datos_clientes,
         "query": query or "",
+        "productos": Productos.objects.all()
     })
+
 
 
 def detalle_cliente(request, dni):
@@ -99,6 +104,29 @@ def detalle_cliente(request, dni):
         "ciudades": ciudades,
     }
     return render(request, "cliente_detalle.html", context)
+
+
+def detalle_poliza(request, dni):
+    if not request.user.is_authenticated:
+        messages.error(request, "Debes iniciar sesión.")
+        return redirect("/login")
+
+    # Recuperar el asesor y su empresa
+    try:
+        asesor = Usuarios.objects.get(user=request.user)
+    except Usuarios.DoesNotExist:
+        messages.error(request, "Tu perfil no está asociado correctamente.")
+        return redirect("/")
+
+    # Buscar el cliente dentro de la misma empresa del asesor
+    cliente = get_object_or_404(Clientes, dni=dni, asesor__empresa=asesor.empresa)
+    poliza = Polizas.objects.filter(dni_cliente=cliente).order_by("-fecha_inicio").first()
+
+    context = {
+        "cliente": cliente,
+        "poliza": poliza
+    }
+    return render(request, "poliza_detalle.html", context)
 
 
 def eliminar_cliente(request, dni):

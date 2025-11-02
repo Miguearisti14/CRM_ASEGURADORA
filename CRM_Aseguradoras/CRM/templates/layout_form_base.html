@@ -1,0 +1,30 @@
+{% extends 'layout_panel.html' %}
+{% load static %}
+
+{% block title %}{{ titulo|default:"Formulario" }} - ZuluAris CRM{% endblock %}
+
+{% block content %}
+<section class="panel-formulario-container">
+    <div class="panel-formulario-card">
+        <h2 class="titulo-seccion">{{ titulo|default:"Formulario general" }}</h2>
+        {% if descripcion %}
+        <p class="descripcion-seccion">{{ descripcion }}</p>
+        {% endif %}
+
+        <form method="POST" class="panel-formulario">
+            {% csrf_token %}
+
+            {% block form_fields %}
+            <!-- Aquí se incluirán los campos específicos del formulario -->
+            {% endblock %}
+
+            <div class="acciones-formulario">
+                {% block form_actions %}
+                <button type="submit" class="btn-guardar">💾 Guardar</button>
+                <a href="{% url 'panel_resumen' %}" class="btn-cancelar">Cancelar</a>
+                {% endblock %}
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}

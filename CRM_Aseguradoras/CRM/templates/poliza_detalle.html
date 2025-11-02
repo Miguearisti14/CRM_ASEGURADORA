@@ -1,0 +1,23 @@
+{% extends 'layout_panel.html' %}
+{% load static %}
+
+{% block title %}Detalle del Cliente - ZuluAris CRM{% endblock %}
+
+{% block content %}
+<section class="detalle-cliente-container">
+    <div class="detalle-cliente-card">
+        <h2 class="titulo-seccion">Información de la poliza del Cliente</h2>
+
+        {% if poliza %}
+        <!-- Información adicional -->
+        <div class="poliza-card">
+            <h3>Información de la póliza</h3>
+            <p><strong>Producto:</strong> {{ poliza.id_producto.descripcion }}</p>
+            <p><strong>Tipo de póliza:</strong> {{ poliza.id_tipo_poliza.descripcion }}</p>
+            <p><strong>Canal de venta:</strong> {{ poliza.id_canal_venta.descripcion }}</p>
+            <p><strong>Vigencia:</strong> {{ poliza.fecha_inicio }} → {{ poliza.fecha_fin }}</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

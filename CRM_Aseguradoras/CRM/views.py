@@ -11,7 +11,7 @@ from django.db.models import Q
 
 # Create your views here.
 def index(request):
-    return render(request, 'layout_form_base.html')
+    return render(request, 'index.html')
 
 def plans(request):
     return render(request, 'plans.html')

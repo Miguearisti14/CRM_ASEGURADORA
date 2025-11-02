@@ -19,6 +19,10 @@ h4 {
     margin: 0.5em 0;
 }
 
+h2 {
+    color: #2a4d96
+}
+
 
 
 p {
@@ -2014,11 +2018,6 @@ small {
     max-width: 900px;
 }
 
-.titulo-seccion {
-    font-size: 1.8em;
-    color: #1a1a1a;
-    margin-bottom: 10px;
-}
 
 .descripcion-seccion {
     color: #555;
@@ -2144,6 +2143,7 @@ textarea:focus {
     cursor: pointer;
     transition: background 0.2s;
     font-size: 14px;
+    font-weight: bold;
 }
 
 .btn-buscar:hover {
@@ -2198,6 +2198,7 @@ textarea:focus {
     cursor: pointer;
     transition: background 0.2s;
     font-size: 14px;
+    font-weight: bold;
 }
 
 .btn-limpiar:hover {
@@ -2229,7 +2230,8 @@ textarea:focus {
 
 .titulo-seccion {
     font-size: 1.8em;
-    color: #1a1a1a;
+    color: #2a4d96;
+    font-weight: bold;
     margin-bottom: 10px;
 }
 
@@ -2296,6 +2298,8 @@ textarea:focus {
     font-weight: 500;
     transition: background-color 0.3s ease;
     font-weight: bold;
+    font-size: 16px;
+    height: 100%;
 }
 
 .btn-guardar:hover {
@@ -2320,9 +2324,10 @@ textarea:focus {
     cursor: pointer;
     font-weight: 500;
     transition: background-color 0.3s ease;
-    font-size: 14px;
+    font-size: 16px;
     font-style: bold;
     font-weight: bold;
+    height: 100%;
 }
 
 .btn-cancelar:hover {
@@ -2340,9 +2345,27 @@ textarea:focus {
     font-weight: 500;
     transition: background-color 0.3s ease;
     font-weight: bold;
+    font-size: 16px;
+    height: 100%;
 }
 
 .btn-eliminar:hover {
     background-color: #b71c1c;
 
+}
+
+.acciones-formulario {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+    /* Espacio entre botones */
+    margin-top: 20px;
+    flex-wrap: wrap;
+    /* Evita que se rompa si hay poco espacio */
+}
+
+.acciones-formulario.eliminar {
+    justify-content: flex-end;
+    margin-top: 10px;
 }

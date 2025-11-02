@@ -1,129 +1,129 @@
-{% extends 'layout_panel.html' %}
+{% extends 'layout_form_base.html' %}
 {% load static %}
 
-{% block content %}
-<link rel="stylesheet" href="{% static 'css/form_cliente.css' %}">
+{% block title %}Registrar nuevo cliente - ZuluAris CRM{% endblock %}
 
-<section class="cliente-formulario-container">
-    <div class="cliente-formulario-card">
-        <h2 class="cliente-titulo-formulario">Registrar nuevo cliente</h2>
-        <p class="cliente-descripcion">Completa los datos del cliente y su póliza asociada.</p>
+{% block form_content %}
+<h2 class="titulo-seccion">Registrar nuevo cliente</h2>
+<p class="descripcion-seccion">Completa los datos del cliente y su póliza asociada.</p>
 
-        <form class="cliente-formulario" method="POST">
-            {% csrf_token %}
+<form method="POST" class="panel-formulario">
+    {% csrf_token %}
 
-            <!-- 🧍 Datos personales -->
-            <h3 class="cliente-subtitulo">Datos personales</h3>
+    <!-- 🧍 Datos personales -->
+    <h3 class="cliente-subtitulo">Datos personales</h3>
 
-            <div class="cliente-grupo-doble">
-                <div class="cliente-form-group">
-                    <label for="nombre">Nombre completo*</label>
-                    <input type="text" id="nombre" name="nombre" placeholder="Ej: Juan Pérez" required>
-                </div>
+    <div class="grupo-doble">
+        <div class="form-group">
+            <label for="nombre">Nombre completo*</label>
+            <input type="text" id="nombre" name="nombre" placeholder="Ej: Juan Pérez" required>
+        </div>
 
-                <div class="cliente-form-group">
-                    <label for="dni">Número de documento*</label>
-                    <input type="text" id="dni" name="dni" placeholder="Ej: 1032456789" required>
-                </div>
-            </div>
-
-            <div class="cliente-grupo-doble">
-                <div class="cliente-form-group">
-                    <label for="tipo_dni">Tipo de documento*</label>
-                    <select id="tipo_dni" name="tipo_dni" required>
-                        <option value="">Selecciona una opción</option>
-                        {% for tipo in tipos_dni %}
-                            <option value="{{ tipo.id }}">{{ tipo.nombre }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <div class="cliente-form-group">
-                    <label for="telefono">Teléfono / Celular*</label>
-                    <input type="text" id="telefono" name="telefono" placeholder="+57 300 123 4567" required>
-                </div>
-            </div>
-
-            <div class="cliente-grupo-doble">
-                <div class="cliente-form-group">
-                    <label for="correo">Correo electrónico</label>
-                    <input type="email" id="correo" name="correo" placeholder="correo@ejemplo.com">
-                </div>
-
-                <div class="cliente-form-group">
-                    <label for="direccion">Dirección</label>
-                    <input type="text" id="direccion" name="direccion" placeholder="Calle 10 #45-23, Medellín">
-                </div>
-            </div>
-
-            <div class="cliente-grupo-doble">
-                <div class="cliente-form-group">
-                    <label for="departamento">Departamento*</label>
-                    <select id="departamento" name="departamento" required>
-                        <option value="">Selecciona un departamento</option>
-                        {% for depto in departamentos %}
-                            <option value="{{ depto.id }}">{{ depto.descripcion }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <div class="cliente-form-group">
-                    <label for="ciudad">Ciudad*</label>
-                    <select id="ciudad" name="ciudad" required>
-                        <option value="">Selecciona primero un departamento</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- 🧾 Datos de la póliza -->
-            <h3 class="cliente-subtitulo">Datos de la póliza</h3>
-
-            <div class="cliente-grupo-doble">
-                <div class="cliente-form-group">
-                    <label for="producto">Producto*</label>
-                    <select id="producto" name="producto" required>
-                        <option value="">Selecciona una opción</option>
-                        {% for producto in productos %}
-                            <option value="{{ producto.id }}">{{ producto.descripcion }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <div class="cliente-form-group">
-                    <label for="poliza">Tipo de póliza*</label>
-                    <select id="poliza" name="poliza" required>
-                        <option value="">Selecciona una opción</option>
-                        <option value="Mensual">Mensual</option>
-                        <option value="Trimestral">Trimestral</option>
-                        <option value="Semestral">Semestral</option>
-                        <option value="Anual">Anual</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="cliente-grupo-doble">
-                <div class="cliente-form-group">
-                    <label for="canal">Canal de venta*</label>
-                    <select id="canal" name="canal" required>
-                        <option value="">Selecciona una opción</option>
-                        {% for canal in canales %}
-                            <option value="{{ canal.id }}">{{ canal.descripcion }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <div class="cliente-form-group">
-                    <label for="notas">Notas o comentarios</label>
-                    <textarea id="notas" name="notas" placeholder="Información adicional sobre el cliente o la póliza"></textarea>
-                </div>
-            </div>
-
-            <div class="cliente-acciones-formulario">
-                <button type="button" class="btn-cancelar" onclick="window.history.back()">Cancelar</button>
-                <button type="submit" class="btn-guardar">Guardar cliente</button>
-            </div>
-        </form>
+        <div class="form-group">
+            <label for="dni">Número de documento*</label>
+            <input type="text" id="dni" name="dni" placeholder="Ej: 1032456789" required>
+        </div>
     </div>
-</section>
+
+    <div class="grupo-doble">
+        <div class="form-group">
+            <label for="tipo_dni">Tipo de documento*</label>
+            <select id="tipo_dni" name="tipo_dni" required>
+                <option value="">Selecciona una opción</option>
+                {% for tipo in tipos_dni %}
+                    <option value="{{ tipo.id }}">{{ tipo.nombre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="telefono">Teléfono / Celular*</label>
+            <input type="text" id="telefono" name="telefono" placeholder="+57 300 123 4567" required>
+        </div>
+    </div>
+
+    <div class="grupo-doble">
+        <div class="form-group">
+            <label for="correo">Correo electrónico</label>
+            <input type="email" id="correo" name="correo" placeholder="correo@ejemplo.com">
+        </div>
+
+        <div class="form-group">
+            <label for="direccion">Dirección</label>
+            <input type="text" id="direccion" name="direccion" placeholder="Calle 10 #45-23, Medellín">
+        </div>
+    </div>
+
+    <div class="grupo-doble">
+        <div class="form-group">
+            <label for="departamento">Departamento*</label>
+            <select id="departamento" name="departamento" required>
+                <option value="">Selecciona un departamento</option>
+                {% for depto in departamentos %}
+                    <option value="{{ depto.id }}">{{ depto.descripcion }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="ciudad">Ciudad*</label>
+            <select id="ciudad" name="ciudad" required>
+                <option value="">Selecciona primero un departamento</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- 🧾 Datos de la póliza -->
+    <h3 class="cliente-subtitulo">Datos de la póliza</h3>
+
+    <div class="grupo-doble">
+        <div class="form-group">
+            <label for="producto">Producto*</label>
+            <select id="producto" name="producto" required>
+                <option value="">Selecciona una opción</option>
+                {% for producto in productos %}
+                    <option value="{{ producto.id }}">{{ producto.descripcion }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="poliza">Tipo de póliza*</label>
+            <select id="poliza" name="poliza" required>
+                <option value="">Selecciona una opción</option>
+                <option value="Mensual">Mensual</option>
+                <option value="Trimestral">Trimestral</option>
+                <option value="Semestral">Semestral</option>
+                <option value="Anual">Anual</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="grupo-doble">
+        <div class="form-group">
+            <label for="canal">Canal de venta*</label>
+            <select id="canal" name="canal" required>
+                <option value="">Selecciona una opción</option>
+                {% for canal in canales %}
+                    <option value="{{ canal.id }}">{{ canal.descripcion }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="notas">Notas o comentarios</label>
+            <textarea id="notas" name="notas" placeholder="Información adicional sobre el cliente o la póliza"></textarea>
+        </div>
+    </div>
+
+    <!-- 🎯 Botones de acción -->
+    <div class="acciones-formulario">
+        <a href="{% url 'panel_resumen' %}" class="btn-cancelar">Cancelar</a>
+        <button type="submit" class="btn-guardar">Guardar cliente</button>
+    </div>
+</form>
+{% endblock %}
+
+{% block extra_scripts %}
 <script src="{% static 'js/dependencias.js' %}"></script>
 {% endblock %}

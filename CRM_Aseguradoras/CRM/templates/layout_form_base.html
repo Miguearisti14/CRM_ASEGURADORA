@@ -6,25 +6,18 @@
 {% block content %}
 <section class="panel-formulario-container">
     <div class="panel-formulario-card">
-        <h2 class="titulo-seccion">{{ titulo|default:"Formulario general" }}</h2>
+
         {% if descripcion %}
-        <p class="descripcion-seccion">{{ descripcion }}</p>
+            <p class="descripcion-seccion">{{ descripcion }}</p>
         {% endif %}
 
-        <form method="POST" class="panel-formulario">
-            {% csrf_token %}
-
-            {% block form_fields %}
-            <!-- Aquí se incluirán los campos específicos del formulario -->
-            {% endblock %}
-
-            <div class="acciones-formulario">
-                {% block form_actions %}
-                <button type="submit" class="btn-guardar">💾 Guardar</button>
-                <a href="{% url 'panel_resumen' %}" class="btn-cancelar">Cancelar</a>
-                {% endblock %}
-            </div>
-        </form>
+        <!-- 🔹 Los formularios hijos se declaran aquí -->
+        {% block form_content %}
+            <!-- Aquí el formulario específico (creación, edición, eliminación, etc.) -->
+            <p>Este es un formulario genérico. Sobrescribe el bloque <code>form_content</code> en tus vistas hijas.</p>
+        {% endblock %}
     </div>
 </section>
+
+<script src="{% static 'js/dependencias.js' %}"></script>
 {% endblock %}

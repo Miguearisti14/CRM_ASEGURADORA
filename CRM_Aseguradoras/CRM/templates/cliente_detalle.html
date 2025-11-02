@@ -3,87 +3,104 @@
 
 {% block title %}Detalle del Cliente - ZuluAris CRM{% endblock %}
 
-{% block content %}
-{% with titulo="Información del Cliente" descripcion="Consulta, edita o elimina los datos del cliente registrado." %}
-{{ block.super }}
-{% endwith %}
-{% endblock %}
+{% block form_content %}
+<h2 class="titulo-seccion">Información del Cliente</h2>
+<p class="descripcion-seccion">Consulta, edita o elimina los datos del cliente registrado.</p>
 
-{% block form_fields %}
-<!-- Información del cliente -->
-<div class="grupo-doble">
-    <div class="form-group">
-        <label for="nombre">Nombre completo</label>
-        <input type="text" name="nombre" id="nombre" value="{{ cliente.nombre }}" readonly style="background-color: #e7e9eaff;">
+<!-- 🧾 Formulario principal (editar cliente) -->
+<form method="POST" class="panel-formulario">
+    {% csrf_token %}
+
+    <div class="grupo-doble">
+        <div class="form-group">
+            <label for="nombre">Nombre completo</label>
+            <input type="text" name="nombre" id="nombre" 
+                   value="{{ cliente.nombre }}" readonly 
+                   style="background-color: #e7e9ea;">
+        </div>
+
+        <div class="form-group">
+            <label for="dni">Documento</label>
+            <input type="text" name="dni" id="dni" 
+                   value="{{ cliente.dni }}" readonly 
+                   style="background-color: #e7e9ea;">
+        </div>
     </div>
 
-    <div class="form-group">
-        <label for="dni">Documento</label>
-        <input type="text" name="dni" id="dni" value="{{ cliente.dni }}" readonly style="background-color: #e7e9eaff;">
-    </div>
-</div>
+    <div class="grupo-doble">
+        <div class="form-group">
+            <label for="tipo_dni">Tipo de documento</label>
+            <select name="tipo_dni" id="tipo_dni" required>
+                {% for tipo in tipos_dni %}
+                    <option value="{{ tipo.id }}" 
+                            {% if cliente.id_tipo_dni.id == tipo.id %}selected{% endif %}>
+                        {{ tipo.nombre }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
 
-<div class="grupo-doble">
-    <div class="form-group">
-        <label for="tipo_dni">Tipo de documento</label>
-        <select name="tipo_dni" id="tipo_dni" required>
-            {% for tipo in tipos_dni %}
-                <option value="{{ tipo.id }}" {% if cliente.id_tipo_dni.id == tipo.id %}selected{% endif %}>{{ tipo.nombre }}</option>
-            {% endfor %}
-        </select>
-    </div>
-
-    <div class="form-group">
-        <label for="telefono">Teléfono / Celular</label>
-        <input type="text" name="telefono" id="telefono" value="{{ cliente.celular }}">
-    </div>
-</div>
-
-<div class="grupo-doble">
-    <div class="form-group">
-        <label for="correo">Correo electrónico</label>
-        <input type="email" name="correo" id="correo" value="{{ cliente.correo|default:'' }}">
+        <div class="form-group">
+            <label for="telefono">Teléfono / Celular</label>
+            <input type="text" name="telefono" id="telefono" 
+                   value="{{ cliente.celular }}">
+        </div>
     </div>
 
-    <div class="form-group">
-        <label for="direccion">Dirección</label>
-        <input type="text" name="direccion" id="direccion" value="{{ cliente.direccion|default:'' }}">
-    </div>
-</div>
+    <div class="grupo-doble">
+        <div class="form-group">
+            <label for="correo">Correo electrónico</label>
+            <input type="email" name="correo" id="correo" 
+                   value="{{ cliente.correo|default:'' }}">
+        </div>
 
-<div class="grupo-doble">
-    <div class="form-group">
-        <label for="departamento">Departamento</label>
-        <select name="departamento" id="departamento">
-            {% for dep in departamentos %}
-                <option value="{{ dep.id }}" {% if cliente.id_ciudad.id_departamento.id == dep.id %}selected{% endif %}>{{ dep.descripcion }}</option>
-            {% endfor %}
-        </select>
+        <div class="form-group">
+            <label for="direccion">Dirección</label>
+            <input type="text" name="direccion" id="direccion" 
+                   value="{{ cliente.direccion|default:'' }}">
+        </div>
     </div>
 
-    <div class="form-group">
-        <label for="ciudad">Ciudad</label>
-        <select name="ciudad" id="ciudad">
-            {% for c in ciudades %}
-                <option value="{{ c.id }}" {% if cliente.id_ciudad.id == c.id %}selected{% endif %}>{{ c.descripcion }}</option>
-            {% endfor %}
-        </select>
+    <div class="grupo-doble">
+        <div class="form-group">
+            <label for="departamento">Departamento</label>
+            <select name="departamento" id="departamento">
+                {% for dep in departamentos %}
+                    <option value="{{ dep.id }}" 
+                            {% if cliente.id_ciudad.id_departamento.id == dep.id %}selected{% endif %}>
+                        {{ dep.descripcion }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="ciudad">Ciudad</label>
+            <select name="ciudad" id="ciudad">
+                {% for c in ciudades %}
+                    <option value="{{ c.id }}" 
+                            {% if cliente.id_ciudad.id == c.id %}selected{% endif %}>
+                        {{ c.descripcion }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
     </div>
-</div>
-{% endblock %}
 
-{% block form_actions %}
-<button type="submit" class="btn-guardar">Guardar </button>
-<a href="{% url 'consultar_clientes' %}" class="btn-cancelar">Cancelar</a>
+    <div class="acciones-formulario">
+        <button type="submit" class="btn-guardar">Guardar cambios</button>
+        <a href="{% url 'consultar_clientes' %}" class="btn-cancelar">Cancelar</a>
+    </div>
+</form>
 
+<!-- 🗑️ Formulario de eliminación independiente -->
 <form method="POST" action="{% url 'eliminar_cliente' cliente.dni %}" 
       onsubmit="return confirm('¿Estás seguro de eliminar este cliente?')" 
       class="form-eliminar">
     {% csrf_token %}
-    <button type="submit" class="btn-eliminar">Eliminar cliente</button>
+    <div class="acciones-formulario eliminar">
+        <button type="submit" class="btn-eliminar">Eliminar cliente</button>
+    </div>
 </form>
-{% endblock %}
 
-{% block extra_scripts %}
-<script src="{% static 'js/dependencias.js' %}"></script>
 {% endblock %}

@@ -61,7 +61,7 @@
                         
                         <!-- Producto -->
                         <td>
-                            <a href="{% url 'detalle_poliza' item.cliente.dni %}" class="cliente-link">
+                            <a href="{% url 'detalle_poliza' poliza.id %}" class="cliente-link">
                                 {{ poliza.id_producto.descripcion }}
                             </a>
                         </td>
@@ -96,8 +96,6 @@
 
     <div class="acciones-polizas">
         <a href="{% url 'crear_poliza' %}" class="btn-guardar">Nueva póliza</a>
-        <a href="#" class="btn-cancelar">Renovar póliza</a>
-        <a href="#" class="btn-eliminar">Eliminar póliza</a>
     </div>
     
 </div>

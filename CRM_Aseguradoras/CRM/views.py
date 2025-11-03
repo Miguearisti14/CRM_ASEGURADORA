@@ -20,26 +20,12 @@ def obtener_ciudades(request, departamento_id):
     ciudades = Ciudades.objects.filter(id_departamento_id=departamento_id).values("id", "descripcion")
     return JsonResponse(list(ciudades), safe=False)
 
-def listar_polizas(request):
-    if not request.user.is_authenticated:
-        messages.error(request, "Debes iniciar sesión.")
-        return redirect("/login")
 
-    query = request.GET.get("q", "")
-    polizas = Polizas.objects.select_related("dni_cliente", "id_producto", "id_canal_venta")
+#----------------------------#
+#-----CLIENTES Y POLIZAS-----#
+#----------------------------#
 
-    if query:
-        polizas = polizas.filter(
-            dni_cliente__nombre__icontains=query
-        ) | polizas.filter(
-            id_producto__descripcion__icontains=query
-        )
-
-    return render(request, "polizas_panel.html", {
-        "polizas": polizas,
-        "query": query
-    })
-
+# Vista y lógica para mostrar y gestionar clientes y sus pólizas
 def gestionar_clientes(request):
     if not request.user.is_authenticated:
         messages.error(request, "Debes iniciar sesión para acceder a esta sección.")
@@ -82,7 +68,7 @@ def gestionar_clientes(request):
     })
 
 
-
+# Mostrar en detalle la información de un cliente específico
 def detalle_cliente(request, dni):
     if not request.user.is_authenticated:
         messages.error(request, "Debes iniciar sesión.")
@@ -131,7 +117,8 @@ def detalle_cliente(request, dni):
     return render(request, "cliente_detalle.html", context)
 
 
-def detalle_poliza(request, dni):
+# Mostrar en detalle la información de una póliza específica
+def detalle_poliza(request, poliza_id):
     if not request.user.is_authenticated:
         messages.error(request, "Debes iniciar sesión.")
         return redirect("/login")
@@ -143,9 +130,13 @@ def detalle_poliza(request, dni):
         messages.error(request, "Tu perfil no está asociado correctamente.")
         return redirect("/")
 
-    # Buscar el cliente dentro de la misma empresa del asesor
-    cliente = get_object_or_404(Clientes, dni=dni, asesor__empresa=asesor.empresa)
-    poliza = Polizas.objects.filter(dni_cliente=cliente).order_by("-fecha_inicio").first()
+    # Buscar la póliza específica
+    poliza = get_object_or_404(
+        Polizas, 
+        id=poliza_id, 
+        dni_cliente__asesor__empresa=asesor.empresa
+    )
+    cliente = poliza.dni_cliente
 
     context = {
         "cliente": cliente,
@@ -153,7 +144,66 @@ def detalle_poliza(request, dni):
     }
     return render(request, "poliza_detalle.html", context)
 
+# Eliminar una póliza específica
+def eliminar_poliza(request, poliza_id):
+    if not request.user.is_authenticated:
+        messages.error(request, "Debes iniciar sesión.")
+        return redirect("/login")
 
+    try:
+        asesor = Usuarios.objects.get(user=request.user)
+    except Usuarios.DoesNotExist:
+        messages.error(request, "Tu cuenta no está asociada correctamente.")
+        return redirect("/")
+
+    poliza = get_object_or_404(Polizas, id=poliza_id, dni_cliente__asesor__empresa=asesor.empresa)
+
+    if request.method == "POST":
+        poliza.delete()
+        messages.success(request, "La póliza ha sido eliminada correctamente.")
+        return redirect("gestionar_clientes")
+
+    messages.warning(request, "Operación no permitida.")
+    return redirect("detalle_poliza", dni=poliza.dni_cliente.dni)
+
+# Renovar una póliza específica
+def renovar_poliza(request, poliza_id):
+    if not request.user.is_authenticated:
+        messages.error(request, "Debes iniciar sesión.")
+        return redirect("/login")
+
+    asesor = get_object_or_404(Usuarios, user=request.user)
+    poliza = get_object_or_404(
+        Polizas,
+        id=poliza_id,
+        dni_cliente__asesor__empresa=asesor.empresa
+    )
+
+    if request.method == "POST":
+        tipo = poliza.id_tipo_poliza.valor
+        fecha_fin_actual = poliza.fecha_fin
+
+        # Lógica para extender la fecha según el tipo de póliza
+        if tipo == 1:  # mensual
+            poliza.fecha_fin = fecha_fin_actual + timedelta(days=30)
+        elif tipo == 3:  # trimestral
+            poliza.fecha_fin = fecha_fin_actual + timedelta(days=90)
+        elif tipo == 6:  # semestral
+            poliza.fecha_fin = fecha_fin_actual + timedelta(days=180)
+        elif tipo == 12:  # anual
+            poliza.fecha_fin = fecha_fin_actual + timedelta(days=365)
+        else:
+            messages.warning(request, "No se pudo determinar la duración del tipo de póliza.")
+            return redirect("detalle_poliza", dni=poliza.dni_cliente.dni)
+
+        poliza.save()
+        messages.success(request, f"La póliza #{poliza.id} fue renovada correctamente.")
+        return redirect("detalle_poliza", poliza_id=poliza.id)
+
+    messages.error(request, "Operación no permitida.")
+    return redirect("detalle_poliza", poliza_id=poliza.id)
+
+# Eliminar un cliente específico
 def eliminar_cliente(request, dni):
     if not request.user.is_authenticated:
         messages.error(request, "Debes iniciar sesión.")
@@ -170,53 +220,7 @@ def eliminar_cliente(request, dni):
     messages.error(request, "Operación no permitida.")
     return redirect("detalle_cliente", dni=dni)
 
-
-
-def resumen(request):
-    # Validar autenticación
-    if not request.user.is_authenticated:
-        messages.error(request, "Debes iniciar sesión para acceder al panel.")
-        return redirect("/login")
-
-    # Obtener el perfil del usuario
-    try:
-        usuario = Usuarios.objects.select_related("empresa").get(user=request.user)
-        empresa = usuario.empresa
-    except Usuarios.DoesNotExist:
-        messages.error(request, "Tu cuenta no está asociada a una empresa.")
-        return redirect("/login")
-
-    # Obtener datos reales asociados a la empresa
-    clientes_count = Clientes.objects.filter(asesor__empresa=empresa).count()
-    reclamos_pendientes = Reclamaciones.objects.filter(
-        dni_asesor__empresa=empresa,
-        id_estado__descripcion__icontains="pendiente"
-    ).count()
-    polizas_vigentes = Polizas.objects.filter(
-    dni_cliente__asesor__empresa=empresa
-    ).count()
-
-    # Opcional: puedes calcular ingresos o métricas adicionales si tienes campos monetarios
-    ingresos_mes = 12450  # placeholder — lo puedes reemplazar con un cálculo real
-
-    # Actividad reciente simulada (luego puedes reemplazar con una tabla de logs)
-    actividad_reciente = [
-        {"fecha": "2025-10-17", "usuario": "Ana López", "accion": "Ingreso de cliente", "detalle": "Carlos Pérez"},
-        {"fecha": "2025-10-17", "usuario": "Juan Gómez", "accion": "Actualización de póliza", "detalle": "ID #4587"},
-        {"fecha": "2025-10-16", "usuario": "Laura Ruiz", "accion": "Reclamo cerrado", "detalle": "Seguros Alfa"},
-    ]
-
-    context = {
-        "empresa": empresa,
-        "clientes_count": clientes_count,
-        "reclamos_pendientes": reclamos_pendientes,
-        "polizas_vigentes": polizas_vigentes,
-        "ingresos_mes": ingresos_mes,
-        "actividad_reciente": actividad_reciente
-    }
-
-    return render(request, "resumen.html", context)
-
+# Crear un nuevo cliente junto con su póliza inicial
 def nuevoCliente(request):
     # Asegurar autenticación
     if not request.user.is_authenticated:
@@ -382,15 +386,82 @@ def crear_poliza(request):
     })
 
 
+#----------------------------#
+#-----PANTALLA PRINCIPAL-----#
+#----------------------------#
+def resumen(request):
+    # Validar autenticación
+    if not request.user.is_authenticated:
+        messages.error(request, "Debes iniciar sesión para acceder al panel.")
+        return redirect("/login")
+
+    # Obtener el perfil del usuario
+    try:
+        usuario = Usuarios.objects.select_related("empresa").get(user=request.user)
+        empresa = usuario.empresa
+    except Usuarios.DoesNotExist:
+        messages.error(request, "Tu cuenta no está asociada a una empresa.")
+        return redirect("/login")
+
+    # Obtener datos reales asociados a la empresa
+    clientes_count = Clientes.objects.filter(asesor__empresa=empresa).count()
+    reclamos_pendientes = Reclamaciones.objects.filter(
+        dni_asesor__empresa=empresa,
+        id_estado__descripcion__icontains="pendiente"
+    ).count()
+    polizas_vigentes = Polizas.objects.filter(
+    dni_cliente__asesor__empresa=empresa
+    ).count()
+
+    # Opcional: puedes calcular ingresos o métricas adicionales si tienes campos monetarios
+    ingresos_mes = 12450  # placeholder — lo puedes reemplazar con un cálculo real
+
+    # Actividad reciente simulada (luego puedes reemplazar con una tabla de logs)
+    actividad_reciente = [
+        {"fecha": "2025-10-17", "usuario": "Ana López", "accion": "Ingreso de cliente", "detalle": "Carlos Pérez"},
+        {"fecha": "2025-10-17", "usuario": "Juan Gómez", "accion": "Actualización de póliza", "detalle": "ID #4587"},
+        {"fecha": "2025-10-16", "usuario": "Laura Ruiz", "accion": "Reclamo cerrado", "detalle": "Seguros Alfa"},
+    ]
+
+    context = {
+        "empresa": empresa,
+        "clientes_count": clientes_count,
+        "reclamos_pendientes": reclamos_pendientes,
+        "polizas_vigentes": polizas_vigentes,
+        "ingresos_mes": ingresos_mes,
+        "actividad_reciente": actividad_reciente
+    }
+
+    return render(request, "resumen.html", context)
+
+
+
+#----------------------------#
+#------- INTERACCIONES ------#
+#----------------------------#
+
 def interacciones(request):
     return render(request, 'interacciones.html')
+
+
+#----------------------------#
+#------- RECLAMACIONES ------#
+#----------------------------#
 
 def reclamaciones(request):
     return render(request, 'reclamaciones.html')
 
+#----------------------------#
+#--------- REPORTES ---------#
+#----------------------------#
+
 def reportes(request):
     return render(request, 'reportes.html')
 
+
+#----------------------------#
+#------- LOGIN Y AUTH -------#
+#----------------------------#
 # Autenticación e inicio de sesión
 def login_view(request):
     if request.method == "POST":
@@ -500,7 +571,7 @@ def register(request):
 
     return render(request, "register.html", {"tipos_dni": tipos_dni})
 
-
+# Cierre de sesión
 def logout_view(request):
     logout(request)
     messages.success(request, "Has cerrado sesión correctamente.")

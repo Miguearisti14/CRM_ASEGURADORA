@@ -13,11 +13,26 @@
         <div class="poliza-card">
             <h3>Información de la póliza</h3>
             <p><strong>Producto:</strong> {{ poliza.id_producto.descripcion }}</p>
+            <p><strong>Tomador:</strong> {{ cliente.nombre }}</p>
+            <p><strong>DNI:</strong> {{ cliente.dni }}</p>
             <p><strong>Tipo de póliza:</strong> {{ poliza.id_tipo_poliza.descripcion }}</p>
             <p><strong>Canal de venta:</strong> {{ poliza.id_canal_venta.descripcion }}</p>
             <p><strong>Vigencia:</strong> {{ poliza.fecha_inicio }} → {{ poliza.fecha_fin }}</p>
         </div>
         {% endif %}
+        <div class="acciones-polizas">
+            <form method="POST" action="{% url 'renovar_poliza' poliza.id %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn-guardar">Renovar póliza</button>
+            </form>
+
+            <form method="POST" action="{% url 'eliminar_poliza' poliza.id %}" 
+                onsubmit="return confirm('¿Estás seguro de eliminar esta póliza?')" 
+                style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn-eliminar">Eliminar póliza</button>
+            </form>
+        </div>
     </div>
 </section>
 {% endblock %}

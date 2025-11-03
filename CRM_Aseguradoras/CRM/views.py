@@ -60,15 +60,20 @@ def gestionar_clientes(request):
             Q(nombre__icontains=query) | Q(dni__icontains=query)
         )
 
+    # Obtener todas las pólizas para los clientes filtrados
     polizas = Polizas.objects.filter(dni_cliente__in=clientes).select_related("id_producto", "id_canal_venta")
 
     if producto_id:
         polizas = polizas.filter(id_producto_id=producto_id)
 
+    # Crear una estructura que contenga cada cliente con todas sus pólizas
     datos_clientes = []
     for cliente in clientes:
-        poliza = polizas.filter(dni_cliente=cliente).order_by("-fecha_inicio").first()
-        datos_clientes.append({"cliente": cliente, "poliza": poliza})
+        polizas_cliente = polizas.filter(dni_cliente=cliente).order_by("-fecha_inicio")
+        datos_clientes.append({
+            "cliente": cliente,
+            "polizas": polizas_cliente
+        })
 
     return render(request, "consultar.html", {
         "datos_clientes": datos_clientes,
@@ -238,7 +243,7 @@ def nuevoCliente(request):
         tipo_poliza_id = request.POST.get("poliza")
         canal_id = request.POST.get("canal")
         ciudad_id = request.POST.get("ciudad")
-        departamento_id = request.POST.get("departamento")
+        departamento_id = request.POST.get("metodo")
         metodo_pago_id = request.POST.get("metodo")
 
         # Recuperar asesor logueado
@@ -352,15 +357,16 @@ def crear_poliza(request):
             fecha_fin = fecha_inicio + timedelta(days=365)
 
         # Crear póliza
-        poliza = Polizas.objects.create(
+        Polizas.objects.create(
             id_producto_id=producto_id,
             id_canal_venta_id=canal_id,
-            dni_cliente_id=dni_cliente_id,
+            dni_cliente=cliente,
             fecha_inicio=fecha_inicio,
             fecha_fin=fecha_fin,
             id_tipo_poliza_id=tipo_poliza_id,
             id_forma_pago_id=metodo_pago_id
         )
+
 
         messages.success(request, f"La póliza para {cliente.nombre} se registró correctamente.")
         return redirect("gestionar_clientes")

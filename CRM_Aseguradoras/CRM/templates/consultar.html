@@ -6,7 +6,7 @@
 {% block content %}
 <div class="card">
     <div class="card-header">
-        <h2>Consultar Clientes</h2>
+        <h2>Consultar Polizas</h2>
     </div>
 
     <!-- 🔍 Buscador -->
@@ -49,38 +49,41 @@
         <tbody>
             {% if datos_clientes %}
                 {% for item in datos_clientes %}
-                <tr>
-                    <td>{{ item.cliente.dni }}</td>
-                    <td>
-                        <a href="{% url 'detalle_cliente' item.cliente.dni %}" class="cliente-link">
-                            {{ item.cliente.nombre }}
-                        </a>
-                    </td>
-                    <td>{{ item.cliente.correo|default:"-" }}</td>
-                    
-
-                    <!-- Producto -->
-                    <td>
-                        {% if item.poliza %}
-                            <a href="{% url 'detalle_poliza' item.cliente.dni %}" class="cliente-link">
-                                {{ item.poliza.id_producto.descripcion }}
+                    {% for poliza in item.polizas %}
+                    <tr>
+                        <td>{{ item.cliente.dni }}</td>
+                        <td>
+                            <a href="{% url 'detalle_cliente' item.cliente.dni %}" class="cliente-link">
+                                {{ item.cliente.nombre }}
                             </a>
-                        {% else %}
-                            -
-                        {% endif %}
-                    </td>
+                        </td>
+                        <td>{{ item.cliente.correo|default:"-" }}</td>
+                        
+                        <!-- Producto -->
+                        <td>
+                            <a href="{% url 'detalle_poliza' item.cliente.dni %}" class="cliente-link">
+                                {{ poliza.id_producto.descripcion }}
+                            </a>
+                        </td>
 
-                    
-
-                    <!-- Vigencia -->
-                    <td>
-                        {% if item.poliza %}
-                            {{ item.poliza.fecha_inicio }} → {{ item.poliza.fecha_fin }}
-                        {% else %}
-                            Sin póliza
-                        {% endif %}
-                    </td>
-                </tr>
+                        <!-- Vigencia -->
+                        <td>
+                            {{ poliza.fecha_inicio }} → {{ poliza.fecha_fin }}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td>{{ item.cliente.dni }}</td>
+                        <td>
+                            <a href="{% url 'detalle_cliente' item.cliente.dni %}" class="cliente-link">
+                                {{ item.cliente.nombre }}
+                            </a>
+                        </td>
+                        <td>{{ item.cliente.correo|default:"-" }}</td>
+                        <td>-</td>
+                        <td>Sin póliza</td>
+                    </tr>
+                    {% endfor %}
                 {% endfor %}
             {% else %}
                 <tr>
@@ -89,6 +92,8 @@
             {% endif %}
         </tbody>
     </table>
+
+
     <div class="acciones-polizas">
         <a href="{% url 'crear_poliza' %}" class="btn-guardar">Nueva póliza</a>
         <a href="#" class="btn-cancelar">Renovar póliza</a>

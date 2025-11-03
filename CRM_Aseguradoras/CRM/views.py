@@ -534,6 +534,33 @@ def registrar_interaccion(request):
         "tipos_interaccion": tipos_interaccion
     })
 
+# Mostrar en detalle la información de una póliza específica
+def detalle_interaccion(request, interaccion_id):
+    if not request.user.is_authenticated:
+        messages.error(request, "Debes iniciar sesión.")
+        return redirect("/login")
+
+    # Recuperar el asesor y su empresa
+    try:
+        asesor = Usuarios.objects.get(user=request.user)
+    except Usuarios.DoesNotExist:
+        messages.error(request, "Tu perfil no está asociado correctamente.")
+        return redirect("/")
+
+    # Buscar la interacción específica
+    interaccion = get_object_or_404(
+        Interacciones, 
+        id=interaccion_id,
+        dni_asesor__empresa=asesor.empresa
+    )
+    
+    cliente = interaccion.dni_cliente
+
+    context = {
+        "cliente": cliente,
+        "interaccion": interaccion
+    }
+    return render(request, "interaccion_detalle.html", context)
 
 
 #----------------------------#

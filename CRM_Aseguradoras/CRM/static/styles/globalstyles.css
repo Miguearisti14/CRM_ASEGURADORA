@@ -2412,9 +2412,14 @@ textarea:focus {
 /* Evitar que el contenido rompa el diseño y mostrar ... si es necesario */
 .tabla_interacciones th,
 .tabla_interacciones td {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    /* permitir salto de línea y mostrar todo el contenido */
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    word-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
+    padding: 8px;
 }
 
 /* Anchos personalizados por columna (especificidad sobre reglas generales) */
@@ -2448,6 +2453,12 @@ textarea:focus {
 .tabla_interacciones td.col-asunto {
     width: 35%;
     min-width: 160px;
+    white-space: nowrap;
+    /* Previene saltos de línea */
+    overflow: hidden;
+    /* Oculta el contenido que sobrepase */
+    text-overflow: ellipsis;
+    /* Muestra "..." */
 }
 
 .tabla_interacciones th.col-fecha,
@@ -2479,29 +2490,12 @@ textarea:focus {
     text-decoration: none;
 }
 
-.tabla_interacciones th {
-    background-color: #f5f7fa;
-    font-weight: 600;
-    color: #333;
-}
-
-.tabla_interacciones tr:hover {
-    background-color: #f0f4ff;
-    /* efecto sutil al pasar el mouse */
-}
-
-.tabla_interacciones td a {
-    color: #1a73e8;
-    text-decoration: none;
-    font-weight: 500;
-}
-
-.tabla_interacciones td a:hover {
-    text-decoration: underline;
-}
 
 /* TABLA DE CLIENTES */
+
 .tabla_clientes {
+    /* obliga a respetar los anchos definidos en celdas/encabezados */
+    table-layout: fixed;
     width: 100%;
     border-collapse: collapse;
     /* 👈 hace que las columnas respeten el ancho total */
@@ -2512,55 +2506,35 @@ textarea:focus {
 
 .tabla_clientes th,
 .tabla_clientes td {
-    border-bottom: 1px solid #e0e0e0;
-    padding: 10px 12px;
-    text-align: left;
-    vertical-align: top;
-    word-wrap: break-word;
-    /* 👈 permite que el texto se parta */
+    /* permitir salto de línea para mostrar todo el contenido */
     white-space: normal;
-    /* 👈 permite saltos de línea */
-    overflow-wrap: break-word;
-    /* 👈 evita desbordes en palabras largas */
+    overflow: visible;
+    text-overflow: clip;
+    word-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
+
+    padding: 8px;
 }
 
-.tabla_clientes th {
-    background-color: #f5f7fa;
-    font-weight: 600;
-    color: #333;
+/* Anchos por columna (ajusta valores según prefieras) */
+.tabla_clientes th.col-dni,
+.tabla_clientes td.col-dni {
+    width: 110px;
+    min-width: 110px;
+    max-width: 110px;
 }
 
-.tabla_clientes tr:hover {
-    background-color: #f0f4ff;
-    /* efecto sutil al pasar el mouse */
+.tabla_clientes th.col-nom,
+.tabla_clientes td.col-nom {
+    width: 20%;
+    min-width: 160px;
+    max-width: 300px;
 }
 
-.tabla_clientes td a {
-    color: #1a73e8;
-    text-decoration: none;
-    font-weight: 500;
-}
-
-.tabla_clientes td a:hover {
-    text-decoration: underline;
-}
-
-.col-dni {
-    width: 100px;
-}
-
-.col-nom {
-    width: 150px;
-}
-
-.col-cor {
-    width: 50px;
-}
-
-.col-prod {
-    width: 150px;
-}
-
-.col-vig {
-    width: 250px;
+.tabla_clientes th.col-cor,
+.tabla_clientes td.col-cor {
+    width: 20%;
+    min-width: 160px;
+    max-width: 300px;
 }

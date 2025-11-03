@@ -39,11 +39,11 @@
     <table class="tabla_clientes">
         <thead>
             <tr>
-                <th>DNI</th>
-                <th>Cliente</th>
-                <th>Correo</th>
-                <th>Producto</th>
-                <th>Vigencia</th>
+                <th class="col-header col-dni">DNI</th>
+                <th class="col-header col-nom">Cliente</th>
+                <th class="col-header col-cor">Correo</th>
+                <th class="col-header col-prod">Producto</th>
+                <th class="col-header col-vig">Vigencia</th>
             </tr>
         </thead>
         <tbody>
@@ -51,23 +51,21 @@
                 {% for item in datos_clientes %}
                     {% for poliza in item.polizas %}
                     <tr>
-                        <td class = "col-dni">{{ item.cliente.dni }}</td>
-                        <td class = "col-nom">
+                        <td class="col-dni">{{ item.cliente.dni }}</td>
+                        <td class="col-nom">
                             <a href="{% url 'detalle_cliente' item.cliente.dni %}" class="cliente-link">
                                 {{ item.cliente.nombre }}
                             </a>
                         </td>
-                        <td class = "col-cor">{{ item.cliente.correo|default:"-" }}</td>
-                        
+                        <td class="col-cor">{{ item.cliente.correo|default:"-" }}</td>
                         <!-- Producto -->
-                        <td class = "col-prod">
+                        <td class="col-prod">
                             <a href="{% url 'detalle_poliza' poliza.id %}" class="cliente-link">
                                 {{ poliza.id_producto.descripcion }}
                             </a>
                         </td>
-
                         <!-- Vigencia -->
-                        <td class = "col-vig">
+                        <td class="col-vig">
                             {{ poliza.fecha_inicio }} → {{ poliza.fecha_fin }}
                         </td>
                     </tr>

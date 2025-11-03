@@ -24,6 +24,6 @@ urlpatterns = [
     path("ajax/ciudades/<int:departamento_id>/", CRM.views.obtener_ciudades, name="obtener_ciudades"),
     path('gestionar/crear/', CRM.views.crear_poliza, name='crear_poliza'),
     path('interacciones/registrar/', CRM.views.registrar_interaccion, name='registrar_interaccion'),
-
+    path('interacciones/<int:interaccion_id>/', CRM.views.detalle_interaccion, name='detalle_interaccion'),
 
 ]

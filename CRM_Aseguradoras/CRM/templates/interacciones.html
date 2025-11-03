@@ -61,7 +61,7 @@
                     <td class="col-asunto">{{ interaccion.asunto }}</td>
                     <td class="col-fecha">{{ interaccion.fecha|date:"Y-m-d H:i" }}</td>
                     <td class="col-detalles">
-                        <a href="{% url 'detalle_cliente' interaccion.dni_cliente.dni %}" class="cliente-link">
+                        <a href="{% url 'detalle_interaccion' interaccion.id %}" class="cliente-link">
                             Ver
                         </a>
                     </td>

@@ -1,0 +1,40 @@
+{% extends 'layout_panel.html' %}
+{% load static %}
+
+{% block title %}información de la Interacción - ZuluAris CRM{% endblock %}
+
+{% block content %}
+<section class="detalle-cliente-container">
+    <div class="detalle-cliente-card">
+        <h2 class="titulo-seccion">Detalle de la Interacción</h2>
+        <p class="descripcion-seccion">
+            Aquí puedes ver la información detallada de la interacción con el cliente.
+        </p>
+
+        <!-- Información de la interacción -->
+        <div class="poliza-card">
+            <h3>Información de la interacción</h3>
+            <p><strong>Cliente:</strong> {{ cliente.nombre }}</p>
+            <p><strong>DNI:</strong> {{ cliente.dni }}</p>
+            <p><strong>Asesor:</strong> {{ interaccion.dni_asesor.user.first_name }} {{ interaccion.dni_asesor.user.last_name }}</p>
+            <p><strong>Tipo de interacción:</strong> {{ interaccion.id_tipo_interaccion.descripcion }}</p>
+            <p><strong>Fecha:</strong> {{ interaccion.fecha|date:"Y-m-d H:i" }}</p>
+            <p><strong>Asunto:</strong> {{ interaccion.asunto }}</p>
+            
+            {% if interaccion.observaciones %}
+                <p><strong>Observaciones: </strong>{{ interaccion.observaciones }}</p>
+            {% else %}
+                <p><strong>Observaciones: </strong><em>No se registraron observaciones adicionales.</em></p>
+            {% endif %}
+        </div>
+
+        <!-- Acciones -->
+        <div class="acciones-formulario">
+            <a href="{% url 'interacciones' %}" class="btn-cancelar">Volver</a>
+
+            
+        </div>
+    </div>
+</section>
+
+{% endblock %}

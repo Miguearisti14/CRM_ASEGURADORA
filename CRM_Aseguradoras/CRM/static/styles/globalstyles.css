@@ -2394,3 +2394,173 @@ textarea:focus {
     background-color: #e0e0e0;
     color: #333;
 }
+
+
+/*=== TABLA DE INTERACCIONES === */
+/* Estilos base para la tabla */
+.tabla_interacciones {
+    /* obliga a respetar los anchos definidos en celdas/encabezados */
+    table-layout: fixed;
+    width: 100%;
+    border-collapse: collapse;
+    /* 👈 hace que las columnas respeten el ancho total */
+    background-color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+/* Evitar que el contenido rompa el diseño y mostrar ... si es necesario */
+.tabla_interacciones th,
+.tabla_interacciones td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Anchos personalizados por columna (especificidad sobre reglas generales) */
+.tabla_interacciones th.col-dni,
+.tabla_interacciones td.col-dni {
+    width: 110px;
+    min-width: 110px;
+    max-width: 110px;
+}
+
+.tabla_interacciones th.col-nombre,
+.tabla_interacciones td.col-nombre {
+    width: 240px;
+    min-width: 160px;
+    max-width: 360px;
+}
+
+.tabla_interacciones th.col-tipo,
+.tabla_interacciones td.col-tipo {
+    width: 140px;
+    min-width: 100px;
+    max-width: 180px;
+}
+
+.tabla_interacciones tr:hover {
+    background-color: #f0f4ff;
+    /* efecto sutil al pasar el mouse */
+}
+
+.tabla_interacciones th.col-asunto,
+.tabla_interacciones td.col-asunto {
+    width: 35%;
+    min-width: 160px;
+}
+
+.tabla_interacciones th.col-fecha,
+.tabla_interacciones td.col-fecha {
+    width: 140px;
+    min-width: 120px;
+}
+
+.tabla_interacciones th.col-detalles,
+.tabla_interacciones td.col-detalles {
+    width: 80px;
+    text-align: center;
+}
+
+/* Estilos para las celdas */
+.tabla_interacciones td {
+    padding: 8px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+/* Efectos hover */
+.tabla_interacciones tbody tr:hover {
+    background-color: #f5f5f5;
+}
+
+/* Estilo para los enlaces dentro de la tabla */
+.cliente-link {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.tabla_interacciones th {
+    background-color: #f5f7fa;
+    font-weight: 600;
+    color: #333;
+}
+
+.tabla_interacciones tr:hover {
+    background-color: #f0f4ff;
+    /* efecto sutil al pasar el mouse */
+}
+
+.tabla_interacciones td a {
+    color: #1a73e8;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.tabla_interacciones td a:hover {
+    text-decoration: underline;
+}
+
+/* TABLA DE CLIENTES */
+.tabla_clientes {
+    width: 100%;
+    border-collapse: collapse;
+    /* 👈 hace que las columnas respeten el ancho total */
+    background-color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.tabla_clientes th,
+.tabla_clientes td {
+    border-bottom: 1px solid #e0e0e0;
+    padding: 10px 12px;
+    text-align: left;
+    vertical-align: top;
+    word-wrap: break-word;
+    /* 👈 permite que el texto se parta */
+    white-space: normal;
+    /* 👈 permite saltos de línea */
+    overflow-wrap: break-word;
+    /* 👈 evita desbordes en palabras largas */
+}
+
+.tabla_clientes th {
+    background-color: #f5f7fa;
+    font-weight: 600;
+    color: #333;
+}
+
+.tabla_clientes tr:hover {
+    background-color: #f0f4ff;
+    /* efecto sutil al pasar el mouse */
+}
+
+.tabla_clientes td a {
+    color: #1a73e8;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.tabla_clientes td a:hover {
+    text-decoration: underline;
+}
+
+.col-dni {
+    width: 100px;
+}
+
+.col-nom {
+    width: 150px;
+}
+
+.col-cor {
+    width: 50px;
+}
+
+.col-prod {
+    width: 150px;
+}
+
+.col-vig {
+    width: 250px;
+}

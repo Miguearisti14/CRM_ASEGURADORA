@@ -10,7 +10,7 @@ urlpatterns = [
     path('gestionar/', CRM.views.gestionar_clientes, name='gestionar_clientes'),
     path('resumen/', CRM.views.resumen, name='panel_resumen'),
     path('client_form/', CRM.views.nuevoCliente),
-    path('interacciones/', CRM.views.interacciones),
+    path('interacciones/', CRM.views.interacciones, name='interacciones'),
     path('reclamaciones/', CRM.views.reclamaciones),
     path('reportes/', CRM.views.reportes),
     path('login/', CRM.views.login_view),
@@ -23,6 +23,7 @@ urlpatterns = [
     path('clientes/<str:dni>/eliminar/', CRM.views.eliminar_cliente, name='eliminar_cliente'),
     path("ajax/ciudades/<int:departamento_id>/", CRM.views.obtener_ciudades, name="obtener_ciudades"),
     path('gestionar/crear/', CRM.views.crear_poliza, name='crear_poliza'),
+    path('interacciones/registrar/', CRM.views.registrar_interaccion, name='registrar_interaccion'),
 
 
 ]

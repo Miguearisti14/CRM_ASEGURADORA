@@ -6,7 +6,7 @@ from CRM.models import Usuarios
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib import messages
-from .models import Usuarios,Formas_pago, Tipo_Poliza, Canal_venta, Tipo_DNI, Roles, Empresa, Clientes, Ciudades, Productos, Canal_venta, Tipo_Poliza, Polizas, Departamentos, Reclamaciones
+from .models import Interacciones, TipoInteraccion, Usuarios,Formas_pago, Tipo_Poliza, Canal_venta, Tipo_DNI, Roles, Empresa, Clientes, Ciudades, Productos, Canal_venta, Tipo_Poliza, Polizas, Departamentos, Reclamaciones
 from django.db.models import Q
 
 # Create your views here.
@@ -440,8 +440,100 @@ def resumen(request):
 #------- INTERACCIONES ------#
 #----------------------------#
 
+# Vista para gestionar interacciones
 def interacciones(request):
-    return render(request, 'interacciones.html')
+    if not request.user.is_authenticated:
+        messages.error(request, "Debes iniciar sesión para acceder a esta sección.")
+        return redirect("/login")
+
+    try:
+        asesor = Usuarios.objects.get(user=request.user)
+    except Usuarios.DoesNotExist:
+        messages.error(request, "Tu cuenta no está asociada a un perfil válido.")
+        return redirect("/")
+
+    # Base: interacciones solo del asesor actual
+    interacciones = Interacciones.objects.filter(dni_asesor=asesor).select_related(
+        "dni_cliente", "id_tipo_interaccion"
+    )
+
+    # --- Filtros ---
+    query = request.GET.get("q")  # nombre o dni del cliente
+    tipo_id = request.GET.get("tipo")
+
+    if query:
+        interacciones = interacciones.filter(
+            Q(dni_cliente__nombre__icontains=query)
+            | Q(dni_cliente__dni__icontains=query)
+            | Q(asunto__icontains=query)
+        )
+
+    if tipo_id:
+        interacciones = interacciones.filter(id_tipo_interaccion_id=tipo_id)
+
+    # Orden descendente (últimas primero)
+    interacciones = interacciones.order_by("-fecha")
+
+
+    context = {
+        "interacciones": interacciones,
+        "tipos": TipoInteraccion.objects.all(),
+        "query": query or "",
+        "tipo_id": tipo_id or "",
+    }
+    return render(request, "interacciones.html", context)
+
+# Registrar una nueva interacción 
+def registrar_interaccion(request):
+    # ✅ Verificar autenticación
+    if not request.user.is_authenticated:
+        messages.error(request, "Debes iniciar sesión para registrar una interacción.")
+        return redirect("/login")
+
+    # ✅ Obtener asesor logueado
+    asesor = get_object_or_404(Usuarios, user=request.user)
+
+    # ✅ Obtener clientes del asesor (solo de su empresa)
+    clientes = Clientes.objects.filter(asesor__empresa=asesor.empresa)
+
+    # ✅ Obtener tipos de interacción (llamada, correo, reunión, etc.)
+    tipos_interaccion = TipoInteraccion.objects.all()
+
+    # ✅ Si se envió el formulario
+    if request.method == "POST":
+        dni_cliente_id = request.POST.get("cliente")
+        tipo_id = request.POST.get("tipo_interaccion")
+        asunto = request.POST.get("asunto")
+        observaciones = request.POST.get("observaciones")
+
+        # ⚠️ Validación básica
+        if not dni_cliente_id or not tipo_id or not asunto:
+            messages.error(request, "Por favor completa todos los campos obligatorios.")
+            return redirect("interaccion")
+
+        # ✅ Buscar cliente
+        cliente = get_object_or_404(Clientes, dni=dni_cliente_id)
+
+        # ✅ Crear interacción
+        Interacciones.objects.create(
+            dni_cliente=cliente,
+            dni_asesor=asesor,
+            id_tipo_interaccion_id=tipo_id,
+            asunto=asunto,
+            observaciones=observaciones
+        )
+
+        messages.success(request, f"La interacción con {cliente.nombre} se registró correctamente.")
+        return redirect("interacciones")
+
+    # ✅ Renderizar formulario
+    return render(request, "interaccion_form.html", {
+        "titulo": "Registrar nueva interacción",
+        "descripcion": "Registra una nueva interacción con un cliente de tu cartera.",
+        "clientes": clientes,
+        "tipos_interaccion": tipos_interaccion
+    })
+
 
 
 #----------------------------#

@@ -169,6 +169,7 @@ class Interacciones(models.Model):
     dni_asesor = models.ForeignKey(Usuarios, on_delete=models.CASCADE)
     fecha = models.DateTimeField(auto_now_add=True)
     id_tipo_interaccion = models.ForeignKey(TipoInteraccion, on_delete=models.CASCADE)
+    asunto = models.CharField(max_length=100)
     observaciones = models.CharField(max_length=500, blank=True, null=True)
 
     class Meta:

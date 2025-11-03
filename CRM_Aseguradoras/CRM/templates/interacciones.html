@@ -1,41 +1,82 @@
 {% extends 'layout_panel.html' %}
+{% load static %}
+
+{% block title %}Consultar Interacciones - ZuluAris CRM{% endblock %}
 
 {% block content %}
-<section class="interacciones-container">
-    <h2 class="titulo-seccion">Gestión de Interacciones</h2>
-
-    <div class="interacciones-grid">
-        <div class="interaccion-card">
-            <h3>Registro Llamadas</h3>
-            <div class="acciones">
-                <button class="btn-secundario">Editar</button>
-                <button class="btn-primario">Agregar</button>
-            </div>
-        </div>
-
-        <div class="interaccion-card">
-            <h3>Registro Correos</h3>
-            <div class="acciones">
-                <button class="btn-secundario">Editar</button>
-                <button class="btn-primario">Agregar</button>
-            </div>
-        </div>
-
-        <div class="interaccion-card">
-            <h3>Registro Reuniones</h3>
-            <div class="acciones">
-                <button class="btn-secundario">Editar</button>
-                <button class="btn-primario">Agregar</button>
-            </div>
-        </div>
-
-        <div class="interaccion-card">
-            <h3>Registro Reclamos</h3>
-            <div class="acciones">
-                <button class="btn-secundario">Editar</button>
-                <button class="btn-primario">Agregar</button>
-            </div>
-        </div>
+<div class="card">
+    <div class="card-header">
+        <h2>Consultar Interacciones</h2>
     </div>
-</section>
+
+    <!-- 🔍 Buscador -->
+    <form class="consulta-filtros" method="get" action="">
+        <div class="grupo-busqueda">
+            <input 
+                type="text" 
+                name="q" 
+                value="{{ query }}" 
+                placeholder="Buscar por nombre, DNI o asunto..."
+                class="input-busqueda"
+            >
+
+            <select name="tipo" class="input-select">
+                <option value="">Tipo de interacción</option>
+                {% for tipo in tipos %}
+                    <option value="{{ tipo.id }}" {% if tipo.id|stringformat:"s" == request.GET.tipo %}selected{% endif %}>
+                        {{ tipo.descripcion }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <button type="submit" class="btn-buscar">Buscar</button>
+            <a href="{% url 'interacciones' %}" class="btn-limpiar">Limpiar filtro</a>
+        </div>
+    </form>
+
+ 
+    <!-- 📋 Tabla de resultados -->
+    <table class="tabla_interacciones">
+        <thead>
+            <tr>
+                <th class="col-header col-dni">DNI</th>
+                <th class="col-header col-nombre">Cliente</th>
+                <th class="col-header col-tipo">Tipo</th>
+                <th class="col-header col-asunto">Asunto</th>
+                <th class="col-header col-fecha">Fecha</th>
+                <th class="col-header col-detalles">Detalles</th>           
+            </tr>
+        </thead>
+        <tbody>
+            {% if interacciones %}
+                {% for interaccion in interacciones %}
+                <tr>
+                    <td class="col-dni">{{ interaccion.dni_cliente.dni }}</td>
+                    <td class="col-nombre">
+                        <a href="{% url 'detalle_cliente' interaccion.dni_cliente.dni %}" class="cliente-link">
+                            {{ interaccion.dni_cliente.nombre }}
+                        </a>
+                    </td>
+                    <td class="col-tipo">{{ interaccion.id_tipo_interaccion.descripcion }}</td>
+                    <td class="col-asunto">{{ interaccion.asunto }}</td>
+                    <td class="col-fecha">{{ interaccion.fecha|date:"Y-m-d H:i" }}</td>
+                    <td class="col-detalles">
+                        <a href="{% url 'detalle_cliente' interaccion.dni_cliente.dni %}" class="cliente-link">
+                            Ver
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="6" style="text-align:center;">No hay interacciones registradas.</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+
+    <div class="acciones-polizas">
+        <a href="{% url 'registrar_interaccion' %}" class="btn-guardar">Nueva interacción</a>
+    </div>
+</div>
 {% endblock %}

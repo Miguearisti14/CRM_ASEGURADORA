@@ -1,0 +1,45 @@
+{% extends 'layout_form_base.html' %}
+{% load static %}
+
+{% block form_content %}
+<form method="POST" class="panel-formulario">
+    {% csrf_token %}
+    
+    <div class="grupo-doble">
+        <div class="form-group">
+            <label for="cliente">Cliente*</label>
+            <select name="cliente" id="cliente" required>
+                <option value="">Selecciona un cliente</option>
+                {% for c in clientes %}
+                    <option value="{{ c.dni }}">{{ c.nombre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="tipo_interaccion">Tipo de interacción*</label>
+            <select name="tipo_interaccion" id="tipo_interaccion" required>
+                <option value="">Selecciona una opción</option>
+                {% for tipo in tipos_interaccion %}
+                    <option value="{{ tipo.id }}">{{ tipo.descripcion }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="asunto">Asunto*</label>
+        <input type="text" id="asunto" name="asunto" placeholder="Ej: Llamada de seguimiento" required>
+    </div>
+
+    <div class="form-group">
+        <label for="observaciones">Observaciones</label>
+        <textarea id="observaciones" name="observaciones" placeholder="Detalles de la interacción o próximos pasos..."></textarea>
+    </div>
+
+    <div class="acciones-formulario">
+        <a href="{% url 'interacciones' %}" class="btn-cancelar">Cancelar</a>
+        <button type="submit" class="btn-guardar">Guardar interacción</button>
+    </div>
+</form>
+{% endblock %}

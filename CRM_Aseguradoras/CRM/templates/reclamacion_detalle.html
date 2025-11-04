@@ -46,19 +46,24 @@
         {% endif %}
 
         <!-- 🔧 Acciones -->
-        <div class="acciones-polizas">
+
+        <div class="acciones-formulario">
+                <a href="{% url 'cambiar_estado_reclamacion' reclamacion.id %}" class="btn-guardar">
+                    Cambiar estado
+                </a>
+
+                <a href="{% url 'reclamaciones' %}" class="btn-cancelar">Volver</a>
+            </div>
+            
             <form method="POST" action="{% url 'eliminar_reclamacion' reclamacion.id %}" 
                   onsubmit="return confirm('¿Seguro que deseas eliminar esta reclamación?')">
                 {% csrf_token %}
-                <button type="submit" class="btn-eliminar">Eliminar</button>
+                <div class="acciones-formulario eliminar">
+                    <button type="submit" class="btn-eliminar">Eliminar</button>
+                </div>
             </form>
 
-            <a href="{% url 'cambiar_estado_reclamacion' reclamacion.id %}" class="btn-guardar">
-                Cambiar estado
-            </a>
-
-            <a href="{% url 'reclamaciones' %}" class="btn-cancelar">Volver</a>
-        </div>
+            
     </div>
 </section>
 {% endblock %}

@@ -2651,12 +2651,123 @@ textarea:focus {
     color: #fff;
 }
 
-.btn-guardar {
-    display: inline-block;
-    background: #1976d2;
+.exportar-boton {
+    background-color: #1976d2;
     color: #fff;
-    padding: 6px 14px;
+    border: none;
+    padding: 8px 14px;
     border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+    margin-top: 15px;
+    max-width: fit-content;
+}
+
+/* Estilos para la sección de reportes */
+.reportes-container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.reportes-seccion {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.reportes-seccion h3 {
+    color: #1976d2;
+    margin-bottom: 20px;
+    font-size: 1.2em;
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 10px;
+}
+
+/* Estilos específicos para las tablas de reportes */
+.reportes-seccion table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 0.9em;
+    background: #fff;
+}
+
+.reportes-seccion th {
+    background-color: #f5f5f5;
+    color: #333;
+    font-weight: 600;
+    text-align: left;
+    padding: 12px;
+    border-bottom: 2px solid #ddd;
+}
+
+.reportes-seccion td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+    color: #666;
+}
+
+.reportes-seccion tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Estilos para los botones de exportar */
+.reportes-seccion .btn-guardar {
+    float: right;
+    margin-bottom: 15px;
+    background-color: #4caf50;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
     text-decoration: none;
-    margin-bottom: 10px;
+    font-size: 0.9em;
+    transition: background-color 0.3s;
+}
+
+.reportes-seccion .btn-guardar:hover {
+    background-color: #45a049;
+}
+
+/* Estilos específicos para diferentes tipos de datos */
+.reportes-seccion td:nth-child(2) {
+    /* DNIs y fechas */
+
+    font-size: 0.95em;
+}
+
+.reportes-seccion .estado-tag {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .reportes-seccion {
+        padding: 15px;
+        overflow-x: auto;
+    }
+
+
+
+    .reportes-seccion th,
+    .reportes-seccion td {
+        padding: 8px;
+    }
+}
+
+/* Estilos para las acciones de reportes */
+.acciones-reporte {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.acciones-reporte .btn-guardar {
+    margin: 0;
 }

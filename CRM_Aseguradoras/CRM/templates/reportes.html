@@ -8,10 +8,10 @@
     <h2>Reportes del asesor</h2>
     <p>Consulta, analiza y exporta los datos registrados en el sistema.</p>
 
+    <!-- Estructura para cada sección de reporte -->
     <div class="reportes-seccion">
         <h3>Clientes registrados</h3>
-        <a href="{% url 'exportar_reporte' 'clientes' %}" class="btn-guardar">Exportar</a>
-        <table class="tabla-reportes">
+        <table class="tabla_clientes">
             <thead>
                 <tr>
                     <th>Nombre</th>
@@ -31,12 +31,14 @@
                 {% endfor %}
             </tbody>
         </table>
+        <div class="acciones-reporte">
+            <a href="{% url 'exportar_reporte' 'clientes' %}" class="btn-guardar">Exportar a hoja de cálculo</a>
+        </div>
     </div>
 
     <div class="reportes-seccion">
         <h3>Pólizas</h3>
-        <a href="{% url 'exportar_reporte' 'polizas' %}" class="btn-guardar">Exportar</a>
-        <table class="tabla-reportes">
+        <table class="tabla_clientes">
             <thead>
                 <tr>
                     <th>Cliente</th>
@@ -56,12 +58,14 @@
                 {% endfor %}
             </tbody>
         </table>
+        <div class="acciones-reporte">
+            <a href="{% url 'exportar_reporte' 'polizas' %}" class="btn-guardar">Exportar a hoja de cálculo</a>
+        </div>
     </div>
 
     <div class="reportes-seccion">
         <h3>Interacciones</h3>
-        <a href="{% url 'exportar_reporte' 'interacciones' %}" class="btn-guardar">Exportar</a>
-        <table class="tabla-reportes">
+        <table class="tabla_interacciones">
             <thead>
                 <tr>
                     <th>Cliente</th>
@@ -75,18 +79,20 @@
                 <tr>
                     <td>{{ i.dni_cliente.nombre }}</td>
                     <td>{{ i.id_tipo_interaccion.descripcion }}</td>
-                    <td>{{ i.Asunto }}</td>
+                    <td>{{ i.asunto }}</td>
                     <td>{{ i.fecha|date:"d/m/Y" }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
+        <div class="acciones-reporte">
+            <a href="{% url 'exportar_reporte' 'interacciones' %}" class="btn-guardar">Exportar a hoja de cálculo</a>
+        </div>
     </div>
 
     <div class="reportes-seccion">
         <h3>Reclamaciones</h3>
-        <a href="{% url 'exportar_reporte' 'reclamaciones' %}" class="btn-guardar">Exportar</a>
-        <table class="tabla-reportes">
+        <table class="tabla-clientes">
             <thead>
                 <tr>
                     <th>Cliente</th>
@@ -106,6 +112,9 @@
                 {% endfor %}
             </tbody>
         </table>
+        <div class="acciones-reporte">
+            <a href="{% url 'exportar_reporte' 'reclamaciones' %}" class="btn-guardar">Exportar a hoja de cálculo</a>
+        </div>
     </div>
 
     <div class="reportes-seccion">

@@ -1,13 +1,13 @@
 import csv
 import json
+from datetime import date, timedelta
 from django.db.models import Count
+from django.db.models.functions import TruncMonth
+
 from django.http import JsonResponse
-from datetime import date, timedelta, timezone
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from CRM.models import Usuarios
-from django.shortcuts import render, redirect
-from django.contrib.auth.models import User
 from django.contrib import messages
 from .models import Estado, Interacciones, TipoInteraccion, Usuarios,Formas_pago, Tipo_Poliza, Canal_venta, Tipo_DNI, Roles, Empresa, Clientes, Ciudades, Productos, Canal_venta, Tipo_Poliza, Polizas, Departamentos, Reclamaciones
 from django.db.models import Q, Count
@@ -924,7 +924,7 @@ def reportes_metricas(request):
     reclamaciones_qs = Estado.objects.annotate(count=Count('reclamacion_estado')).values('descripcion', 'count')
     reclamaciones_por_estado = json.dumps(list(reclamaciones_qs))
 
-    # Canales de venta (ajusta relación si es diferente)
+    # Canales de venta
     canales_qs = Canal_venta.objects.annotate(count=Count('polizas')).values('descripcion', 'count')
     canales_venta = json.dumps(list(canales_qs))
 
@@ -932,10 +932,50 @@ def reportes_metricas(request):
     interacciones_qs = TipoInteraccion.objects.annotate(count=Count('interacciones')).values('descripcion', 'count')
     interacciones_tipo = json.dumps(list(interacciones_qs))
 
+    # --- Nuevas métricas solicitadas ---
+
+    # 1) Pólizas por producto (tipo)
+    polizas_por_producto_qs = Polizas.objects.filter(
+        dni_cliente__asesor__empresa=asesor.empresa
+    ).values('id_producto__descripcion').annotate(count=Count('id')).order_by('-count')
+    polizas_por_producto = json.dumps([
+        {'descripcion': p['id_producto__descripcion'] or 'Sin producto', 'count': p['count']}
+        for p in polizas_por_producto_qs
+    ])
+
+    # 2) Pólizas próximas a vencer (en los próximos 30 días) - agrupadas por producto
+    hoy = date.today()
+    lim = hoy + timedelta(days=30)
+    proximas_qs = Polizas.objects.filter(
+        fecha_fin__gte=hoy,
+        fecha_fin__lte=lim,
+        dni_cliente__asesor__empresa=asesor.empresa
+    ).values('id_producto__descripcion').annotate(count=Count('id')).order_by('-count')
+    polizas_proximas = json.dumps([
+        {'descripcion': p['id_producto__descripcion'] or 'Sin producto', 'count': p['count']}
+        for p in proximas_qs
+    ])
+
+    # 3) Número de pólizas nuevas por mes (últimos 12 meses)
+    inicio_periodo = (hoy.replace(day=1) - timedelta(days=365)).replace(day=1)
+    nuevas_qs = Polizas.objects.filter(
+        fecha_inicio__gte=inicio_periodo,
+        dni_cliente__asesor__empresa=asesor.empresa
+    ).annotate(mes=TruncMonth('fecha_inicio')).values('mes').annotate(count=Count('id')).order_by('mes')
+
+    # formatear mes YYYY-MM
+    polizas_nuevas_mes = json.dumps([
+        {'mes': item['mes'].strftime('%Y-%m'), 'count': item['count']}
+        for item in nuevas_qs
+    ])
+
     context = {
         'reclamaciones_por_estado': reclamaciones_por_estado,
         'canales_venta': canales_venta,
         'interacciones_tipo': interacciones_tipo,
+        'polizas_por_producto': polizas_por_producto,
+        'polizas_proximas': polizas_proximas,
+        'polizas_nuevas_mes': polizas_nuevas_mes,
         'total_clientes': Clientes.objects.filter(asesor__empresa=asesor.empresa).count(),
         'total_polizas': Polizas.objects.filter(dni_cliente__asesor__empresa=asesor.empresa).count(),
         'total_interacciones': Interacciones.objects.filter(dni_asesor__empresa=asesor.empresa).count(),

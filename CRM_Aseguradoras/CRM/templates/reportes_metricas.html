@@ -36,7 +36,7 @@
             <h4>Reclamaciones por estado</h4>
             <canvas id="graficoReclamaciones" width="400" height="300"></canvas>
         </div>
-        <div class="grafico-card">
+        <div class="grafico-card grafico-canales">
             <h4>Canales de venta</h4>
             <canvas id="graficoCanales" width="600" height="300"></canvas>
         </div>
@@ -45,6 +45,30 @@
             <canvas id="graficoInteracciones" width="400" height="300"></canvas>
         </div>
     </div>
+
+    <!-- fila 2: nuevos gráficos -->
+    <div class="graficos-grid">
+        <div class="grafico-card grafico-tipo">
+            <h4>Pólizas por producto</h4>
+            <canvas id="graficoPolizasTipo" width=auto height="350"></canvas>
+        </div>
+
+        <div class="grafico-card">
+            <h4>Pólizas próximas a vencer (30 días)</h4>
+            <canvas id="graficoProximasVencer" width="500" height="350"></canvas>
+        </div>
+
+        <div class="grafico-card">
+            <h4>Pólizas nuevas por mes</h4>
+            <canvas id="graficoPolizasNuevas" width=auto height="350"></canvas>
+        </div>
+
+    </div>
+
+    <div class="graficos-grid">
+        
+        
+    </div>
 </section>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -52,6 +76,10 @@
     const dataReclamaciones = {{ reclamaciones_por_estado|safe }};
     const dataCanales = {{ canales_venta|safe }};
     const dataInteracciones = {{ interacciones_tipo|safe }};
+
+    const dataPolizasTipo = {{ polizas_por_producto|safe }};
+    const dataPolizasProximas = {{ polizas_proximas|safe }};
+    const dataPolizasNuevas = {{ polizas_nuevas_mes|safe }};
 </script>
 <script src="{% static 'js/metricas.js' %}"></script>
 {% endblock %}

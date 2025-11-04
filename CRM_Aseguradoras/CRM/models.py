@@ -200,6 +200,7 @@ class Reclamaciones(models.Model):
     dni_cliente = models.ForeignKey(Clientes, on_delete=models.CASCADE)
     poliza = models.ForeignKey(Polizas, on_delete=models.SET_NULL, null=True, db_column="id_poliza")
     fecha = models.DateField(auto_now_add=True)
+    fecha_actualizacion = models.DateTimeField(auto_now=True)
     descripcion = models.TextField(blank=True, null=True)
     id_estado = models.ForeignKey(Estado, on_delete=models.CASCADE, db_column="id_estado", related_name="reclamacion_estado")
 

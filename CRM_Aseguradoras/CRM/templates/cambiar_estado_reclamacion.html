@@ -1,0 +1,25 @@
+{% extends 'layout_form_base.html' %}
+{% load static %}
+
+{% block form_content %}
+<form method="POST" class="panel-formulario">
+    {% csrf_token %}
+
+    <div class="form-group">
+        <label for="estado">Nuevo estado</label>
+        <select name="estado" id="estado" required>
+            <option value="">Selecciona un estado</option>
+            {% for estado in estados %}
+                <option value="{{ estado.id }}" {% if estado.id == reclamacion.id_estado.id %}selected{% endif %}>
+                    {{ estado.descripcion }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="acciones-formulario">
+        <a href="{% url 'detalle_reclamacion' reclamacion.id %}" class="btn-cancelar">Cancelar</a>
+        <button type="submit" class="btn-guardar">Actualizar estado</button>
+    </div>
+</form>
+{% endblock %}

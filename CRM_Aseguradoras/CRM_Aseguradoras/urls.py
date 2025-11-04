@@ -25,5 +25,12 @@ urlpatterns = [
     path('gestionar/crear/', CRM.views.crear_poliza, name='crear_poliza'),
     path('interacciones/registrar/', CRM.views.registrar_interaccion, name='registrar_interaccion'),
     path('interacciones/<int:interaccion_id>/', CRM.views.detalle_interaccion, name='detalle_interaccion'),
+    path('reclamaciones/', CRM.views.reclamaciones, name='reclamaciones'),
+    path('reclamaciones/crear/', CRM.views.crear_reclamacion, name='crear_reclamacion'),
+    path("api/polizas-cliente/<str:dni>/", CRM.views.polizas_por_cliente, name="polizas_por_cliente"),
+    path('polizas-cliente/<str:dni>/', CRM.views.polizas_por_cliente, name='polizas_por_cliente'),
+    path('reclamaciones/<int:reclamacion_id>/', CRM.views.detalle_reclamacion, name='detalle_reclamacion'),
+    path("reclamaciones/<int:reclamacion_id>/estado/", CRM.views.cambiar_estado_reclamacion, name="cambiar_estado_reclamacion"),
+    path("reclamaciones/<int:reclamacion_id>/eliminar/", CRM.views.eliminar_reclamacion, name="eliminar_reclamacion"),
 
 ]

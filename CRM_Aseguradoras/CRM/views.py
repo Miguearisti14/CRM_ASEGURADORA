@@ -6,8 +6,9 @@ from CRM.models import Usuarios
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib import messages
-from .models import Interacciones, TipoInteraccion, Usuarios,Formas_pago, Tipo_Poliza, Canal_venta, Tipo_DNI, Roles, Empresa, Clientes, Ciudades, Productos, Canal_venta, Tipo_Poliza, Polizas, Departamentos, Reclamaciones
+from .models import Estado, Interacciones, TipoInteraccion, Usuarios,Formas_pago, Tipo_Poliza, Canal_venta, Tipo_DNI, Roles, Empresa, Clientes, Ciudades, Productos, Canal_venta, Tipo_Poliza, Polizas, Departamentos, Reclamaciones
 from django.db.models import Q
+from .models import Reclamaciones  # asegúrate que el modelo exista
 
 # Create your views here.
 def index(request):
@@ -20,6 +21,30 @@ def obtener_ciudades(request, departamento_id):
     ciudades = Ciudades.objects.filter(id_departamento_id=departamento_id).values("id", "descripcion")
     return JsonResponse(list(ciudades), safe=False)
 
+def polizas_por_cliente(request, dni):
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'No autorizado'}, status=401)
+    
+    try:
+        # Obtener pólizas del cliente
+        polizas = Polizas.objects.filter(
+            dni_cliente__dni=dni
+        ).select_related('id_producto')
+        
+        # Formatear datos para JSON
+        data = []
+        for poliza in polizas:
+            data.append({
+                'id': poliza.id,
+                'producto': poliza.id_producto.descripcion,
+                'fecha_inicio': poliza.fecha_inicio.strftime('%Y-%m-%d'),
+                'fecha_fin': poliza.fecha_fin.strftime('%Y-%m-%d')
+            })
+        
+        return JsonResponse(data, safe=False)
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
 #----------------------------#
 #-----CLIENTES Y POLIZAS-----#
@@ -568,8 +593,196 @@ def detalle_interaccion(request, interaccion_id):
 #----------------------------#
 
 def reclamaciones(request):
-    return render(request, 'reclamaciones.html')
+    if not request.user.is_authenticated:
+        messages.error(request, "Debes iniciar sesión.")
+        return redirect("/login")
 
+    try:
+        asesor = Usuarios.objects.get(user=request.user)
+    except Usuarios.DoesNotExist:
+        messages.error(request, "Tu perfil no está asociado correctamente.")
+        return redirect("/")
+
+    query = request.GET.get("q", "").strip()
+    estado_id = request.GET.get("estado")
+
+    # Obtener reclamaciones base
+    reclamaciones_qs = Reclamaciones.objects.filter(
+        dni_asesor__empresa=asesor.empresa
+    ).select_related("dni_cliente", "id_estado")
+
+    # Aplicar filtros
+    if query:
+        reclamaciones_qs = reclamaciones_qs.filter(
+            Q(dni_cliente__nombre__icontains=query) |
+            Q(dni_cliente__dni__icontains=query) |
+            Q(descripcion__icontains=query)
+        )
+
+    if estado_id:
+        reclamaciones_qs = reclamaciones_qs.filter(id_estado_id=estado_id)
+
+    # Ordenar por fecha descendente
+    reclamaciones_qs = reclamaciones_qs.order_by('-fecha')
+
+    context = {
+        "reclamaciones": reclamaciones_qs,
+        "query": query,
+        "estado_id": estado_id,
+        "estados": Estado.objects.all()
+    }
+
+    return render(request, "reclamaciones.html", context)
+
+def crear_reclamacion(request):
+    if not request.user.is_authenticated:
+        messages.error(request, "Debes iniciar sesión para registrar una reclamación.")
+        return redirect("/login")
+
+    asesor = get_object_or_404(Usuarios, user=request.user)
+
+    # Listados para los selects (solo de la empresa del asesor)
+    clientes = Clientes.objects.filter(asesor__empresa=asesor.empresa)
+    polizas = Polizas.objects.filter(dni_cliente__asesor__empresa=asesor.empresa)
+    estados = Estado.objects.all()
+
+    if request.method == "POST":
+        cliente_dni = request.POST.get("cliente")
+        poliza_id = request.POST.get("poliza")
+        descripcion = request.POST.get("descripcion", "").strip()
+
+        if not cliente_dni or not descripcion:
+            messages.error(request, "Cliente y descripción son obligatorios.")
+            return redirect("crear_reclamacion")
+
+        cliente = get_object_or_404(Clientes, dni=cliente_dni, asesor__empresa=asesor.empresa)
+
+        # Buscar póliza (si fue seleccionada)
+        poliza = None
+        if poliza_id:
+            poliza = get_object_or_404(
+                Polizas,
+                id=poliza_id,
+                dni_cliente__asesor__empresa=asesor.empresa
+            )
+
+        # 🟢 Estado por defecto "Pendiente"
+        estado = Estado.objects.filter(descripcion__iexact="Pendiente").first()
+        if not estado:
+            # Si no existe un estado "Pendiente", se toma el primero como fallback
+            estado = Estado.objects.first()
+
+        # Crear reclamación
+        Reclamaciones.objects.create(
+            dni_asesor=asesor,
+            dni_cliente=cliente,
+            poliza=poliza,
+            descripcion=descripcion,
+            id_estado=estado
+        )
+
+        messages.success(request, "Reclamación registrada correctamente.")
+        return redirect("reclamaciones")
+
+    return render(request, "crear_reclamacion.html", {
+        "clientes": clientes,
+        "polizas": polizas,
+        "estados": estados,
+        "titulo": "Registrar reclamación",
+        "descripcion": "Registra una nueva reclamación asociada a un cliente."
+    })
+
+
+def detalle_reclamacion(request, reclamacion_id):
+    if not request.user.is_authenticated:
+        messages.error(request, "Debes iniciar sesión.")
+        return redirect("/login")
+
+    # Obtener el asesor logueado
+    try:
+        asesor = Usuarios.objects.get(user=request.user)
+    except Usuarios.DoesNotExist:
+        messages.error(request, "Tu perfil no está asociado correctamente.")
+        return redirect("/")
+
+    # Buscar la reclamación dentro de la empresa del asesor
+    reclamacion = get_object_or_404(
+        Reclamaciones,
+        id=reclamacion_id,
+        dni_asesor__empresa=asesor.empresa
+    )
+
+    cliente = reclamacion.dni_cliente
+    poliza = reclamacion.poliza
+    estado = reclamacion.id_estado
+
+    context = {
+        "reclamacion": reclamacion,
+        "cliente": cliente,
+        "poliza": poliza,
+        "estado": estado
+    }
+
+    return render(request, "reclamacion_detalle.html", context)
+
+# Cambiar el estado de una reclamación
+def cambiar_estado_reclamacion(request, reclamacion_id):
+    if not request.user.is_authenticated:
+        messages.error(request, "Debes iniciar sesión para realizar esta acción.")
+        return redirect("/login")
+
+    asesor = get_object_or_404(Usuarios, user=request.user)
+    reclamacion = get_object_or_404(
+        Reclamaciones,
+        id=reclamacion_id,
+        dni_asesor__empresa=asesor.empresa
+    )
+
+    if request.method == "POST":
+        nuevo_estado_id = request.POST.get("estado")
+        if not nuevo_estado_id:
+            messages.error(request, "Debes seleccionar un nuevo estado.")
+            return redirect("detalle_reclamacion", reclamacion_id=reclamacion.id)
+
+        nuevo_estado = get_object_or_404(Estado, id=nuevo_estado_id)
+        reclamacion.id_estado = nuevo_estado
+        reclamacion.save()
+
+        messages.success(request, f"El estado de la reclamación se actualizó a '{nuevo_estado.descripcion}'.")
+        return redirect("detalle_reclamacion", reclamacion_id=reclamacion.id)
+
+    estados = Estado.objects.all()
+    return render(request, "cambiar_estado_reclamacion.html", {
+        "reclamacion": reclamacion,
+        "estados": estados,
+        "titulo": "Actualizar estado de la reclamación",
+        "descripcion": "Selecciona un nuevo estado para esta reclamación."
+    })
+
+
+# Eliminar una reclamación 
+def eliminar_reclamacion(request, reclamacion_id):
+    if not request.user.is_authenticated:
+        messages.error(request, "Debes iniciar sesión.")
+        return redirect("/login")
+
+    asesor = get_object_or_404(Usuarios, user=request.user)
+    reclamacion = get_object_or_404(
+        Reclamaciones,
+        id=reclamacion_id,
+        dni_asesor__empresa=asesor.empresa
+    )
+
+    if request.method == "POST":
+        if reclamacion.id_estado.descripcion.lower() == "finalizada":
+            reclamacion.delete()
+            messages.success(request, "La reclamación fue eliminada correctamente.")
+            return redirect("reclamaciones")
+        else:
+            messages.error(request, "Solo puedes eliminar reclamaciones que estén finalizadas.")
+            return redirect("detalle_reclamacion", reclamacion_id=reclamacion.id)
+
+    return redirect("detalle_reclamacion", reclamacion_id=reclamacion.id)
 #----------------------------#
 #--------- REPORTES ---------#
 #----------------------------#

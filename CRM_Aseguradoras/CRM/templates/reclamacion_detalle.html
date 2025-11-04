@@ -1,0 +1,64 @@
+{% extends 'layout_panel.html' %}
+{% load static %}
+
+{% block title %}Detalle de Reclamación - ZuluAris CRM{% endblock %}
+
+{% block content %}
+<section class="detalle-cliente-container">
+    <div class="detalle-cliente-card">
+        <h2 class="titulo-seccion">Detalle de la Reclamación</h2>
+        <p class="descripcion-seccion">
+            Consulta la información completa de la reclamación registrada por el cliente.
+        </p>
+
+        <!-- 📄 Información de la reclamación -->
+        <div class="poliza-card">
+            <h3>Datos de la Reclamación</h3>
+            <p><strong>N° Reclamación:</strong> {{ reclamacion.id }}</p>
+            <p><strong>Fecha:</strong> {{ reclamacion.fecha }}</p>
+            <p><strong>Estado:</strong> 
+                <span class="estado-tag estado-{{ reclamacion.id_estado.descripcion|lower }}">
+                    {{ reclamacion.id_estado.descripcion }}
+                </span>
+            </p>
+            <p><strong>Descripción: </strong>{{ reclamacion.descripcion|default:"Sin descripción" }}</p>
+            
+        </div>
+        
+        <!-- 🧾 Información del cliente -->
+        <div class="poliza-card">
+            <h3>Información del Cliente</h3>
+            <p><strong>Nombre:</strong> {{ cliente.nombre }}</p>
+            <p><strong>DNI:</strong> {{ cliente.dni }}</p>
+            <p><strong>Correo:</strong> {{ cliente.correo|default:"No especificado" }}</p>
+        </div>
+
+        
+
+        <!-- 📦 Información de la póliza asociada -->
+        {% if poliza %}
+        <div class="poliza-card">
+            <h3>Póliza Asociada</h3>
+            <p><strong>Producto:</strong> {{ poliza.id_producto.descripcion }}</p>
+            <p><strong>Tipo de póliza:</strong> {{ poliza.id_tipo_poliza.descripcion }}</p>
+            <p><strong>Vigencia:</strong> {{ poliza.fecha_inicio }} → {{ poliza.fecha_fin }}</p>
+        </div>
+        {% endif %}
+
+        <!-- 🔧 Acciones -->
+        <div class="acciones-polizas">
+            <form method="POST" action="{% url 'eliminar_reclamacion' reclamacion.id %}" 
+                  onsubmit="return confirm('¿Seguro que deseas eliminar esta reclamación?')">
+                {% csrf_token %}
+                <button type="submit" class="btn-eliminar">Eliminar</button>
+            </form>
+
+            <a href="{% url 'cambiar_estado_reclamacion' reclamacion.id %}" class="btn-guardar">
+                Cambiar estado
+            </a>
+
+            <a href="{% url 'reclamaciones' %}" class="btn-cancelar">Volver</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

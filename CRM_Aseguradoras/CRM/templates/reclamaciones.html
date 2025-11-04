@@ -1,60 +1,77 @@
 {% extends 'layout_panel.html' %}
+{% load static %}
+
+{% block title %}Consultar Reclamaciones - ZuluAris CRM{% endblock %}
 
 {% block content %}
-<section class="reclamaciones-container">
-    <h2 class="titulo-seccion">Buscar Reclamaciones</h2>
-
-    <div class="busqueda-box">
-        <input type="text" placeholder="Ingrese el número de radicado">
-        <button class="btn-buscar">
-            <i class="fas fa-search"></i>
-        </button>
+<div class="card">
+    <div class="card-header">
+        <h2>Consultar Reclamaciones</h2>
     </div>
 
-    <div class="tabla-contenedor">
-        <table class="tabla-reclamaciones">
-            <thead>
-                <tr>
-                    <th>ID Reclamo</th>
-                    <th>Cliente</th>
-                    <th>Tipo de Reclamación</th>
-                    <th>Fecha</th>
-                    <th>Estado</th>
-                    <th>Monto Estimado</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>R-001</td>
-                    <td>Juan Pérez</td>
-                    <td>Daños materiales</td>
-                    <td>2025-08-01</td>
-                    <td><span class="estado aprobado">Aprobado</span></td>
-                    <td>$4,500,000</td>
-                </tr>
-                <tr>
-                    <td>R-002</td>
-                    <td>María Gómez</td>
-                    <td>Robo de vehículo</td>
-                    <td>2025-08-05</td>
-                    <td><span class="estado proceso">En proceso</span></td>
-                    <td>$32,000,000</td>
-                </tr>
-                <tr>
-                    <td>R-003</td>
-                    <td>Carlos López</td>
-                    <td>Daños personales</td>
-                    <td>2025-08-07</td>
-                    <td><span class="estado rechazado">Rechazado</span></td>
-                    <td>$8,000,000</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+    <form class="consulta-filtros" method="get" action="">
+        <div class="grupo-busqueda">
+            <input 
+                type="text" 
+                name="q" 
+                value="{{ query }}" 
+                placeholder="Buscar por nombre, DNI o descripción..."
+                class="input-busqueda"
+            >
+            <select name="estado" class="input-select">
+                <option value="">Todos los estados</option>
+                {% for estado in estados %}
+                    <option value="{{ estado.id }}" {% if estado_id == estado.id|stringformat:"s" %}selected{% endif %}>
+                        {{ estado.descripcion }}
+                    </option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn-buscar">Buscar</button>
+            <a href="{% url 'reclamaciones' %}" class="btn-limpiar">Limpiar filtros</a>
+        </div>
+    </form>
 
-    <div class="paginacion">
-        <button class="flecha">&#10094;</button>
-        <button class="flecha">&#10095;</button>
+    <table class="tabla_reclamaciones">
+        <thead>
+            <tr>
+                <th class="col-header col-dni">DNI</th>
+                <th class="col-header col-nombre">Cliente</th>
+                <th class="col-header col-asunto">Descripción</th>
+                <th class="col-header col-fecha">Fecha</th>
+                <th class="col-header col-estado">Estado</th>
+                <th class="col-header col-detalles">Detalles</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if reclamaciones %}
+                {% for r in reclamaciones %}
+                <tr>
+                    <td class="col-dni">{{ r.dni_cliente.dni }}</td>
+                    <td class="col-nombre">
+                        <a href="{% url 'detalle_cliente' r.dni_cliente.dni %}" class="cliente-link">
+                            {{ r.dni_cliente.nombre }}
+                        </a>
+                    </td>
+                    <td class="col-asunto">{{ r.descripcion|default:"-" }}</td>
+                    <td class="col-fecha">{{ r.fecha|date:"Y-m-d" }}</td>
+                    <td class="col-estado">{{ r.id_estado.descripcion|default:"-" }}</td>
+                    <td class="col-detalles">
+                        <a href="{% url 'detalle_reclamacion' r.id %}" class="cliente-link">
+                            Ver
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="6" style="text-align:center;">No hay reclamaciones registradas.</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+
+    <div class="acciones-polizas">
+        <a href="{% url 'crear_reclamacion' %}" class="btn-guardar">Nueva reclamación</a>
     </div>
-</section>
+</div>
 {% endblock %}

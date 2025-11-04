@@ -2538,3 +2538,84 @@ textarea:focus {
     min-width: 160px;
     max-width: 300px;
 }
+
+/* Tabla Reclamaciones CSS */
+/* Estilos generales para las tablas */
+.tabla_reclamaciones {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 1em;
+    font-family: 'Arial', sans-serif;
+    background-color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+
+}
+
+.tabla_reclamaciones th,
+.tabla_reclamaciones td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.tabla_reclamaciones th {
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+.tabla_reclamaciones tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.tabla_reclamaciones tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Estilos para las columnas específicas */
+.col-header {
+    font-weight: bold;
+}
+
+.col-dni {
+    width: 15%;
+}
+
+.col-nombre {
+    width: 25%;
+}
+
+.col-asunto {
+    width: 30%;
+}
+
+.col-fecha {
+    width: 15%;
+}
+
+.col-estado {
+    width: 10%;
+}
+
+.col-detalles {
+    width: 5%;
+}
+
+.tabla_reclamaciones th.col-detalles,
+.tabla_reclamaciones td.col-detalles {
+    width: 5%;
+    min-width: 60px;
+    max-width: 80px;
+    text-align: center;
+    /* Centra horizontalmente */
+    vertical-align: middle;
+    /* Centra verticalmente */
+    padding: 12px 8px;
+}
+
+/* Asegura que el enlace dentro de la celda se muestre centrado y no ocupe todo el ancho */
+.tabla_reclamaciones td.col-detalles .cliente-link,
+.tabla_reclamaciones th.col-detalles .cliente-link {
+    display: inline-block;
+}

@@ -33,6 +33,8 @@ urlpatterns = [
     path("reclamaciones/<int:reclamacion_id>/eliminar/", CRM.views.eliminar_reclamacion, name="eliminar_reclamacion"),
     path("reportes/", CRM.views.reportes_panel, name="reportes_panel"),
     path("reportes/exportar/<str:tipo>/", CRM.views.exportar_reporte, name="exportar_reporte"),
+    path("reportes/metricas/", CRM.views.reportes_metricas, name="reportes_metricas"),
+
 
 
 ]

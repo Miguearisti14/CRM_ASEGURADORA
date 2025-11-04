@@ -117,24 +117,5 @@
         </div>
     </div>
 
-    <div class="reportes-seccion">
-        <h3>📈 Métricas de canales de venta</h3>
-        <canvas id="graficoCanales" width="400" height="180"></canvas>
-    </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-const ctx = document.getElementById('graficoCanales');
-const data = {
-    labels: [{% for canal, cantidad in canales.items %}'{{ canal }}',{% endfor %}],
-    datasets: [{
-        label: 'Cantidad de pólizas por canal',
-        data: [{% for canal, cantidad in canales.items %}{{ cantidad }},{% endfor %}],
-        backgroundColor: ['#1976d2', '#4caf50', '#ff9800', '#e91e63'],
-        borderWidth: 1
-    }]
-};
-new Chart(ctx, { type: 'bar', data });
-</script>
 {% endblock %}

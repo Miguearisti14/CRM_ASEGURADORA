@@ -2771,3 +2771,307 @@ textarea:focus {
 .acciones-reporte .btn-guardar {
     margin: 0;
 }
+
+/* ...existing code... */
+
+/* Ajustes: tamaños distintos por gráfico */
+.graficos-grid {
+    /* damos más espacio a la columna central (Canales) */
+    grid-template-columns: 1fr 1.6fr 1fr;
+    gap: 18px;
+}
+
+/* Alturas específicas (sobrescribe la regla genérica) */
+#graficoReclamaciones {
+    height: 320px !important;
+    max-height: 420px;
+}
+
+#graficoCanales {
+    height: 420px !important;
+    /* más alto porque queda apretado */
+    max-height: 520px;
+}
+
+#graficoInteracciones {
+    height: 280px !important;
+    max-height: 360px;
+}
+
+/* Asegurar que el contenedor se adapte a la nueva altura */
+#graficoReclamaciones,
+#graficoCanales,
+#graficoInteracciones {
+    width: 100% !important;
+    display: block;
+    margin: 0 auto;
+}
+
+/* Ajustes responsivos: en móvil apilan y mantienen proporción */
+@media (max-width: 992px) {
+    .graficos-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    #graficoCanales {
+        height: 360px !important;
+    }
+
+    #graficoReclamaciones {
+        height: 300px !important;
+    }
+
+    #graficoInteracciones {
+        height: 260px !important;
+    }
+}
+
+@media (max-width: 600px) {
+    .graficos-grid {
+        grid-template-columns: 1fr;
+    }
+
+    #graficoCanales {
+        height: 300px !important;
+    }
+
+    #graficoReclamaciones {
+        height: 260px !important;
+    }
+
+    #graficoInteracciones {
+        height: 220px !important;
+    }
+}
+
+/* ...existing code... */
+
+/* Contenedor general */
+.metricas-container {
+    max-width: 1200px;
+    margin: 24px auto;
+    padding: 18px;
+    color: #263238;
+}
+
+/* Título / descripción */
+.titulo-seccion {
+    color: #0d47a1;
+    margin-bottom: 6px;
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+.descripcion-seccion {
+    color: #546e7a;
+    margin-bottom: 18px;
+    font-size: 0.95rem;
+}
+
+/* Grid de métricas (números) */
+.metricas-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.metrica-card {
+    background: linear-gradient(180deg, #ffffff, #fbfdff);
+    border: 1px solid rgba(13, 71, 161, 0.06);
+    border-radius: 10px;
+    padding: 14px;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 84px;
+}
+
+.metrica-card h4 {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #1565c0;
+    font-weight: 600;
+}
+
+.metrica-valor {
+    margin-top: 8px;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #0b3d91;
+    letter-spacing: -0.5px;
+}
+
+/* Grid de gráficos */
+.graficos-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-top: 8px;
+}
+
+.grafico-card {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 14px;
+    border: 1px solid rgba(2, 6, 23, 0.04);
+    box-shadow: 0 6px 22px rgba(15, 23, 42, 0.04);
+    display: flex;
+    flex-direction: column;
+    min-height: 320px;
+    align-items: center;
+    justify-content: space-evenly;
+    text-align: center;
+}
+
+/* Encabezado de cada tarjeta de gráfico */
+.grafico-card h4 {
+    margin: 0 0 10px 0;
+    font-size: 1rem;
+    color: #0d47a1;
+    font-weight: 600;
+}
+
+/* Asegurar que canvas ocupe todo el ancho disponible y tenga altura adecuada */
+.grafico-card canvas {
+    width: 100% !important;
+    height: 260px !important;
+    /* altura visual consistente */
+    align-self: stretch;
+    display: block;
+}
+
+/* Centrado del canvas y leyenda */
+.grafico-card .chart-wrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Etiquetas de estado (si las usas) */
+.estado-tag {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 14px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #fff;
+    background: #1976d2;
+}
+
+/* Acción exportar (colocada debajo de tabla en template) */
+.acciones-reporte {
+    margin-top: 12px;
+    display: flex;
+    justify-content: flex-start;
+    /* izquierda */
+    gap: 8px;
+}
+
+/* Pequeños ajustes responsivos */
+@media (max-width: 992px) {
+    .metricas-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .graficos-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .grafico-card canvas {
+        height: 240px !important;
+    }
+}
+
+@media (max-width: 600px) {
+    .metricas-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .graficos-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .grafico-card {
+        padding: 12px;
+        min-height: 260px;
+    }
+
+    .grafico-card canvas {
+        height: 220px !important;
+    }
+}
+
+
+/* Ajustes: tamaños distintos por gráfico */
+.graficos-grid {
+    /* damos más espacio a la columna central (Canales) */
+    grid-template-columns: 1fr 1.6fr 1fr;
+    gap: 18px;
+}
+
+/* Alturas específicas (sobrescribe la regla genérica) */
+#graficoReclamaciones {
+    height: 320px !important;
+    max-height: 420px;
+}
+
+#graficoCanales {
+    height: 420px !important;
+    /* más alto porque queda apretado */
+    max-height: 520px;
+}
+
+#graficoInteracciones {
+    height: 280px !important;
+    max-height: 360px;
+}
+
+/* Asegurar que el contenedor se adapte a la nueva altura */
+#graficoReclamaciones,
+#graficoCanales,
+#graficoInteracciones {
+    width: 100% !important;
+    height: auto !important;
+    display: block;
+    margin: 0 auto;
+}
+
+/* Ajustes responsivos: en móvil apilan y mantienen proporción */
+@media (max-width: 992px) {
+    .graficos-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    #graficoCanales {
+        height: 360px !important;
+    }
+
+    #graficoReclamaciones {
+        height: 300px !important;
+    }
+
+    #graficoInteracciones {
+        height: 260px !important;
+    }
+}
+
+@media (max-width: 600px) {
+    .graficos-grid {
+        grid-template-columns: 1fr;
+    }
+
+    #graficoCanales {
+        height: 300px !important;
+    }
+
+    #graficoReclamaciones {
+        height: 260px !important;
+    }
+
+    #graficoInteracciones {
+        height: 220px !important;
+    }
+}

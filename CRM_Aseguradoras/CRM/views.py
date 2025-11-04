@@ -1,4 +1,6 @@
 import csv
+import json
+from django.db.models import Count
 from django.http import JsonResponse
 from datetime import date, timedelta, timezone
 from django.shortcuts import render, redirect, get_object_or_404
@@ -906,6 +908,40 @@ def exportar_reporte(request, tipo):
     wb.save(response)
     return response
 
+
+def reportes_metricas(request):
+    if not request.user.is_authenticated:
+        messages.error(request, "Debes iniciar sesión.")
+        return redirect("/login")
+
+    try:
+        asesor = Usuarios.objects.get(user=request.user)
+    except Usuarios.DoesNotExist:
+        messages.error(request, "Tu perfil no está asociado correctamente.")
+        return redirect("/")
+
+    # Reclamaciones por estado
+    reclamaciones_qs = Estado.objects.annotate(count=Count('reclamacion_estado')).values('descripcion', 'count')
+    reclamaciones_por_estado = json.dumps(list(reclamaciones_qs))
+
+    # Canales de venta (ajusta relación si es diferente)
+    canales_qs = Canal_venta.objects.annotate(count=Count('polizas')).values('descripcion', 'count')
+    canales_venta = json.dumps(list(canales_qs))
+
+    # Interacciones por tipo
+    interacciones_qs = TipoInteraccion.objects.annotate(count=Count('interacciones')).values('descripcion', 'count')
+    interacciones_tipo = json.dumps(list(interacciones_qs))
+
+    context = {
+        'reclamaciones_por_estado': reclamaciones_por_estado,
+        'canales_venta': canales_venta,
+        'interacciones_tipo': interacciones_tipo,
+        'total_clientes': Clientes.objects.filter(asesor__empresa=asesor.empresa).count(),
+        'total_polizas': Polizas.objects.filter(dni_cliente__asesor__empresa=asesor.empresa).count(),
+        'total_interacciones': Interacciones.objects.filter(dni_asesor__empresa=asesor.empresa).count(),
+        'total_reclamaciones': Reclamaciones.objects.filter(dni_asesor__empresa=asesor.empresa).count(),
+    }
+    return render(request, 'reportes_metricas.html', context)
 
 #----------------------------#
 #------- LOGIN Y AUTH -------#

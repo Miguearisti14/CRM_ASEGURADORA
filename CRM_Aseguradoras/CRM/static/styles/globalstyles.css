@@ -2619,3 +2619,44 @@ textarea:focus {
 .tabla_reclamaciones th.col-detalles .cliente-link {
     display: inline-block;
 }
+
+
+/* Reportes CSS */
+.reportes-container {
+    background: #fff;
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.reportes-seccion {
+    margin-top: 30px;
+}
+
+.tabla-reportes {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.tabla-reportes th,
+.tabla-reportes td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.tabla-reportes th {
+    background: #1976d2;
+    color: #fff;
+}
+
+.btn-guardar {
+    display: inline-block;
+    background: #1976d2;
+    color: #fff;
+    padding: 6px 14px;
+    border-radius: 6px;
+    text-decoration: none;
+    margin-bottom: 10px;
+}

@@ -1,3 +1,4 @@
+import csv
 from django.http import JsonResponse
 from datetime import date, timedelta, timezone
 from django.shortcuts import render, redirect, get_object_or_404
@@ -7,8 +8,10 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib import messages
 from .models import Estado, Interacciones, TipoInteraccion, Usuarios,Formas_pago, Tipo_Poliza, Canal_venta, Tipo_DNI, Roles, Empresa, Clientes, Ciudades, Productos, Canal_venta, Tipo_Poliza, Polizas, Departamentos, Reclamaciones
-from django.db.models import Q
+from django.db.models import Q, Count
 from .models import Reclamaciones  # asegúrate que el modelo exista
+from openpyxl import Workbook
+from django.http import HttpResponse
 
 # Create your views here.
 def index(request):
@@ -787,8 +790,121 @@ def eliminar_reclamacion(request, reclamacion_id):
 #--------- REPORTES ---------#
 #----------------------------#
 
-def reportes(request):
-    return render(request, 'reportes.html')
+
+def reportes_panel(request):
+    if not request.user.is_authenticated:
+        messages.error(request, "Debes iniciar sesión para ver los reportes.")
+        return redirect("/")
+
+    asesor = get_object_or_404(Usuarios, user=request.user)
+    empresa = asesor.empresa
+
+    # Filtrar datos SOLO de la empresa del asesor
+    clientes = Clientes.objects.filter(asesor__empresa=empresa)
+    polizas = Polizas.objects.filter(dni_cliente__asesor__empresa=empresa).select_related("id_producto", "id_canal_venta")
+    reclamaciones = Reclamaciones.objects.filter(dni_cliente__asesor__empresa=empresa).select_related("id_estado", "poliza")
+    interacciones = Interacciones.objects.filter(dni_cliente__asesor__empresa=empresa).select_related("id_tipo_interaccion")
+
+    # Métricas adicionales (ejemplo: canales de venta)
+    canales = {}
+    for poliza in polizas:
+        canal = poliza.id_canal_venta.descripcion
+        canales[canal] = canales.get(canal, 0) + 1
+
+    context = {
+        "clientes": clientes,
+        "polizas": polizas,
+        "reclamaciones": reclamaciones,
+        "interacciones": interacciones,
+        "canales": canales
+    }
+
+    return render(request, "reportes.html", context)
+
+from datetime import datetime
+
+def exportar_reporte(request, tipo):
+    if not request.user.is_authenticated:
+        messages.error(request, "Debes iniciar sesión para exportar reportes.")
+        return redirect("/login")
+
+    asesor = get_object_or_404(Usuarios, user=request.user)
+    empresa = asesor.empresa
+
+    # --- Armamos el dataset según el tipo ---
+    if tipo == "clientes":
+        queryset = Clientes.objects.filter(asesor__empresa=empresa)
+        headers = ["Nombre", "DNI", "Correo", "Ciudad"]
+        rows = [[c.nombre, c.dni, c.correo, c.id_ciudad.descripcion] for c in queryset]
+
+    elif tipo == "polizas":
+        queryset = Polizas.objects.filter(dni_cliente__asesor__empresa=empresa)
+        headers = ["Cliente", "Producto", "Canal", "Fecha inicio", "Fecha fin"]
+        rows = [
+            [
+                p.dni_cliente.nombre,
+                p.id_producto.descripcion,
+                p.id_canal_venta.descripcion,
+                p.fecha_inicio.strftime("%Y-%m-%d"),
+                p.fecha_fin.strftime("%Y-%m-%d"),
+            ]
+            for p in queryset
+        ]
+
+    elif tipo == "reclamaciones":
+        queryset = Reclamaciones.objects.filter(dni_cliente__asesor__empresa=empresa)
+        headers = ["Cliente", "Fecha", "Estado", "Descripción"]
+        rows = [
+            [
+                r.dni_cliente.nombre,
+                r.fecha.strftime("%Y-%m-%d"),
+                r.id_estado.descripcion,
+                r.descripcion,
+            ]
+            for r in queryset
+        ]
+
+    elif tipo == "interacciones":
+        queryset = Interacciones.objects.filter(dni_cliente__asesor__empresa=empresa)
+        headers = ["Cliente", "Tipo", "Asunto", "Fecha"]
+        rows = []
+        for i in queryset:
+            fecha = i.fecha
+            if hasattr(fecha, "tzinfo") and fecha.tzinfo is not None:
+                fecha = fecha.replace(tzinfo=None)  # ❗ Elimina la zona horaria
+            rows.append([
+                i.dni_cliente.nombre,
+                i.id_tipo_interaccion.descripcion,
+                i.asunto,
+                fecha.strftime("%Y-%m-%d %H:%M:%S"),
+            ])
+    else:
+        messages.error(request, "Tipo de reporte no válido.")
+        return redirect("reportes_panel")
+
+    formato = request.GET.get("formato", "xlsx")
+
+    # --- Exportar como CSV ---
+    if formato == "csv":
+        response = HttpResponse(content_type="text/csv")
+        response["Content-Disposition"] = f'attachment; filename="{tipo}_reporte.csv"'
+        writer = csv.writer(response)
+        writer.writerow(headers)
+        writer.writerows(rows)
+        return response
+
+    # --- Exportar como Excel ---
+    wb = Workbook()
+    ws = wb.active
+    ws.append(headers)
+    for row in rows:
+        ws.append(row)
+    response = HttpResponse(
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    response["Content-Disposition"] = f'attachment; filename="{tipo}_reporte.xlsx"'
+    wb.save(response)
+    return response
 
 
 #----------------------------#

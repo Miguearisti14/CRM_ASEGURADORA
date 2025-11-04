@@ -1,32 +1,131 @@
 {% extends 'layout_panel.html' %}
 {% load static %}
 
+{% block title %}Reportes - ZuluAris CRM{% endblock %}
+
 {% block content %}
-<link rel="stylesheet" href="{% static 'css/reportes.css' %}">
+<div class="reportes-container">
+    <h2>Reportes del asesor</h2>
+    <p>Consulta, analiza y exporta los datos registrados en el sistema.</p>
 
-<section class="reportes-container">
-    <h2 class="reportes-titulo">Genera tus reportes</h2>
-
-    <div class="reportes-panel">
-        <div class="reporte-item">
-            <span class="reporte-nombre">Mis Clientes</span>
-            <button class="btn-generar">Generar</button>
-        </div>
-
-        <div class="reporte-item">
-            <span class="reporte-nombre">Mis Pólizas</span>
-            <button class="btn-generar">Generar</button>
-        </div>
-
-        <div class="reporte-item">
-            <span class="reporte-nombre">Mis Reclamaciones</span>
-            <button class="btn-generar">Generar</button>
-        </div>
-
-        <div class="reporte-item">
-            <span class="reporte-nombre">Mis Ventas</span>
-            <button class="btn-generar">Generar</button>
-        </div>
+    <div class="reportes-seccion">
+        <h3>Clientes registrados</h3>
+        <a href="{% url 'exportar_reporte' 'clientes' %}" class="btn-guardar">Exportar</a>
+        <table class="tabla-reportes">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>DNI</th>
+                    <th>Correo</th>
+                    <th>Ciudad</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in clientes %}
+                <tr>
+                    <td>{{ c.nombre }}</td>
+                    <td>{{ c.dni }}</td>
+                    <td>{{ c.correo|default:"-" }}</td>
+                    <td>{{ c.id_ciudad.descripcion }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
-</section>
+
+    <div class="reportes-seccion">
+        <h3>Pólizas</h3>
+        <a href="{% url 'exportar_reporte' 'polizas' %}" class="btn-guardar">Exportar</a>
+        <table class="tabla-reportes">
+            <thead>
+                <tr>
+                    <th>Cliente</th>
+                    <th>Producto</th>
+                    <th>Canal</th>
+                    <th>Vigencia</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in polizas %}
+                <tr>
+                    <td>{{ p.dni_cliente.nombre }}</td>
+                    <td>{{ p.id_producto.descripcion }}</td>
+                    <td>{{ p.id_canal_venta.descripcion }}</td>
+                    <td>{{ p.fecha_inicio }} → {{ p.fecha_fin }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="reportes-seccion">
+        <h3>Interacciones</h3>
+        <a href="{% url 'exportar_reporte' 'interacciones' %}" class="btn-guardar">Exportar</a>
+        <table class="tabla-reportes">
+            <thead>
+                <tr>
+                    <th>Cliente</th>
+                    <th>Tipo</th>
+                    <th>Asunto</th>
+                    <th>Fecha</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in interacciones %}
+                <tr>
+                    <td>{{ i.dni_cliente.nombre }}</td>
+                    <td>{{ i.id_tipo_interaccion.descripcion }}</td>
+                    <td>{{ i.Asunto }}</td>
+                    <td>{{ i.fecha|date:"d/m/Y" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="reportes-seccion">
+        <h3>Reclamaciones</h3>
+        <a href="{% url 'exportar_reporte' 'reclamaciones' %}" class="btn-guardar">Exportar</a>
+        <table class="tabla-reportes">
+            <thead>
+                <tr>
+                    <th>Cliente</th>
+                    <th>Fecha</th>
+                    <th>Estado</th>
+                    <th>Descripción</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in reclamaciones %}
+                <tr>
+                    <td>{{ r.dni_cliente.nombre }}</td>
+                    <td>{{ r.fecha }}</td>
+                    <td>{{ r.id_estado.descripcion }}</td>
+                    <td>{{ r.descripcion }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="reportes-seccion">
+        <h3>📈 Métricas de canales de venta</h3>
+        <canvas id="graficoCanales" width="400" height="180"></canvas>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const ctx = document.getElementById('graficoCanales');
+const data = {
+    labels: [{% for canal, cantidad in canales.items %}'{{ canal }}',{% endfor %}],
+    datasets: [{
+        label: 'Cantidad de pólizas por canal',
+        data: [{% for canal, cantidad in canales.items %}{{ cantidad }},{% endfor %}],
+        backgroundColor: ['#1976d2', '#4caf50', '#ff9800', '#e91e63'],
+        borderWidth: 1
+    }]
+};
+new Chart(ctx, { type: 'bar', data });
+</script>
 {% endblock %}

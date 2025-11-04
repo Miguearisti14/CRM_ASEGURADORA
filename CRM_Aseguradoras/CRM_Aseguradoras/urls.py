@@ -12,7 +12,6 @@ urlpatterns = [
     path('client_form/', CRM.views.nuevoCliente),
     path('interacciones/', CRM.views.interacciones, name='interacciones'),
     path('reclamaciones/', CRM.views.reclamaciones),
-    path('reportes/', CRM.views.reportes),
     path('login/', CRM.views.login_view),
     path('crear_admin/', CRM.views.crear_admin_view, name='crear_admin'),
     path("logout/", CRM.views.logout_view),
@@ -32,5 +31,8 @@ urlpatterns = [
     path('reclamaciones/<int:reclamacion_id>/', CRM.views.detalle_reclamacion, name='detalle_reclamacion'),
     path("reclamaciones/<int:reclamacion_id>/estado/", CRM.views.cambiar_estado_reclamacion, name="cambiar_estado_reclamacion"),
     path("reclamaciones/<int:reclamacion_id>/eliminar/", CRM.views.eliminar_reclamacion, name="eliminar_reclamacion"),
+    path("reportes/", CRM.views.reportes_panel, name="reportes_panel"),
+    path("reportes/exportar/<str:tipo>/", CRM.views.exportar_reporte, name="exportar_reporte"),
+
 
 ]

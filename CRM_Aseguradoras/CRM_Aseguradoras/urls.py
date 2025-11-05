@@ -43,5 +43,7 @@ urlpatterns = [
     path("datos/crear/<str:recurso>/", CRM.views.crear_dato, name="crear_dato"),
     path("datos/eliminar/<str:recurso>/<int:pk>/", CRM.views.eliminar_dato, name="eliminar_dato"),
 
+    path("reportes_admin/", CRM.views.reportes_admin, name="reportes_admin"),
+    path("reportes/metricas_admin/", CRM.views.reportes_metricas_admin, name="reportes_metricas_admin"),
 
 ]

@@ -5,6 +5,7 @@ from django.db.models import Count
 from django.db.models.functions import TruncMonth
 from django.db.models.deletion import ProtectedError
 from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
 
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -1146,25 +1147,46 @@ def logout_view(request):
 #------ ADMINISTRACIÓN ------#
 #----------------------------#
 
+@login_required
 def panel_admin(request):
-    usuario = Usuarios.objects.select_related("id_rol").get(user=request.user)
-    if usuario.id_rol.nombre.lower() != "administrador":
-        messages.error(request, "No tienes permisos para acceder al panel de administración.")
-        return redirect("panel_asesor")
+    if not request.user.is_authenticated:
+        messages.error(request, "Debes iniciar sesión.")
+        return redirect("/login")
 
-    total_clientes = Clientes.objects.count()
-    total_polizas = Polizas.objects.count()
-    total_interacciones = Interacciones.objects.count()
-    total_reclamaciones = Reclamaciones.objects.count()
+    try:
+        admin = Usuarios.objects.get(user=request.user)
+    except Usuarios.DoesNotExist:
+        messages.error(request, "Tu perfil no está asociado correctamente.")
+        return redirect("/")
 
-    return render(request, "admin_panel.html", {
-        "titulo": "Panel de Administración",
-        "descripcion": "Gestión general del sistema y reportes globales.",
-        "total_clientes": total_clientes,
-        "total_polizas": total_polizas,
-        "total_interacciones": total_interacciones,
-        "total_reclamaciones": total_reclamaciones,
-    })
+    # Filtrar solo por la empresa del administrador
+    empresa = admin.empresa
+
+    # Contar clientes de la empresa (a través de sus asesores)
+    total_clientes = Clientes.objects.filter(asesor__empresa=empresa).count()
+
+    # Contar pólizas de la empresa (a través de los clientes de la empresa)
+    total_polizas = Polizas.objects.filter(dni_cliente__asesor__empresa=empresa).count()
+
+    # Contar interacciones de la empresa (a través de sus asesores)
+    total_interacciones = Interacciones.objects.filter(dni_asesor__empresa=empresa).count()
+
+    # Contar reclamaciones de la empresa (a través de sus asesores)
+    total_reclamaciones = Reclamaciones.objects.filter(dni_asesor__empresa=empresa).count()
+
+    # Contar usuarios/asesores de la empresa
+    total_usuarios = Usuarios.objects.filter(empresa=empresa).count()
+
+    context = {
+        'empresa': empresa,
+        'total_clientes': total_clientes,
+        'total_polizas': total_polizas,
+        'total_interacciones': total_interacciones,
+        'total_reclamaciones': total_reclamaciones,
+        'total_usuarios': total_usuarios,
+    }
+
+    return render(request, "admin_panel.html", context)
 
 def gestionar_usuarios(request):
     if not request.user.is_authenticated:
@@ -1486,3 +1508,123 @@ def eliminar_dato(request, recurso, pk):
     except ProtectedError:
         messages.error(request, "No se puede eliminar: está en uso por otros registros.")
     return redirect(request.META.get("HTTP_REFERER", "/"))
+
+
+# Reportes admin
+def reportes_admin(request):
+    if not request.user.is_authenticated:
+        messages.error(request, "Debes iniciar sesión.")
+        return redirect("/login")
+
+    try:
+        usuario = Usuarios.objects.select_related("empresa").get(user=request.user)
+        empresa = usuario.empresa
+    except Usuarios.DoesNotExist:
+        messages.error(request, "Tu perfil no está asociado correctamente.")
+        return redirect("/")
+
+    # 🔹 Filtrar datos por empresa (no solo por asesor)
+    clientes = Clientes.objects.filter(asesor__empresa=empresa).select_related("id_ciudad")
+    polizas = Polizas.objects.filter(dni_cliente__asesor__empresa=empresa).select_related("dni_cliente", "id_producto", "id_canal_venta")
+    interacciones = Interacciones.objects.filter(dni_cliente__asesor__empresa=empresa).select_related("dni_cliente", "id_tipo_interaccion")
+    reclamaciones = Reclamaciones.objects.filter(dni_cliente__asesor__empresa=empresa).select_related("dni_cliente", "id_estado")
+
+    context = {
+        "titulo": f"Reportes de {empresa.nombre}",
+        "clientes": clientes,
+        "polizas": polizas,
+        "interacciones": interacciones,
+        "reclamaciones": reclamaciones,
+    }
+
+    return render(request, "reportes_admin.html", context)
+
+
+def reportes_metricas_admin(request):
+    if not request.user.is_authenticated:
+        messages.error(request, "Debes iniciar sesión.")
+        return redirect("/login")
+
+    # 🧑‍💼 Verificamos el usuario logueado y su empresa
+    try:
+        usuario = Usuarios.objects.select_related("empresa").get(user=request.user)
+        empresa = usuario.empresa
+    except Usuarios.DoesNotExist:
+        messages.error(request, "Tu perfil no está asociado correctamente.")
+        return redirect("/")
+
+    # =============== 🔹 MÉTRICAS PRINCIPALES 🔹 ==================
+
+    # Reclamaciones por estado (toda la empresa)
+    reclamaciones_qs = Estado.objects.annotate(
+        count=Count('reclamacion_estado', filter=Q(reclamacion_estado__dni_cliente__asesor__empresa=empresa))
+    ).filter(count__gt=0).values('descripcion', 'count')
+    reclamaciones_por_estado = json.dumps(list(reclamaciones_qs))
+
+    # Canales de venta más utilizados (toda la empresa)
+    canales_qs = Canal_venta.objects.annotate(
+        count=Count('polizas', filter=Q(polizas__dni_cliente__asesor__empresa=empresa))
+    ).filter(count__gt=0).values('descripcion', 'count')
+    canales_venta = json.dumps(list(canales_qs))
+
+    # Interacciones por tipo (toda la empresa)
+    interacciones_qs = TipoInteraccion.objects.annotate(
+        count=Count('interacciones', filter=Q(interacciones__dni_cliente__asesor__empresa=empresa))
+    ).filter(count__gt=0).values('descripcion', 'count')
+    interacciones_tipo = json.dumps(list(interacciones_qs))
+
+    # Pólizas por producto
+    polizas_por_producto_qs = Polizas.objects.filter(
+        dni_cliente__asesor__empresa=empresa
+    ).values('id_producto__descripcion').annotate(count=Count('id')).order_by('-count')
+    polizas_por_producto = json.dumps([
+        {'descripcion': p['id_producto__descripcion'] or 'Sin producto', 'count': p['count']}
+        for p in polizas_por_producto_qs
+    ])
+
+    # Pólizas próximas a vencer (30 días)
+    hoy = date.today()
+    lim = hoy + timedelta(days=30)
+    proximas_qs = Polizas.objects.filter(
+        fecha_fin__gte=hoy,
+        fecha_fin__lte=lim,
+        dni_cliente__asesor__empresa=empresa
+    ).values('id_producto__descripcion').annotate(count=Count('id')).order_by('-count')
+    polizas_proximas = json.dumps([
+        {'descripcion': p['id_producto__descripcion'] or 'Sin producto', 'count': p['count']}
+        for p in proximas_qs
+    ])
+
+    # Pólizas nuevas por mes (últimos 12 meses)
+    inicio_periodo = (hoy.replace(day=1) - timedelta(days=365)).replace(day=1)
+    nuevas_qs = Polizas.objects.filter(
+        fecha_inicio__gte=inicio_periodo,
+        dni_cliente__asesor__empresa=empresa
+    ).annotate(mes=TruncMonth('fecha_inicio')).values('mes').annotate(count=Count('id')).order_by('mes')
+    polizas_nuevas_mes = json.dumps([
+        {'mes': item['mes'].strftime('%Y-%m'), 'count': item['count']}
+        for item in nuevas_qs
+    ])
+
+    # ================= 🔹 MÉTRICAS TOTALES 🔹 =================
+    total_clientes = Clientes.objects.filter(asesor__empresa=empresa).count()
+    total_polizas = Polizas.objects.filter(dni_cliente__asesor__empresa=empresa).count()
+    total_interacciones = Interacciones.objects.filter(dni_cliente__asesor__empresa=empresa).count()
+    total_reclamaciones = Reclamaciones.objects.filter(dni_cliente__asesor__empresa=empresa).count()
+
+    # ================= 🔹 CONTEXTO FINAL 🔹 =================
+    context = {
+        'titulo': f"Métricas generales - {empresa.nombre}",
+        'reclamaciones_por_estado': reclamaciones_por_estado,
+        'canales_venta': canales_venta,
+        'interacciones_tipo': interacciones_tipo,
+        'polizas_por_producto': polizas_por_producto,
+        'polizas_proximas': polizas_proximas,
+        'polizas_nuevas_mes': polizas_nuevas_mes,
+        'total_clientes': total_clientes,
+        'total_polizas': total_polizas,
+        'total_interacciones': total_interacciones,
+        'total_reclamaciones': total_reclamaciones,
+    }
+
+    return render(request, 'reportes_metricas_admin.html', context)

@@ -1,0 +1,121 @@
+{% extends 'layout_admin.html' %}
+{% load static %}
+
+{% block title %}Reportes - ZuluAris CRM{% endblock %}
+
+{% block content %}
+<div class="reportes-container">
+    <h2>Reportes del asesor</h2>
+    <p>Consulta, analiza y exporta los datos registrados en el sistema.</p>
+
+    <!-- Estructura para cada sección de reporte -->
+    <div class="reportes-seccion">
+        <h3>Clientes registrados</h3>
+        <table class="tabla_clientes">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>DNI</th>
+                    <th>Correo</th>
+                    <th>Ciudad</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in clientes %}
+                <tr>
+                    <td>{{ c.nombre }}</td>
+                    <td>{{ c.dni }}</td>
+                    <td>{{ c.correo|default:"-" }}</td>
+                    <td>{{ c.id_ciudad.descripcion }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="acciones-reporte">
+            <a href="{% url 'exportar_reporte' 'clientes' %}" class="btn-guardar">Exportar a hoja de cálculo</a>
+        </div>
+    </div>
+
+    <div class="reportes-seccion">
+        <h3>Pólizas</h3>
+        <table class="tabla_clientes">
+            <thead>
+                <tr>
+                    <th>Cliente</th>
+                    <th>Producto</th>
+                    <th>Canal</th>
+                    <th>Vigencia</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in polizas %}
+                <tr>
+                    <td>{{ p.dni_cliente.nombre }}</td>
+                    <td>{{ p.id_producto.descripcion }}</td>
+                    <td>{{ p.id_canal_venta.descripcion }}</td>
+                    <td>{{ p.fecha_inicio }} → {{ p.fecha_fin }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="acciones-reporte">
+            <a href="{% url 'exportar_reporte' 'polizas' %}" class="btn-guardar">Exportar a hoja de cálculo</a>
+        </div>
+    </div>
+
+    <div class="reportes-seccion">
+        <h3>Interacciones</h3>
+        <table class="tabla_interacciones">
+            <thead>
+                <tr>
+                    <th>Cliente</th>
+                    <th>Tipo</th>
+                    <th>Asunto</th>
+                    <th>Fecha</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in interacciones %}
+                <tr>
+                    <td>{{ i.dni_cliente.nombre }}</td>
+                    <td>{{ i.id_tipo_interaccion.descripcion }}</td>
+                    <td>{{ i.asunto }}</td>
+                    <td>{{ i.fecha|date:"d/m/Y" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="acciones-reporte">
+            <a href="{% url 'exportar_reporte' 'interacciones' %}" class="btn-guardar">Exportar a hoja de cálculo</a>
+        </div>
+    </div>
+
+    <div class="reportes-seccion">
+        <h3>Reclamaciones</h3>
+        <table class="tabla-clientes">
+            <thead>
+                <tr>
+                    <th>Cliente</th>
+                    <th>Fecha</th>
+                    <th>Estado</th>
+                    <th>Descripción</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in reclamaciones %}
+                <tr>
+                    <td>{{ r.dni_cliente.nombre }}</td>
+                    <td>{{ r.fecha }}</td>
+                    <td>{{ r.id_estado.descripcion }}</td>
+                    <td>{{ r.descripcion }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="acciones-reporte">
+            <a href="{% url 'exportar_reporte' 'reclamaciones' %}" class="btn-guardar">Exportar a hoja de cálculo</a>
+        </div>
+    </div>
+
+
+{% endblock %}

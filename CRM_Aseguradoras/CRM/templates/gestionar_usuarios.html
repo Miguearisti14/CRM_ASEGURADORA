@@ -7,7 +7,6 @@
 <div class="card">
     <div class="card-header">
         <h2>Gestión de Usuarios</h2>
-     
     </div>
 
     <!-- 🔍 Buscador -->
@@ -50,17 +49,20 @@
             {% if usuarios %}
                 {% for usuario in usuarios %}
                 <tr>
-                    <td class="col-nom">{{ usuario.user.first_name }} {{ usuario.user.last_name }}</td>
+                    <td>
+                        <a href="{% url 'detalle_usuario' usuario.dni %}" class="cliente-link">
+                            {{ usuario.user.first_name }} {{ usuario.user.last_name }}
+                        </a>
+                    </td>
                     <td class="col-dni">{{ usuario.dni }}</td>
                     <td class="col-cor">{{ usuario.user.email }}</td>
                     <td class="col-rol">{{ usuario.id_rol.nombre }}</td>
                     <td class="col-tel">{{ usuario.celular|default:"-" }}</td>
-
                 </tr>
                 {% endfor %}
             {% else %}
                 <tr>
-                    <td colspan="6" style="text-align:center;">No hay usuarios registrados.</td>
+                    <td colspan="5" style="text-align:center;">No hay usuarios registrados.</td>
                 </tr>
             {% endif %}
         </tbody>

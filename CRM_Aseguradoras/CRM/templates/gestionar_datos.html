@@ -1,0 +1,178 @@
+{% extends 'layout_admin.html' %}
+{% load static %}
+
+{% block title %}Gestión de Datos Base - ZuluAris CRM{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/gestionar_datos.css' %}">
+
+<section class="panel-formulario-container gd-container">
+  <div class="panel-formulario-card gd-card">
+    <h2 class="titulo-seccion">Gestión de Datos Base</h2>
+    <p class="descripcion-seccion">Administra catálogos usados por clientes, pólizas, interacciones y reclamaciones.</p>
+
+    <div class="gd-tabs">
+      <ul class="gd-tabs-list">
+        <li class="gd-tab active" data-target="tab-tipo-dni">Tipos de Documento</li>
+        <li class="gd-tab" data-target="tab-canales">Canales de Venta</li>
+        <li class="gd-tab" data-target="tab-tipo-poliza">Tipos de Póliza</li>
+        <li class="gd-tab" data-target="tab-formas-pago">Formas de Pago</li>
+        <li class="gd-tab" data-target="tab-estados">Estados</li>
+      </ul>
+    </div>
+
+    <!-- Tipos de documento -->
+    <div class="gd-tab-content active" id="tab-tipo-dni">
+      <h3 class="gd-subtitle">Tipos de Documento</h3>
+      <table class="gd-table">
+        <thead><tr><th>Nombre</th><th style="width:140px;">Acciones</th></tr></thead>
+        <tbody>
+          {% for t in tipos_dni %}
+          <tr>
+            <td>{{ t.nombre }}</td>
+            <td>
+              <form method="POST" action="{% url 'eliminar_dato' 'tipo_dni' t.id %}" class="gd-inline-form">
+                {% csrf_token %}
+                <button class="gd-btn gd-btn-del" onclick="return confirm('¿Eliminar este tipo de documento?')">Eliminar</button>
+              </form>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="2" class="gd-empty">No hay registros.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <form method="POST" action="{% url 'crear_dato' 'tipo_dni' %}" class="gd-form-inline">
+        {% csrf_token %}
+        <input type="text" name="nombre" class="gd-input" placeholder="Nuevo tipo de documento" required>
+        <button type="submit" class="gd-btn gd-btn-add">Agregar</button>
+      </form>
+    </div>
+
+    <!-- Canales de venta -->
+    <div class="gd-tab-content" id="tab-canales">
+      <h3 class="gd-subtitle">Canales de Venta</h3>
+      <table class="gd-table">
+        <thead><tr><th>Nombre</th><th style="width:140px;">Acciones</th></tr></thead>
+        <tbody>
+          {% for c in canales %}
+          <tr>
+            <td>{{ c.descripcion }}</td>
+            <td>
+              <form method="POST" action="{% url 'eliminar_dato' 'canal' c.id %}" class="gd-inline-form">
+                {% csrf_token %}
+                <button class="gd-btn gd-btn-del" onclick="return confirm('¿Eliminar este canal?')">Eliminar</button>
+              </form>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="2" class="gd-empty">No hay registros.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <form method="POST" action="{% url 'crear_dato' 'canal' %}" class="gd-form-inline">
+        {% csrf_token %}
+        <input type="text" name="nombre" class="gd-input" placeholder="Nuevo canal de venta" required>
+        <button type="submit" class="gd-btn gd-btn-add">Agregar</button>
+      </form>
+    </div>
+
+    <!-- Tipos de póliza -->
+    <div class="gd-tab-content" id="tab-tipo-poliza">
+      <h3 class="gd-subtitle">Tipos de Póliza</h3>
+      <table class="gd-table">
+        <thead><tr><th>Nombre</th><th style="width:140px;">Acciones</th></tr></thead>
+        <tbody>
+          {% for p in tipos_poliza %}
+          <tr>
+            <td>{{ p.descripcion }}</td>
+            <td>
+              <form method="POST" action="{% url 'eliminar_dato' 'tipo_poliza' p.id %}" class="gd-inline-form">
+                {% csrf_token %}
+                <button class="gd-btn gd-btn-del" onclick="return confirm('¿Eliminar este tipo de póliza?')">Eliminar</button>
+              </form>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="2" class="gd-empty">No hay registros.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <form method="POST" action="{% url 'crear_dato' 'tipo_poliza' %}" class="gd-form-inline">
+        {% csrf_token %}
+        <input type="text" name="nombre" class="gd-input" placeholder="Nuevo tipo de póliza" required>
+        <button type="submit" class="gd-btn gd-btn-add">Agregar</button>
+      </form>
+    </div>
+
+    <!-- Formas de pago -->
+    <div class="gd-tab-content" id="tab-formas-pago">
+      <h3 class="gd-subtitle">Formas de Pago</h3>
+      <table class="gd-table">
+        <thead><tr><th>Nombre</th><th style="width:140px;">Acciones</th></tr></thead>
+        <tbody>
+          {% for f in formas_pago %}
+          <tr>
+            <td>{{ f.descripcion }}</td>
+            <td>
+              <form method="POST" action="{% url 'eliminar_dato' 'forma_pago' f.id %}" class="gd-inline-form">
+                {% csrf_token %}
+                <button class="gd-btn gd-btn-del" onclick="return confirm('¿Eliminar esta forma de pago?')">Eliminar</button>
+              </form>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="2" class="gd-empty">No hay registros.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <form method="POST" action="{% url 'crear_dato' 'forma_pago' %}" class="gd-form-inline">
+        {% csrf_token %}
+        <input type="text" name="nombre" class="gd-input" placeholder="Nueva forma de pago" required>
+        <button type="submit" class="gd-btn gd-btn-add">Agregar</button>
+      </form>
+    </div>
+
+    <!-- Estados -->
+    <div class="gd-tab-content" id="tab-estados">
+      <h3 class="gd-subtitle">Estados</h3>
+      <table class="gd-table">
+        <thead><tr><th>Nombre</th><th style="width:140px;">Acciones</th></tr></thead>
+        <tbody>
+          {% for e in estados %}
+          <tr>
+            <td>{{ e.descripcion }}</td>
+            <td>
+              <form method="POST" action="{% url 'eliminar_dato' 'estado' e.id %}" class="gd-inline-form">
+                {% csrf_token %}
+                <button class="gd-btn gd-btn-del" onclick="return confirm('¿Eliminar este estado?')">Eliminar</button>
+              </form>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="2" class="gd-empty">No hay registros.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <form method="POST" action="{% url 'crear_dato' 'estado' %}" class="gd-form-inline">
+        {% csrf_token %}
+        <input type="text" name="nombre" class="gd-input" placeholder="Nuevo estado" required>
+        <button type="submit" class="gd-btn gd-btn-add">Agregar</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.gd-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.gd-tab, .gd-tab-content').forEach(el => el.classList.remove('active'));
+      tab.classList.add('active');
+      const tgt = document.getElementById(tab.dataset.target);
+      if (tgt) tgt.classList.add('active');
+    });
+  });
+});
+</script>
+{% endblock %}

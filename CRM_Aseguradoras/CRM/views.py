@@ -3,6 +3,8 @@ import json
 from datetime import date, timedelta
 from django.db.models import Count
 from django.db.models.functions import TruncMonth
+from django.db.models.deletion import ProtectedError
+from django.views.decorators.http import require_POST
 
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -15,6 +17,8 @@ from .models import Reclamaciones  # asegúrate que el modelo exista
 from openpyxl import Workbook
 from django.http import HttpResponse
 from django.contrib.auth.models import User
+from CRM.models import Tipo_DNI, Canal_venta, Estado, Usuarios
+
 
 
 # Create your views here.
@@ -1275,28 +1279,148 @@ def crear_usuario(request):
 
     return render(request, "crear_usuario.html", context)
 
+def detalle_usuario(request, dni):
+    if not request.user.is_authenticated:
+        messages.error(request, "Debes iniciar sesión.")
+        return redirect("/login")
 
+    try:
+        admin = Usuarios.objects.get(user=request.user)
+    except Usuarios.DoesNotExist:
+        messages.error(request, "Tu perfil no está asociado correctamente.")
+        return redirect("/")
 
-# Vista para crear un usuario administrador desde una interfaz web
-def crear_admin_view(request):
+    # Buscar usuario por DNI en lugar de por ID
+    usuario = get_object_or_404(Usuarios.objects.select_related('user', 'id_rol', 'empresa', 'tipo_dni'), dni=dni, empresa=admin.empresa)
+    tipos_dni = Tipo_DNI.objects.all()
+
     if request.method == "POST":
-        username = request.POST.get("username")
-        email = request.POST.get("email")
-        password = request.POST.get("password")
-        confirm_password = request.POST.get("confirm_password")
+        usuario.user.first_name = request.POST.get("first_name")
+        usuario.user.last_name = request.POST.get("last_name")
+        usuario.user.email = request.POST.get("email")
+        usuario.celular = request.POST.get("celular")
+        usuario.tipo_dni_id = request.POST.get("tipo_dni")
 
-        # Validaciones
-        if password != confirm_password:
-            messages.error(request, "Las contraseñas no coinciden.")
-            return redirect("crear_admin")
+        usuario.user.save()
+        usuario.save()
 
-        if User.objects.filter(username=username).exists():
-            messages.error(request, "Ese nombre de usuario ya existe.")
-            return redirect("crear_admin")
+        messages.success(request, "Datos del usuario actualizados correctamente.")
+        return redirect("gestionar_usuarios")
 
-        # Crear superusuario
-        user = User.objects.create_superuser(username=username, email=email, password=password)
-        messages.success(request, f"Usuario administrador '{username}' creado con éxito. Puedes iniciar sesión en /admin")
+    context = {
+        "usuario": usuario,
+        "tipos_dni": tipos_dni,
+        "titulo": "Detalles de usuario",
+        "descripcion": "Edita los datos de un asesor de tu empresa."
+    }
 
-        return 
-    return render(request, "crear_admin.html")
+    return render(request, "usuario_detalle.html", context)
+
+
+def eliminar_usuario(request, dni):
+    # Validar autenticación
+    if not request.user.is_authenticated:
+        messages.error(request, "Debes iniciar sesión para eliminar un usuario.")
+        return redirect("/login")
+
+    # Obtener el perfil del usuario logueado
+    admin = get_object_or_404(Usuarios, user=request.user)
+
+    # Verificar que el usuario logueado sea administrador
+    if admin.id_rol.nombre.lower() != "administrador":
+        messages.error(request, "No tienes permisos para eliminar usuarios.")
+        return redirect("gestionar_usuarios")
+
+    # Obtener el usuario a eliminar
+    usuario = get_object_or_404(Usuarios, dni=dni, empresa=admin.empresa)
+
+    # Evitar que el administrador se elimine a sí mismo
+    if usuario.dni == admin.dni:
+        messages.warning(request, "No puedes eliminar tu propio usuario.")
+        return redirect("gestionar_usuarios")
+
+    # Eliminar tanto el perfil extendido como el usuario base
+    user_base = usuario.user
+    usuario.delete()
+    user_base.delete()
+
+    messages.success(request, f"El usuario {user_base.username} fue eliminado correctamente.")
+    return redirect("gestionar_usuarios")
+
+
+def _catalog_mapping():
+    # Mapea el recurso a (Modelo, campo_nombre)
+    return {
+        "tipo_dni": (Tipo_DNI, "nombre"),
+        "canal": (Canal_venta, "descripcion"),
+        "tipo_poliza": (Tipo_Poliza, "descripcion"),
+        "forma_pago": (Formas_pago, "descripcion"),
+        "estado": (Estado, "descripcion"),
+    }
+
+@require_POST
+def crear_dato(request, recurso):
+    mapping = _catalog_mapping()
+    if recurso not in mapping:
+        messages.error(request, "Recurso no válido.")
+        return redirect(request.META.get("HTTP_REFERER", "/"))
+
+    Model, field = mapping[recurso]
+    nombre = (request.POST.get("nombre") or "").strip()
+    if not nombre:
+        messages.error(request, "El nombre es obligatorio.")
+        return redirect(request.META.get("HTTP_REFERER", "/"))
+
+    # Evitar duplicados (case-insensitive)
+    exists = Model.objects.filter(**{f"{field}__iexact": nombre}).exists()
+    if exists:
+        messages.warning(request, f"Ya existe un registro con ese nombre en {recurso.replace('_', ' ')}.")
+        return redirect(request.META.get("HTTP_REFERER", "/"))
+
+    obj = Model(**{field: nombre})
+    obj.save()
+    messages.success(request, "Registro creado correctamente.")
+    return redirect(request.META.get("HTTP_REFERER", "/"))
+
+@require_POST
+def eliminar_dato(request, recurso, pk):
+    mapping = _catalog_mapping()
+    if recurso not in mapping:
+        messages.error(request, "Recurso no válido.")
+        return redirect(request.META.get("HTTP_REFERER", "/"))
+
+    Model, _ = mapping[recurso]
+    try:
+        obj = Model.objects.get(pk=pk)
+    except Model.DoesNotExist:
+        messages.error(request, "El registro no existe.")
+        return redirect(request.META.get("HTTP_REFERER", "/"))
+
+    try:
+        obj.delete()
+        messages.success(request, "Registro eliminado correctamente.")
+    except ProtectedError:
+        messages.error(request, "No se puede eliminar: está en uso por otros registros.")
+    return redirect(request.META.get("HTTP_REFERER", "/"))
+
+
+def gestionar_datos(request):
+    if not request.user.is_authenticated:
+        messages.error(request, "Debes iniciar sesión.")
+        return redirect("/login")
+
+    # Opcional: validar que sea admin de empresa
+    try:
+        admin = Usuarios.objects.get(user=request.user)
+    except Usuarios.DoesNotExist:
+        messages.error(request, "Tu perfil no está asociado correctamente.")
+        return redirect("/")
+
+    context = {
+        "tipos_dni": Tipo_DNI.objects.all().order_by("nombre"),
+        "canales": Canal_venta.objects.all().order_by("descripcion"),
+        "tipos_poliza": Tipo_Poliza.objects.all().order_by("descripcion"),
+        "formas_pago": Formas_pago.objects.all().order_by("descripcion"),
+        "estados": Estado.objects.all().order_by("descripcion"),
+    }
+    return render(request, "gestionar_datos.html", context)

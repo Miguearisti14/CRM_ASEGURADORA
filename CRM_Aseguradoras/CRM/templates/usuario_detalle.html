@@ -1,0 +1,79 @@
+{% extends 'layout_form_admin.html' %}
+{% load static %}
+
+{% block title %}Detalle del Usuario - ZuluAris CRM{% endblock %}
+
+{% block form_content %}
+<h2 class="titulo-seccion">Información del Usuario</h2>
+<p class="descripcion-seccion">Consulta, edita o elimina los datos del asesor registrado.</p>
+
+<!-- 🧾 Formulario principal -->
+<form method="POST" class="panel-formulario">
+    {% csrf_token %}
+
+    <div class="grupo-doble">
+        <div class="form-group">
+            <label for="first_name">Nombre</label>
+            <input type="text" name="first_name" id="first_name"
+                   value="{{ usuario.user.first_name }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="last_name">Apellido</label>
+            <input type="text" name="last_name" id="last_name"
+                   value="{{ usuario.user.last_name }}" required>
+        </div>
+    </div>
+
+    <div class="grupo-doble">
+        <div class="form-group">
+            <label for="email">Correo</label>
+            <input type="email" name="email" id="email"
+                   value="{{ usuario.user.email }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="celular">Teléfono</label>
+            <input type="text" name="celular" id="celular"
+                   value="{{ usuario.celular|default:'' }}">
+        </div>
+    </div>
+
+    <div class="grupo-doble">
+        <div class="form-group">
+            <label for="tipo_dni">Tipo de documento</label>
+            <select name="tipo_dni" id="tipo_dni" required>
+                {% for tipo in tipos_dni %}
+                    <option value="{{ tipo.id }}"
+                        {% if usuario.tipo_dni.id == tipo.id %}selected{% endif %}>
+                        {{ tipo.nombre }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="dni">Número de documento</label>
+            <input type="text" name="dni" id="dni"
+                   value="{{ usuario.dni }}" readonly
+                   style="background-color:#e7e9ea;">
+        </div>
+    </div>
+
+    <div class="acciones-formulario">
+        <button type="submit" class="btn-guardar">Guardar cambios</button>
+        <a href="{% url 'gestionar_usuarios' %}" class="btn-cancelar">Cancelar</a>
+    </div>
+</form>
+
+<!-- 🗑️ Formulario para eliminar -->
+<form method="POST" action="{% url 'eliminar_usuario' usuario.dni %}"
+      onsubmit="return confirm('¿Seguro que deseas eliminar este usuario?')"
+      class="form-eliminar">
+    {% csrf_token %}
+    <div class="acciones-formulario eliminar">
+        <button type="submit" class="btn-eliminar">Eliminar usuario</button>
+    </div>
+</form>
+
+{% endblock %}

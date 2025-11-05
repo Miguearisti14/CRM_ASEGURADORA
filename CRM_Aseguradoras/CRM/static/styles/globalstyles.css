@@ -3312,3 +3312,186 @@ textarea:focus {
     padding-bottom: 10px;
     margin-bottom: 20px;
 }
+
+/* Tabla de datos */
+/* Scope: solo para gestionar_datos (prefijo gd-) */
+
+/* Contenedor */
+.gd-container {
+    padding: 16px;
+}
+
+.gd-card {
+    background: #fff;
+    border: 1px solid rgba(2, 6, 23, 0.06);
+    border-radius: 10px;
+    padding: 16px;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
+}
+
+/* Tabs */
+.gd-tabs {
+    margin-bottom: 12px;
+    border-bottom: 1px solid #e6e9ef;
+}
+
+.gd-tabs-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.gd-tab {
+    padding: 10px 14px;
+    border-radius: 8px 8px 0 0;
+    background: #f6f8fb;
+    color: #455a64;
+    cursor: pointer;
+    font-weight: 600;
+    border: 1px solid #e6e9ef;
+    border-bottom: none;
+}
+
+.gd-tab.active {
+    background: #e9f2ff;
+    color: #0d47a1;
+    border-color: #c8dcff;
+}
+
+.gd-tab-content {
+    display: none;
+    padding: 8px 0 4px;
+}
+
+.gd-tab-content.active {
+    display: block;
+}
+
+/* Título secciones internas */
+.gd-subtitle {
+    color: #0d47a1;
+    margin: 8px 0 10px;
+    font-size: 1rem;
+}
+
+/* Tabla */
+.gd-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+    background: #fff;
+    border: 1px solid #ecf0f5;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+
+.gd-table thead th {
+    background: #f3f6fa;
+    color: #37474f;
+    text-align: left;
+    padding: 12px;
+    font-weight: 700;
+    border-bottom: 1px solid #e6e9ef;
+}
+
+.gd-table tbody td {
+    padding: 12px;
+    border-bottom: 1px solid #f0f3f7;
+    color: #546e7a;
+}
+
+.gd-table tbody tr:nth-child(even) {
+    background: #fafcff;
+}
+
+.gd-table tbody tr:hover {
+    background: #f5f9ff;
+}
+
+.gd-empty {
+    text-align: center;
+    color: #78909c;
+    padding: 16px;
+}
+
+/* Formularios inline */
+.gd-form-inline,
+.gd-inline-form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 8px 0 4px;
+}
+
+.gd-input {
+    padding: 8px 10px;
+    border: 1px solid #cfd8dc;
+    border-radius: 6px;
+    outline: none;
+    min-width: 260px;
+    align-items: flex-start;
+}
+
+.gd-input:focus {
+    border-color: #90caf9;
+    box-shadow: 0 0 0 3px rgba(144, 202, 249, .25);
+}
+
+/* Botones */
+.gd-btn {
+    border: none;
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform .05s ease, opacity .2s ease;
+}
+
+.gd-btn:active {
+    transform: translateY(1px);
+}
+
+.gd-btn-add {
+    background: #2e7d32;
+    color: #fff;
+}
+
+.gd-btn-add:hover {
+    opacity: .95;
+}
+
+.gd-btn-del {
+    background: #c62828;
+    color: #fff;
+}
+
+.gd-btn-del:hover {
+    opacity: .95;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+
+    .gd-form-inline,
+    .gd-inline-form {
+        flex-wrap: wrap;
+    }
+
+    .gd-input {
+        min-width: 200px;
+        flex: 1 1 auto;
+    }
+
+    .gd-tabs-list {
+        gap: 6px;
+    }
+
+    .gd-tab {
+        padding: 8px 10px;
+        font-size: .95rem;
+    }
+}

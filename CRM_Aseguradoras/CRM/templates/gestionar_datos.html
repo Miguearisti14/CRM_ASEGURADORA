@@ -15,7 +15,7 @@
       <ul class="gd-tabs-list">
         <li class="gd-tab active" data-target="tab-tipo-dni">Tipos de Documento</li>
         <li class="gd-tab" data-target="tab-canales">Canales de Venta</li>
-        <li class="gd-tab" data-target="tab-tipo-poliza">Tipos de Póliza</li>
+        <li class="gd-tab" data-target="tab-productos">Productos</li>
         <li class="gd-tab" data-target="tab-formas-pago">Formas de Pago</li>
         <li class="gd-tab" data-target="tab-estados">Estados</li>
       </ul>
@@ -44,8 +44,10 @@
       </table>
       <form method="POST" action="{% url 'crear_dato' 'tipo_dni' %}" class="gd-form-inline">
         {% csrf_token %}
+        <div class="gd-form-row">
         <input type="text" name="nombre" class="gd-input" placeholder="Nuevo tipo de documento" required>
         <button type="submit" class="gd-btn gd-btn-add">Agregar</button>
+        </div>
       </form>
     </div>
 
@@ -72,36 +74,50 @@
       </table>
       <form method="POST" action="{% url 'crear_dato' 'canal' %}" class="gd-form-inline">
         {% csrf_token %}
+        <div class="gd-form-row">
         <input type="text" name="nombre" class="gd-input" placeholder="Nuevo canal de venta" required>
         <button type="submit" class="gd-btn gd-btn-add">Agregar</button>
+        </div>
       </form>
     </div>
 
-    <!-- Tipos de póliza -->
-    <div class="gd-tab-content" id="tab-tipo-poliza">
-      <h3 class="gd-subtitle">Tipos de Póliza</h3>
+    <!-- Productos (nuevo) -->
+    <div class="gd-tab-content" id="tab-productos">
+      <h3 class="gd-subtitle">Productos</h3>
       <table class="gd-table">
-        <thead><tr><th>Nombre</th><th style="width:140px;">Acciones</th></tr></thead>
+        <thead>
+          <tr>
+            <th>Descripción</th>
+            <th>Categoría</th>
+            <th>Precio</th>
+            <th style="width:140px;">Acciones</th>
+          </tr>
+        </thead>
         <tbody>
-          {% for p in tipos_poliza %}
+          {% for p in productos %}
           <tr>
             <td>{{ p.descripcion }}</td>
+            <td>{{ p.categoria|default:"-" }}</td>
+            <td>{{ p.precio|default:"-" }}</td>
             <td>
-              <form method="POST" action="{% url 'eliminar_dato' 'tipo_poliza' p.id %}" class="gd-inline-form">
+              <form method="POST" action="{% url 'eliminar_dato' 'producto' p.id %}" class="gd-inline-form">
                 {% csrf_token %}
-                <button class="gd-btn gd-btn-del" onclick="return confirm('¿Eliminar este tipo de póliza?')">Eliminar</button>
+                <button class="gd-btn gd-btn-del" onclick="return confirm('¿Eliminar este producto?')">Eliminar</button>
               </form>
             </td>
           </tr>
           {% empty %}
-          <tr><td colspan="2" class="gd-empty">No hay registros.</td></tr>
+          <tr><td colspan="4" class="gd-empty">No hay registros.</td></tr>
           {% endfor %}
         </tbody>
       </table>
-      <form method="POST" action="{% url 'crear_dato' 'tipo_poliza' %}" class="gd-form-inline">
+      <form method="POST" action="{% url 'crear_dato' 'producto' %}" class="gd-form-multi">
         {% csrf_token %}
-        <input type="text" name="nombre" class="gd-input" placeholder="Nuevo tipo de póliza" required>
-        <button type="submit" class="gd-btn gd-btn-add">Agregar</button>
+        <div class="gd-form-row">
+          <input type="text" name="descripcion" class="gd-input" placeholder="Descripción del producto" required>
+          <input type="text" name="id_ramo" class="gd-input" placeholder="Ramo">
+                  <button type="submit" class="gd-btn gd-btn-add">Agregar</button>
+        </div>
       </form>
     </div>
 
@@ -128,8 +144,10 @@
       </table>
       <form method="POST" action="{% url 'crear_dato' 'forma_pago' %}" class="gd-form-inline">
         {% csrf_token %}
+        <div class="gd-form-row">
         <input type="text" name="nombre" class="gd-input" placeholder="Nueva forma de pago" required>
         <button type="submit" class="gd-btn gd-btn-add">Agregar</button>
+        </div>
       </form>
     </div>
 
@@ -156,8 +174,10 @@
       </table>
       <form method="POST" action="{% url 'crear_dato' 'estado' %}" class="gd-form-inline">
         {% csrf_token %}
+        <div class="gd-form-row">
         <input type="text" name="nombre" class="gd-input" placeholder="Nuevo estado" required>
         <button type="submit" class="gd-btn gd-btn-add">Agregar</button>
+        </div>
       </form>
     </div>
   </div>

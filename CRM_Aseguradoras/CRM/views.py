@@ -11,7 +11,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from CRM.models import Usuarios
 from django.contrib import messages
-from .models import Estado, Interacciones, TipoInteraccion, Usuarios,Formas_pago, Tipo_Poliza, Canal_venta, Tipo_DNI, Roles, Empresa, Clientes, Ciudades, Productos, Canal_venta, Tipo_Poliza, Polizas, Departamentos, Reclamaciones
+from .models import Estado, Interacciones, Ramos, TipoInteraccion, Usuarios,Formas_pago, Tipo_Poliza, Canal_venta, Tipo_DNI, Roles, Empresa, Clientes, Ciudades, Productos, Canal_venta, Tipo_Poliza, Polizas, Departamentos, Reclamaciones
 from django.db.models import Q, Count
 from .models import Reclamaciones  # asegúrate que el modelo exista
 from openpyxl import Workbook
@@ -1348,68 +1348,11 @@ def eliminar_usuario(request, dni):
     return redirect("gestionar_usuarios")
 
 
-def _catalog_mapping():
-    # Mapea el recurso a (Modelo, campo_nombre)
-    return {
-        "tipo_dni": (Tipo_DNI, "nombre"),
-        "canal": (Canal_venta, "descripcion"),
-        "tipo_poliza": (Tipo_Poliza, "descripcion"),
-        "forma_pago": (Formas_pago, "descripcion"),
-        "estado": (Estado, "descripcion"),
-    }
-
-@require_POST
-def crear_dato(request, recurso):
-    mapping = _catalog_mapping()
-    if recurso not in mapping:
-        messages.error(request, "Recurso no válido.")
-        return redirect(request.META.get("HTTP_REFERER", "/"))
-
-    Model, field = mapping[recurso]
-    nombre = (request.POST.get("nombre") or "").strip()
-    if not nombre:
-        messages.error(request, "El nombre es obligatorio.")
-        return redirect(request.META.get("HTTP_REFERER", "/"))
-
-    # Evitar duplicados (case-insensitive)
-    exists = Model.objects.filter(**{f"{field}__iexact": nombre}).exists()
-    if exists:
-        messages.warning(request, f"Ya existe un registro con ese nombre en {recurso.replace('_', ' ')}.")
-        return redirect(request.META.get("HTTP_REFERER", "/"))
-
-    obj = Model(**{field: nombre})
-    obj.save()
-    messages.success(request, "Registro creado correctamente.")
-    return redirect(request.META.get("HTTP_REFERER", "/"))
-
-@require_POST
-def eliminar_dato(request, recurso, pk):
-    mapping = _catalog_mapping()
-    if recurso not in mapping:
-        messages.error(request, "Recurso no válido.")
-        return redirect(request.META.get("HTTP_REFERER", "/"))
-
-    Model, _ = mapping[recurso]
-    try:
-        obj = Model.objects.get(pk=pk)
-    except Model.DoesNotExist:
-        messages.error(request, "El registro no existe.")
-        return redirect(request.META.get("HTTP_REFERER", "/"))
-
-    try:
-        obj.delete()
-        messages.success(request, "Registro eliminado correctamente.")
-    except ProtectedError:
-        messages.error(request, "No se puede eliminar: está en uso por otros registros.")
-    return redirect(request.META.get("HTTP_REFERER", "/"))
-
-
 def gestionar_datos(request):
     if not request.user.is_authenticated:
         messages.error(request, "Debes iniciar sesión.")
         return redirect("/login")
 
-    # Opcional: validar que sea admin de empresa
     try:
         admin = Usuarios.objects.get(user=request.user)
     except Usuarios.DoesNotExist:
@@ -1422,5 +1365,97 @@ def gestionar_datos(request):
         "tipos_poliza": Tipo_Poliza.objects.all().order_by("descripcion"),
         "formas_pago": Formas_pago.objects.all().order_by("descripcion"),
         "estados": Estado.objects.all().order_by("descripcion"),
+        "productos": Productos.objects.all().order_by("descripcion"),  # Nueva línea
     }
     return render(request, "gestionar_datos.html", context)
+
+def _catalog_mapping():
+    return {
+        "tipo_dni": (Tipo_DNI, "nombre"),
+        "canal": (Canal_venta, "descripcion"),
+        "tipo_poliza": (Tipo_Poliza, "descripcion"),
+        "forma_pago": (Formas_pago, "descripcion"),
+        "estado": (Estado, "descripcion"),
+    }
+
+@require_POST
+def crear_dato(request, recurso):
+    mapping = _catalog_mapping()
+    
+    # Manejo especial para productos con múltiples campos
+    if recurso == "producto":
+        descripcion = request.POST.get("descripcion", "").strip()
+        categoria = request.POST.get("id_ramo", "").strip()
+
+        Ramos.objects.get_or_create(descripcion=categoria)
+
+        ramo_default = Ramos.objects.filter(descripcion__iexact=categoria).first()
+
+        if not descripcion:
+            messages.error(request, "La descripción es obligatoria.")
+            return redirect(request.META.get("HTTP_REFERER", "/"))
+        
+        # Validar que no exista
+        if Productos.objects.filter(descripcion__iexact=descripcion).exists():
+            messages.warning(request, "Ya existe un producto con esa descripción.")
+            return redirect(request.META.get("HTTP_REFERER", "/"))
+        
+        producto = Productos(
+            descripcion=descripcion,
+            id_ramo=ramo_default
+        )
+        producto.save()
+        messages.success(request, "Producto creado correctamente.")
+        return redirect(request.META.get("HTTP_REFERER", "/"))
+    
+    # Lógica existente para catálogos simples
+    if recurso not in mapping:
+        messages.error(request, "Recurso no válido.")
+        return redirect(request.META.get("HTTP_REFERER", "/"))
+
+    Model, field = mapping[recurso]
+    nombre = (request.POST.get("nombre") or "").strip()
+    if not nombre:
+        messages.error(request, "El nombre es obligatorio.")
+        return redirect(request.META.get("HTTP_REFERER", "/"))
+
+    exists = Model.objects.filter(**{f"{field}__iexact": nombre}).exists()
+    if exists:
+        messages.warning(request, f"Ya existe un registro con ese nombre en {recurso.replace('_', ' ')}.")
+        return redirect(request.META.get("HTTP_REFERER", "/"))
+
+    obj = Model(**{field: nombre})
+    obj.save()
+    messages.success(request, "Registro creado correctamente.")
+    return redirect(request.META.get("HTTP_REFERER", "/"))
+
+@require_POST
+def eliminar_dato(request, recurso, pk):
+    # Manejo especial para productos
+    if recurso == "producto":
+        try:
+            producto = Productos.objects.get(pk=pk)
+            producto.delete()
+            messages.success(request, "Producto eliminado correctamente.")
+        except Productos.DoesNotExist:
+            messages.error(request, "El producto no existe.")
+        except ProtectedError:
+            messages.error(request, "No se puede eliminar: está en uso por otros registros.")
+        return redirect(request.META.get("HTTP_REFERER", "/"))
+    
+    # Lógica existente
+    mapping = _catalog_mapping()
+    if recurso not in mapping:
+        messages.error(request, "Recurso no válido.")
+        return redirect(request.META.get("HTTP_REFERER", "/"))
+
+    Model, _ = mapping[recurso]
+    try:
+        obj = Model.objects.get(pk=pk)
+        obj.delete()
+        messages.success(request, "Registro eliminado correctamente.")
+    except Model.DoesNotExist:
+        messages.error(request, "El registro no existe.")
+    except ProtectedError:
+        messages.error(request, "No se puede eliminar: está en uso por otros registros.")
+    return redirect(request.META.get("HTTP_REFERER", "/"))

@@ -16,6 +16,7 @@
         <li class="gd-tab active" data-target="tab-tipo-dni">Tipos de Documento</li>
         <li class="gd-tab" data-target="tab-canales">Canales de Venta</li>
         <li class="gd-tab" data-target="tab-productos">Productos</li>
+        <li class="gd-tab" data-target="tab-tipos-interaccion">Tipos de Interacción</li>
         <li class="gd-tab" data-target="tab-formas-pago">Formas de Pago</li>
         <li class="gd-tab" data-target="tab-estados">Estados</li>
       </ul>
@@ -81,15 +82,14 @@
       </form>
     </div>
 
-    <!-- Productos (nuevo) -->
+    <!-- Productos -->
     <div class="gd-tab-content" id="tab-productos">
       <h3 class="gd-subtitle">Productos</h3>
       <table class="gd-table">
         <thead>
           <tr>
             <th>Descripción</th>
-            <th>Categoría</th>
-            <th>Precio</th>
+            <th>Ramo</th>
             <th style="width:140px;">Acciones</th>
           </tr>
         </thead>
@@ -97,8 +97,7 @@
           {% for p in productos %}
           <tr>
             <td>{{ p.descripcion }}</td>
-            <td>{{ p.categoria|default:"-" }}</td>
-            <td>{{ p.precio|default:"-" }}</td>
+            <td>{{ p.id_ramo|default:"-" }}</td>
             <td>
               <form method="POST" action="{% url 'eliminar_dato' 'producto' p.id %}" class="gd-inline-form">
                 {% csrf_token %}
@@ -107,7 +106,7 @@
             </td>
           </tr>
           {% empty %}
-          <tr><td colspan="4" class="gd-empty">No hay registros.</td></tr>
+          <tr><td colspan="3" class="gd-empty">No hay registros.</td></tr>
           {% endfor %}
         </tbody>
       </table>
@@ -116,7 +115,37 @@
         <div class="gd-form-row">
           <input type="text" name="descripcion" class="gd-input" placeholder="Descripción del producto" required>
           <input type="text" name="id_ramo" class="gd-input" placeholder="Ramo">
-                  <button type="submit" class="gd-btn gd-btn-add">Agregar</button>
+          <button type="submit" class="gd-btn gd-btn-add">Agregar</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Tipos de Interacción -->
+    <div class="gd-tab-content" id="tab-tipos-interaccion">
+      <h3 class="gd-subtitle">Tipos de Interacción</h3>
+      <table class="gd-table">
+        <thead><tr><th>Nombre</th><th style="width:140px;">Acciones</th></tr></thead>
+        <tbody>
+          {% for ti in tipos_interaccion %}
+          <tr>
+            <td>{{ ti.descripcion }}</td>
+            <td>
+              <form method="POST" action="{% url 'eliminar_dato' 'tipo_interaccion' ti.id %}" class="gd-inline-form">
+                {% csrf_token %}
+                <button class="gd-btn gd-btn-del" onclick="return confirm('¿Eliminar este tipo de interacción?')">Eliminar</button>
+              </form>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="2" class="gd-empty">No hay registros.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <form method="POST" action="{% url 'crear_dato' 'tipo_interaccion' %}" class="gd-form-inline">
+        {% csrf_token %}
+        <div class="gd-form-row">
+        <input type="text" name="nombre" class="gd-input" placeholder="Nuevo tipo de interacción" required>
+        <button type="submit" class="gd-btn gd-btn-add">Agregar</button>
         </div>
       </form>
     </div>

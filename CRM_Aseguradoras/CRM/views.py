@@ -11,13 +11,14 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from CRM.models import Usuarios
 from django.contrib import messages
-from .models import Estado, Interacciones, Ramos, TipoInteraccion, Usuarios,Formas_pago, Tipo_Poliza, Canal_venta, Tipo_DNI, Roles, Empresa, Clientes, Ciudades, Productos, Canal_venta, Tipo_Poliza, Polizas, Departamentos, Reclamaciones
+from .models import Estado,Ciudades, Departamentos, Interacciones, Ramos, TipoInteraccion, Usuarios,Formas_pago, Tipo_Poliza, Canal_venta, Tipo_DNI, Roles, Empresa, Clientes, Ciudades, Productos, Canal_venta, Tipo_Poliza, Polizas, Departamentos, Reclamaciones
 from django.db.models import Q, Count
 from .models import Reclamaciones  # asegúrate que el modelo exista
 from openpyxl import Workbook
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 from CRM.models import Tipo_DNI, Canal_venta, Estado, Usuarios
+
 
 
 
@@ -1365,7 +1366,10 @@ def gestionar_datos(request):
         "tipos_poliza": Tipo_Poliza.objects.all().order_by("descripcion"),
         "formas_pago": Formas_pago.objects.all().order_by("descripcion"),
         "estados": Estado.objects.all().order_by("descripcion"),
-        "productos": Productos.objects.all().order_by("descripcion"),  # Nueva línea
+        "productos": Productos.objects.all().order_by("descripcion"),
+        "ciudades": Ciudades.objects.select_related('id_departamento').all().order_by("descripcion"),
+        "departamentos": Departamentos.objects.all().order_by("descripcion"),
+        "tipos_interaccion": TipoInteraccion.objects.all().order_by("descripcion"),
     }
     return render(request, "gestionar_datos.html", context)
 
@@ -1376,13 +1380,14 @@ def _catalog_mapping():
         "tipo_poliza": (Tipo_Poliza, "descripcion"),
         "forma_pago": (Formas_pago, "descripcion"),
         "estado": (Estado, "descripcion"),
+        "tipo_interaccion": (TipoInteraccion, "descripcion"),
     }
 
 @require_POST
 def crear_dato(request, recurso):
     mapping = _catalog_mapping()
     
-    # Manejo especial para productos con múltiples campos
+    # Manejo especial para productos
     if recurso == "producto":
         descripcion = request.POST.get("descripcion", "").strip()
         categoria = request.POST.get("id_ramo", "").strip()
@@ -1406,6 +1411,28 @@ def crear_dato(request, recurso):
         )
         producto.save()
         messages.success(request, "Producto creado correctamente.")
+        return redirect(request.META.get("HTTP_REFERER", "/"))
+    
+    # Manejo especial para ciudades
+    if recurso == "ciudad":
+        descripcion = request.POST.get("descripcion", "").strip()
+        id_departamento = request.POST.get("id_departamento", "").strip()
+        
+        if not descripcion or not id_departamento:
+            messages.error(request, "La ciudad y el departamento son obligatorios.")
+            return redirect(request.META.get("HTTP_REFERER", "/"))
+        
+        if Ciudades.objects.filter(descripcion__iexact=descripcion, id_departamento_id=id_departamento).exists():
+            messages.warning(request, "Ya existe esa ciudad en ese departamento.")
+            return redirect(request.META.get("HTTP_REFERER", "/"))
+        
+        try:
+            departamento = Departamentos.objects.get(pk=id_departamento)
+            ciudad = Ciudades(descripcion=descripcion, id_departamento=departamento)
+            ciudad.save()
+            messages.success(request, "Ciudad creada correctamente.")
+        except Departamentos.DoesNotExist:
+            messages.error(request, "El departamento seleccionado no existe.")
         return redirect(request.META.get("HTTP_REFERER", "/"))
     
     # Lógica existente para catálogos simples
@@ -1443,7 +1470,7 @@ def eliminar_dato(request, recurso, pk):
             messages.error(request, "No se puede eliminar: está en uso por otros registros.")
         return redirect(request.META.get("HTTP_REFERER", "/"))
     
-    # Lógica existente
+       # Lógica existente
     mapping = _catalog_mapping()
     if recurso not in mapping:
         messages.error(request, "Recurso no válido.")

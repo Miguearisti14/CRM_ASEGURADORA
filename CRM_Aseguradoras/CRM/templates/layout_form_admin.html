@@ -1,0 +1,21 @@
+{% extends 'layout_admin.html' %}
+{% load static %}
+
+{% block title %}{{ titulo|default:"Formulario - Administrador" }} - ZuluAris CRM{% endblock %}
+
+{% block content %}
+<section class="admin-formulario-container">
+    <div class="admin-formulario-card">
+        <header class="admin-formulario-header">
+            <h2 class="titulo-seccion">{{ titulo|default:"Formulario de Administración" }}</h2>
+        
+        </header>
+
+        <!-- Contenido del formulario -->
+        {% block form_content %}
+        {% endblock %}
+    </div>
+</section>
+
+<script src="{% static 'js/dependencias.js' %}"></script>
+{% endblock %}

@@ -4,6 +4,7 @@ from django.urls import path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path("panel_admin/", CRM.views.panel_admin, name="admin_panel"),
     path('', CRM.views.index),
     path('register/', CRM.views.register),
     path('plans/', CRM.views.plans),
@@ -34,6 +35,8 @@ urlpatterns = [
     path("reportes/", CRM.views.reportes_panel, name="reportes_panel"),
     path("reportes/exportar/<str:tipo>/", CRM.views.exportar_reporte, name="exportar_reporte"),
     path("reportes/metricas/", CRM.views.reportes_metricas, name="reportes_metricas"),
+    path("usuarios/", CRM.views.gestionar_usuarios, name="gestionar_usuarios"),
+    path("usuarios/crear/", CRM.views.crear_usuario, name="crear_usuario"),
 
 
 

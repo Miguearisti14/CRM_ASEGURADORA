@@ -14,6 +14,8 @@ from django.db.models import Q, Count
 from .models import Reclamaciones  # asegúrate que el modelo exista
 from openpyxl import Workbook
 from django.http import HttpResponse
+from django.contrib.auth.models import User
+
 
 # Create your views here.
 def index(request):
@@ -420,49 +422,73 @@ def crear_poliza(request):
 #-----PANTALLA PRINCIPAL-----#
 #----------------------------#
 def resumen(request):
-    # Validar autenticación
     if not request.user.is_authenticated:
-        messages.error(request, "Debes iniciar sesión para acceder al panel.")
+        messages.error(request, "Debes iniciar sesión.")
         return redirect("/login")
 
-    # Obtener el perfil del usuario
     try:
-        usuario = Usuarios.objects.select_related("empresa").get(user=request.user)
-        empresa = usuario.empresa
+        asesor = Usuarios.objects.get(user=request.user)
     except Usuarios.DoesNotExist:
-        messages.error(request, "Tu cuenta no está asociada a una empresa.")
-        return redirect("/login")
+        messages.error(request, "Tu perfil no está asociado correctamente.")
+        return redirect("/")
 
-    # Obtener datos reales asociados a la empresa
-    clientes_count = Clientes.objects.filter(asesor__empresa=empresa).count()
-    reclamos_pendientes = Reclamaciones.objects.filter(
-        dni_asesor__empresa=empresa,
-        id_estado__descripcion__icontains="pendiente"
-    ).count()
+    # Filtrar solo los datos del asesor actual
+    clientes_count = Clientes.objects.filter(asesor=asesor).count()
+    
+    # Reclamos pendientes del asesor (asumiendo que "Pendiente" es un estado)
+    try:
+        estado_pendiente = Estado.objects.get(descripcion__iexact="Pendiente")
+        reclamos_pendientes = Reclamaciones.objects.filter(
+            dni_asesor=asesor,
+            id_estado=estado_pendiente
+        ).count()
+    except Estado.DoesNotExist:
+        reclamos_pendientes = Reclamaciones.objects.filter(dni_asesor=asesor).count()
+    
+    # Pólizas vigentes del asesor (fecha_fin mayor a hoy)
+    hoy = date.today()
     polizas_vigentes = Polizas.objects.filter(
-    dni_cliente__asesor__empresa=empresa
+        dni_cliente__asesor=asesor,
+        fecha_fin__gte=hoy
     ).count()
-
-    # Opcional: puedes calcular ingresos o métricas adicionales si tienes campos monetarios
-    ingresos_mes = 12450  # placeholder — lo puedes reemplazar con un cálculo real
-
-    # Actividad reciente simulada (luego puedes reemplazar con una tabla de logs)
+    
+    # Ingresos del mes (suma de primas de pólizas del asesor en el mes actual)
+    primer_dia_mes = hoy.replace(day=1)
+    ingresos_mes = Polizas.objects.filter(
+        dni_cliente__asesor=asesor,
+        fecha_inicio__gte=primer_dia_mes,
+        fecha_inicio__lte=hoy
+    ).aggregate(total=Count('id'))['total'] or 0
+    
+    # Si tienes un campo de monto/prima en Polizas, usa algo como:
+    # ingresos_mes = Polizas.objects.filter(...).aggregate(total=Sum('prima'))['total'] or 0
+    
+    # Actividad reciente del asesor (últimas 5 interacciones)
+    actividad_reciente = Interacciones.objects.filter(
+        dni_asesor=asesor
+    ).select_related('dni_cliente', 'id_tipo_interaccion').order_by('-fecha')[:5]
+    
     actividad_reciente = [
-        {"fecha": "2025-10-17", "usuario": "Ana López", "accion": "Ingreso de cliente", "detalle": "Carlos Pérez"},
-        {"fecha": "2025-10-17", "usuario": "Juan Gómez", "accion": "Actualización de póliza", "detalle": "ID #4587"},
-        {"fecha": "2025-10-16", "usuario": "Laura Ruiz", "accion": "Reclamo cerrado", "detalle": "Seguros Alfa"},
+        {
+            'fecha': interaccion.fecha.strftime('%d/%m/%Y'),
+            'usuario': asesor.nombre,
+            'accion': interaccion.id_tipo_interaccion.descripcion if interaccion.id_tipo_interaccion else 'N/A',
+            'detalle': f"Cliente: {interaccion.dni_cliente.nombre}"
+        }
+        for interaccion in actividad_reciente
     ]
-
+    
     context = {
-        "empresa": empresa,
-        "clientes_count": clientes_count,
-        "reclamos_pendientes": reclamos_pendientes,
-        "polizas_vigentes": polizas_vigentes,
-        "ingresos_mes": ingresos_mes,
-        "actividad_reciente": actividad_reciente
+        'empresa': asesor.empresa,
+        'clientes_count': clientes_count,
+        'reclamos_pendientes': reclamos_pendientes,
+        'polizas_vigentes': polizas_vigentes,
+        'ingresos_mes': ingresos_mes,
+        'actividad_reciente': actividad_reciente,
+        'now': hoy,
     }
-
-    return render(request, "resumen.html", context)
+    
+    return render(request, 'resumen.html', context)
 
 
 
@@ -482,35 +508,34 @@ def interacciones(request):
         messages.error(request, "Tu cuenta no está asociada a un perfil válido.")
         return redirect("/")
 
-    # Base: interacciones solo del asesor actual
-    interacciones = Interacciones.objects.filter(dni_asesor=asesor).select_related(
-        "dni_cliente", "id_tipo_interaccion"
-    )
-
-    # --- Filtros ---
-    query = request.GET.get("q")  # nombre o dni del cliente
+    query = request.GET.get("q", "").strip()
     tipo_id = request.GET.get("tipo")
 
+    # Filtrar interacciones SOLO del asesor actual
+    interacciones_qs = Interacciones.objects.filter(
+        dni_asesor=asesor  # Cambio clave: filtrar por el asesor, no por empresa
+    ).select_related("dni_cliente", "id_tipo_interaccion")
+
+    # Aplicar filtros adicionales
     if query:
-        interacciones = interacciones.filter(
-            Q(dni_cliente__nombre__icontains=query)
-            | Q(dni_cliente__dni__icontains=query)
-            | Q(asunto__icontains=query)
+        interacciones_qs = interacciones_qs.filter(
+            Q(dni_cliente__nombre__icontains=query) |
+            Q(dni_cliente__dni__icontains=query) |
+            Q(asunto__icontains=query)
         )
 
     if tipo_id:
-        interacciones = interacciones.filter(id_tipo_interaccion_id=tipo_id)
+        interacciones_qs = interacciones_qs.filter(id_tipo_interaccion_id=tipo_id)
 
-    # Orden descendente (últimas primero)
-    interacciones = interacciones.order_by("-fecha")
-
+    # Ordenar por fecha descendente
+    interacciones_qs = interacciones_qs.order_by('-fecha')
 
     context = {
-        "interacciones": interacciones,
-        "tipos": TipoInteraccion.objects.all(),
-        "query": query or "",
-        "tipo_id": tipo_id or "",
+        "interacciones": interacciones_qs,
+        "query": query,
+        "tipos": TipoInteraccion.objects.all()
     }
+
     return render(request, "interacciones.html", context)
 
 # Registrar una nueva interacción 
@@ -611,12 +636,12 @@ def reclamaciones(request):
     query = request.GET.get("q", "").strip()
     estado_id = request.GET.get("estado")
 
-    # Obtener reclamaciones base
+    # Filtrar reclamaciones SOLO del asesor actual (no por empresa)
     reclamaciones_qs = Reclamaciones.objects.filter(
-        dni_asesor__empresa=asesor.empresa
+        dni_asesor=asesor  # Cambio clave: filtrar por el asesor, no por empresa
     ).select_related("dni_cliente", "id_estado")
 
-    # Aplicar filtros
+    # Aplicar filtros adicionales
     if query:
         reclamaciones_qs = reclamaciones_qs.filter(
             Q(dni_cliente__nombre__icontains=query) |
@@ -795,33 +820,40 @@ def eliminar_reclamacion(request, reclamacion_id):
 
 def reportes_panel(request):
     if not request.user.is_authenticated:
-        messages.error(request, "Debes iniciar sesión para ver los reportes.")
+        messages.error(request, "Debes iniciar sesión.")
+        return redirect("/login")
+
+    try:
+        asesor = Usuarios.objects.get(user=request.user)
+    except Usuarios.DoesNotExist:
+        messages.error(request, "Tu perfil no está asociado correctamente.")
         return redirect("/")
 
-    asesor = get_object_or_404(Usuarios, user=request.user)
-    empresa = asesor.empresa
+    # Filtrar todos los datos SOLO del asesor actual
+    clientes = Clientes.objects.filter(
+        asesor=asesor
+    ).select_related('id_ciudad')
 
-    # Filtrar datos SOLO de la empresa del asesor
-    clientes = Clientes.objects.filter(asesor__empresa=empresa)
-    polizas = Polizas.objects.filter(dni_cliente__asesor__empresa=empresa).select_related("id_producto", "id_canal_venta")
-    reclamaciones = Reclamaciones.objects.filter(dni_cliente__asesor__empresa=empresa).select_related("id_estado", "poliza")
-    interacciones = Interacciones.objects.filter(dni_cliente__asesor__empresa=empresa).select_related("id_tipo_interaccion")
+    polizas = Polizas.objects.filter(
+        dni_cliente__asesor=asesor
+    ).select_related('dni_cliente', 'id_producto', 'id_canal_venta')
 
-    # Métricas adicionales (ejemplo: canales de venta)
-    canales = {}
-    for poliza in polizas:
-        canal = poliza.id_canal_venta.descripcion
-        canales[canal] = canales.get(canal, 0) + 1
+    interacciones = Interacciones.objects.filter(
+        dni_asesor=asesor
+    ).select_related('dni_cliente', 'id_tipo_interaccion')
+
+    reclamaciones = Reclamaciones.objects.filter(
+        dni_asesor=asesor
+    ).select_related('dni_cliente', 'id_estado')
 
     context = {
-        "clientes": clientes,
-        "polizas": polizas,
-        "reclamaciones": reclamaciones,
-        "interacciones": interacciones,
-        "canales": canales
+        'clientes': clientes,
+        'polizas': polizas,
+        'interacciones': interacciones,
+        'reclamaciones': reclamaciones,
     }
 
-    return render(request, "reportes.html", context)
+    return render(request, 'reportes.html', context)
 
 from datetime import datetime
 
@@ -920,50 +952,55 @@ def reportes_metricas(request):
         messages.error(request, "Tu perfil no está asociado correctamente.")
         return redirect("/")
 
-    # Reclamaciones por estado
-    reclamaciones_qs = Estado.objects.annotate(count=Count('reclamacion_estado')).values('descripcion', 'count')
+    # Reclamaciones por estado (filtradas por asesor)
+    reclamaciones_qs = Estado.objects.annotate(
+        count=Count('reclamacion_estado', filter=Q(reclamacion_estado__dni_asesor=asesor))
+    ).filter(count__gt=0).values('descripcion', 'count')
     reclamaciones_por_estado = json.dumps(list(reclamaciones_qs))
 
-    # Canales de venta
-    canales_qs = Canal_venta.objects.annotate(count=Count('polizas')).values('descripcion', 'count')
+    # Canales de venta (filtradas por asesor)
+    canales_qs = Canal_venta.objects.annotate(
+        count=Count('polizas', filter=Q(polizas__dni_cliente__asesor=asesor))
+    ).filter(count__gt=0).values('descripcion', 'count')
     canales_venta = json.dumps(list(canales_qs))
 
-    # Interacciones por tipo
-    interacciones_qs = TipoInteraccion.objects.annotate(count=Count('interacciones')).values('descripcion', 'count')
+    # Interacciones por tipo (filtradas por asesor)
+    interacciones_qs = TipoInteraccion.objects.annotate(
+        count=Count('interacciones', filter=Q(interacciones__dni_asesor=asesor))
+    ).filter(count__gt=0).values('descripcion', 'count')
     interacciones_tipo = json.dumps(list(interacciones_qs))
 
     # --- Nuevas métricas solicitadas ---
 
-    # 1) Pólizas por producto (tipo)
+    # 1) Pólizas por producto (filtradas por asesor)
     polizas_por_producto_qs = Polizas.objects.filter(
-        dni_cliente__asesor__empresa=asesor.empresa
+        dni_cliente__asesor=asesor
     ).values('id_producto__descripcion').annotate(count=Count('id')).order_by('-count')
     polizas_por_producto = json.dumps([
         {'descripcion': p['id_producto__descripcion'] or 'Sin producto', 'count': p['count']}
         for p in polizas_por_producto_qs
     ])
 
-    # 2) Pólizas próximas a vencer (en los próximos 30 días) - agrupadas por producto
+    # 2) Pólizas próximas a vencer (en los próximos 30 días) - filtradas por asesor
     hoy = date.today()
     lim = hoy + timedelta(days=30)
     proximas_qs = Polizas.objects.filter(
         fecha_fin__gte=hoy,
         fecha_fin__lte=lim,
-        dni_cliente__asesor__empresa=asesor.empresa
+        dni_cliente__asesor=asesor
     ).values('id_producto__descripcion').annotate(count=Count('id')).order_by('-count')
     polizas_proximas = json.dumps([
         {'descripcion': p['id_producto__descripcion'] or 'Sin producto', 'count': p['count']}
         for p in proximas_qs
     ])
 
-    # 3) Número de pólizas nuevas por mes (últimos 12 meses)
+    # 3) Número de pólizas nuevas por mes (últimos 12 meses) - filtradas por asesor
     inicio_periodo = (hoy.replace(day=1) - timedelta(days=365)).replace(day=1)
     nuevas_qs = Polizas.objects.filter(
         fecha_inicio__gte=inicio_periodo,
-        dni_cliente__asesor__empresa=asesor.empresa
+        dni_cliente__asesor=asesor
     ).annotate(mes=TruncMonth('fecha_inicio')).values('mes').annotate(count=Count('id')).order_by('mes')
 
-    # formatear mes YYYY-MM
     polizas_nuevas_mes = json.dumps([
         {'mes': item['mes'].strftime('%Y-%m'), 'count': item['count']}
         for item in nuevas_qs
@@ -976,10 +1013,10 @@ def reportes_metricas(request):
         'polizas_por_producto': polizas_por_producto,
         'polizas_proximas': polizas_proximas,
         'polizas_nuevas_mes': polizas_nuevas_mes,
-        'total_clientes': Clientes.objects.filter(asesor__empresa=asesor.empresa).count(),
-        'total_polizas': Polizas.objects.filter(dni_cliente__asesor__empresa=asesor.empresa).count(),
-        'total_interacciones': Interacciones.objects.filter(dni_asesor__empresa=asesor.empresa).count(),
-        'total_reclamaciones': Reclamaciones.objects.filter(dni_asesor__empresa=asesor.empresa).count(),
+        'total_clientes': Clientes.objects.filter(asesor=asesor).count(),
+        'total_polizas': Polizas.objects.filter(dni_cliente__asesor=asesor).count(),
+        'total_interacciones': Interacciones.objects.filter(dni_asesor=asesor).count(),
+        'total_reclamaciones': Reclamaciones.objects.filter(dni_asesor=asesor).count(),
     }
     return render(request, 'reportes_metricas.html', context)
 
@@ -992,34 +1029,32 @@ def login_view(request):
         username = request.POST.get("username")
         password = request.POST.get("password")
 
-        # Autenticación con el sistema de usuarios de Django
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
-            # Iniciar sesión
             login(request, user)
 
             try:
-                # Buscar perfil extendido del usuario (modelo Usuarios)
                 perfil = Usuarios.objects.select_related("id_rol", "empresa").get(user=user)
-                rol = perfil.id_rol.nombre
+                rol = perfil.id_rol.nombre.strip().lower()
                 empresa = perfil.empresa
             except Usuarios.DoesNotExist:
-                rol = "Sin rol asignado"
+                rol = "sin rol"
                 empresa = None
 
-            # Guardar información útil en la sesión
+            # Guardar datos en sesión
             request.session["rol"] = rol
-            if empresa:
-                request.session["empresa_id"] = empresa.id
-                request.session["empresa_nombre"] = empresa.nombre
-            else:
-                request.session["empresa_id"] = None
-                request.session["empresa_nombre"] = "Sin empresa"
+            request.session["empresa_id"] = empresa.id if empresa else None
+            request.session["empresa_nombre"] = empresa.nombre if empresa else "Sin empresa"
 
             messages.success(request, f"Bienvenido {user.first_name}! Empresa: {request.session['empresa_nombre']}")
 
-            return redirect("/resumen")
+            # 🚀 Redirección según el rol
+            if "admin" in rol:
+                return redirect("admin_panel")  # ruta del panel admin
+            else:
+                return redirect("panel_resumen")  # o "/resumen" si prefieres mantenerlo así
+
         else:
             messages.error(request, "Credenciales inválidas. Por favor, intenta nuevamente.")
             return redirect("/login")
@@ -1102,8 +1137,143 @@ def logout_view(request):
     return redirect("/login")
 
 
+#----------------------------#
+#------ ADMINISTRACIÓN ------#
+#----------------------------#
 
+def panel_admin(request):
+    usuario = Usuarios.objects.select_related("id_rol").get(user=request.user)
+    if usuario.id_rol.nombre.lower() != "administrador":
+        messages.error(request, "No tienes permisos para acceder al panel de administración.")
+        return redirect("panel_asesor")
 
+    total_clientes = Clientes.objects.count()
+    total_polizas = Polizas.objects.count()
+    total_interacciones = Interacciones.objects.count()
+    total_reclamaciones = Reclamaciones.objects.count()
+
+    return render(request, "admin_panel.html", {
+        "titulo": "Panel de Administración",
+        "descripcion": "Gestión general del sistema y reportes globales.",
+        "total_clientes": total_clientes,
+        "total_polizas": total_polizas,
+        "total_interacciones": total_interacciones,
+        "total_reclamaciones": total_reclamaciones,
+    })
+
+def gestionar_usuarios(request):
+    if not request.user.is_authenticated:
+        messages.error(request, "Debes iniciar sesión.")
+        return redirect("/login")
+
+    try:
+        admin = Usuarios.objects.select_related("empresa", "id_rol").get(user=request.user)
+    except Usuarios.DoesNotExist:
+        messages.error(request, "No tienes un perfil válido.")
+        return redirect("/login")
+
+    if admin.id_rol.nombre.lower() != "administrador":
+        messages.error(request, "No tienes permisos para acceder a esta sección.")
+        return redirect("/resumen")
+
+    usuarios = Usuarios.objects.filter(empresa=admin.empresa).select_related("user", "id_rol")
+
+    # --- Filtros ---
+    query = request.GET.get("q")
+    rol_id = request.GET.get("rol")
+
+    if query:
+        usuarios = usuarios.filter(
+            Q(user__first_name__icontains=query) |
+            Q(user__last_name__icontains=query) |
+            Q(dni__icontains=query)
+        )
+
+    if rol_id:
+        usuarios = usuarios.filter(id_rol_id=rol_id)
+
+    roles = Roles.objects.all()
+
+    return render(request, "gestionar_usuarios.html", {
+        "usuarios": usuarios,
+        "roles": roles,
+        "query": query or "",
+        "titulo": "Gestión de Usuarios",
+        "descripcion": "Administra los asesores asociados a tu empresa."
+    })
+
+def crear_usuario(request):
+    # Verificar autenticación
+    if not request.user.is_authenticated:
+        messages.error(request, "Debes iniciar sesión como administrador.")
+        return redirect("/login")
+
+    # Obtener el usuario logueado y verificar que sea administrador
+    admin_usuario = get_object_or_404(Usuarios, user=request.user)
+    if admin_usuario.id_rol.nombre.lower() != "administrador":
+        messages.error(request, "No tienes permisos para crear usuarios.")
+        return redirect("panel_resumen")
+
+    # Datos necesarios para los selects
+    tipos_dni = Tipo_DNI.objects.all()
+    roles = Roles.objects.exclude(nombre__icontains="administrador")  # evita crear otros admins
+
+    if request.method == "POST":
+        first_name = request.POST.get("first_name")
+        last_name = request.POST.get("last_name")
+        email = request.POST.get("email")
+        password = request.POST.get("password")
+        confirm_password = request.POST.get("confirm_password")
+        dni = request.POST.get("dni")
+        tipo_dni_id = request.POST.get("tipo_dni")
+        celular = request.POST.get("celular")
+
+        # Validaciones básicas
+        if not all([first_name, last_name, email, password, confirm_password, dni, tipo_dni_id]):
+            messages.error(request, "Por favor completa todos los campos obligatorios.")
+            return redirect("crear_usuario")
+
+        if password != confirm_password:
+            messages.error(request, "Las contraseñas no coinciden.")
+            return redirect("crear_usuario")
+
+        if User.objects.filter(username=email).exists():
+            messages.error(request, "Ya existe un usuario con este correo.")
+            return redirect("crear_usuario")
+
+        # Obtener rol "Usuario" por defecto
+        rol_default = Roles.objects.filter(nombre__iexact="Usuario").first()
+        if not rol_default:
+            rol_default = Roles.objects.create(nombre="Usuario")
+
+        # Crear usuario base de Django
+        user = User.objects.create_user(
+            username=email,
+            email=email,
+            first_name=first_name,
+            last_name=last_name,
+            password=password
+        )
+
+        # Crear usuario extendido (asesor)
+        Usuarios.objects.create(
+            user=user,
+            dni=dni,
+            tipo_dni_id=tipo_dni_id,
+            celular=celular,
+            id_rol=rol_default,
+            empresa=admin_usuario.empresa
+        )
+
+        messages.success(request, f"El usuario {first_name} {last_name} fue creado exitosamente.")
+        return redirect("gestionar_usuarios")
+
+    context = {
+        "titulo": "Registrar nuevo usuario",
+        "tipos_dni": tipos_dni
+    }
+
+    return render(request, "crear_usuario.html", context)
 
 
 

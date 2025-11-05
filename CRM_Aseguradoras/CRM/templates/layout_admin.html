@@ -1,0 +1,63 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Panel Administrativo - ZuluAris CRM{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'styles/globalstyles.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Mensajes Django -->
+    {% if messages %}
+    <div class="messages-container">
+        {% for message in messages %}
+            <div class="message {{ message.tags }}">
+                <span class="icon">
+                    {% if message.tags == "success" %}✅{% elif message.tags == "error" %}❌{% elif message.tags == "warning" %}⚠️{% else %}ℹ️{% endif %}
+                </span>
+                <span class="text">{{ message }}</span>
+                <button class="close-message">&times;</button>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="container">
+        <!-- 🔹 Barra lateral del admin -->
+        <aside class="sidebar sidebar-admin">
+            <div class="logo">ZuluAris CRM</div>
+            <nav>
+                <ul>
+                    <li><a href="{% url 'admin_panel' %}">🏠 Inicio</a></li>
+                    <li><a href="{% url 'gestionar_usuarios' %}">👥 Usuarios</a></li>
+                    {#<li><a href="{% url 'gestionar_datos_base' %}">🧾 Datos base</a></li>#}
+                    {#<li><a href="{% url 'reportes_panel' %}">📊 Reportes</a></li>#}
+                    {#<li><a href="{% url 'reportes_metricas' %}">📈 Métricas</a></li>#}
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- 🔸 Contenido principal -->
+        <main class="main-content">
+            <header class="navbar">
+                <div class="navbar-left">
+                    <span class="user">👤 {{ request.user.first_name }} {{ request.user.last_name }} (Admin)</span>
+                </div>
+                <div class="navbar-right">
+                    <li class="btn-logout"><a href="/logout/">Cerrar sesión</a></li>
+                </div>
+            </header>
+
+            <section class="content">
+                {% block content %}
+                {% endblock %}
+            </section>
+        </main>
+    </div>
+
+    <script src="{% static 'js/messages.js' %}"></script>
+</body>
+</html>

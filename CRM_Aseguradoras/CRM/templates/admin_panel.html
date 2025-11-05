@@ -1,0 +1,38 @@
+{% extends 'layout_admin.html' %}
+{% block title %}Panel Administrativo - ZuluAris CRM{% endblock %}
+
+{% block content %}
+<h2 class="titulo-seccion">👋 Bienvenido al Panel Administrativo</h2>
+<p class="descripcion-seccion">
+    Aquí puedes supervisar el rendimiento general de la empresa, gestionar usuarios y controlar los catálogos del sistema.
+</p>
+
+<div class="admin-cards">
+    <div class="admin-card">
+        <h3>Clientes</h3>
+        <p>{{ total_clientes }}</p>
+    </div>
+    <div class="admin-card">
+        <h3>Pólizas</h3>
+        <p>{{ total_polizas }}</p>
+    </div>
+    <div class="admin-card">
+        <h3>Interacciones</h3>
+        <p>{{ total_interacciones }}</p>
+    </div>
+    <div class="admin-card">
+        <h3>Reclamaciones</h3>
+        <p>{{ total_reclamaciones }}</p>
+    </div>
+    <div class="admin-card">
+        <h3>Asesores</h3>
+        <p>{{ total_usuarios }}</p>
+    </div>
+</div>
+
+<div class="acciones-polizas" style="margin-top:30px;">
+    {#<a href="{% url 'gestionar_usuarios' %}" class="btn-guardar">Gestionar usuarios</a>#}
+    {#<a href="{% url 'gestionar_datos_base' %}" class="btn-cancelar">Configurar catálogos</a>#}
+    {#<a href="{% url 'reportes_metricas' %}" class="btn-guardar">Ver reportes</a>#}
+</div>
+{% endblock %}

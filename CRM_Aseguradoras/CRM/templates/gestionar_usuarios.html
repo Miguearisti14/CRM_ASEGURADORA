@@ -1,0 +1,74 @@
+{% extends 'layout_admin.html' %}
+{% load static %}
+
+{% block title %}Gestión de Usuarios - ZuluAris CRM{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Gestión de Usuarios</h2>
+     
+    </div>
+
+    <!-- 🔍 Buscador -->
+    <form class="consulta-filtros" method="get" action="">
+        <div class="grupo-busqueda">
+            <input 
+                type="text" 
+                name="q" 
+                value="{{ query }}" 
+                placeholder="Buscar por nombre o DNI..."
+                class="input-busqueda"
+            >
+
+            <select name="rol" class="input-select">
+                <option value="">Rol</option>
+                {% for r in roles %}
+                    <option value="{{ r.id }}" {% if r.id|stringformat:"s" == request.GET.rol %}selected{% endif %}>
+                        {{ r.nombre }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <button type="submit" class="btn-buscar">Buscar</button>
+            <a href="{% url 'gestionar_usuarios' %}" class="btn-limpiar">Limpiar filtro</a>
+        </div>
+    </form>
+
+    <!-- 🧾 Tabla de resultados -->
+    <table class="tabla_clientes">
+        <thead>
+            <tr>
+                <th class="col-header col-nom">Nombre</th>
+                <th class="col-header col-dni">DNI</th>
+                <th class="col-header col-cor">Correo</th>
+                <th class="col-header col-rol">Rol</th>
+                <th class="col-header col-tel">Teléfono</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if usuarios %}
+                {% for usuario in usuarios %}
+                <tr>
+                    <td class="col-nom">{{ usuario.user.first_name }} {{ usuario.user.last_name }}</td>
+                    <td class="col-dni">{{ usuario.dni }}</td>
+                    <td class="col-cor">{{ usuario.user.email }}</td>
+                    <td class="col-rol">{{ usuario.id_rol.nombre }}</td>
+                    <td class="col-tel">{{ usuario.celular|default:"-" }}</td>
+
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="6" style="text-align:center;">No hay usuarios registrados.</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+
+    <!-- ➕ Acción principal -->
+    <div class="acciones-polizas">
+        <a href="{% url 'crear_usuario' %}" class="btn-guardar">Añadir nuevo usuario</a>
+    </div>
+</div>
+{% endblock %}

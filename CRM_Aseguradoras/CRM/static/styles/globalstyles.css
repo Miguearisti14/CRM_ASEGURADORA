@@ -3075,3 +3075,240 @@ textarea:focus {
         height: 220px !important;
     }
 }
+
+
+/* Estilos generales para la sección de admin */
+.admin-secciones {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.admin-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.admin-card h3 {
+    color: #004aad;
+    margin-bottom: 1rem;
+}
+
+.admin-base {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.admin-base h4 {
+    font-weight: 600;
+    color: #444;
+    margin-bottom: 0.5rem;
+}
+
+.tabla_admin {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1rem;
+}
+
+.tabla_admin th,
+.tabla_admin td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.tabla_admin th {
+    background: #004aad;
+    color: #fff;
+}
+
+.admin-panel-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 2rem;
+}
+
+/* Cabecera */
+.admin-header {
+    text-align: center;
+}
+
+.titulo-seccion {
+    font-size: 1.8rem;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.descripcion-seccion {
+    color: #7f8c8d;
+    font-size: 1rem;
+}
+
+/* Métricas */
+.metricas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.card-metrica {
+    background: #ffffff;
+    border: 1px solid #dfe6e9;
+    border-radius: 15px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+}
+
+.card-metrica:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+.card-metrica h3 {
+    color: #34495e;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.card-metrica .valor {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+/* Acciones */
+.acciones-admin {
+    margin-top: 2rem;
+}
+
+.acciones-admin h3 {
+    margin-bottom: 1rem;
+    color: #2c3e50;
+}
+
+.acciones-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.admin-btn {
+    flex: 1;
+    min-width: 220px;
+    text-align: center;
+    padding: 1rem;
+    background-color: #3498db;
+    color: white;
+    border-radius: 10px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.admin-btn:hover {
+    background-color: #2980b9;
+    transform: scale(1.03);
+}
+
+/* ==============================
+   ESTILOS PANEL ADMINISTRATIVO
+   ============================== */
+.sidebar-admin {
+    background-color: #1b2a49;
+}
+
+.sidebar-admin .logo {
+    font-size: 1.4em;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 20px;
+}
+
+.sidebar-admin ul li {
+    margin: 15px 0;
+}
+
+.sidebar-admin ul li a {
+    display: block;
+    padding: 10px 15px;
+    color: #dbe2ef;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: background 0.3s;
+}
+
+.sidebar-admin ul li a:hover {
+    background-color: #3f72af;
+    color: #fff;
+}
+
+.navbar {
+    background-color: #f9fafc;
+    border-bottom: 1px solid #ccc;
+    padding: 10px 20px;
+}
+
+.content {
+    padding: 30px;
+    background-color: #f7f9fc;
+    min-height: calc(100vh - 70px);
+}
+
+/* Tarjetas del dashboard admin */
+.admin-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.admin-card {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+}
+
+.admin-card:hover {
+    transform: translateY(-5px);
+}
+
+.admin-card h3 {
+    margin-bottom: 8px;
+    color: #3f72af;
+}
+
+.admin-card p {
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #112d4e;
+}
+
+.admin-formulario-container {
+    display: flex;
+    justify-content: center;
+    padding: 40px;
+}
+
+.admin-formulario-card {
+    background: #ffffff;
+    padding: 35px;
+    border-radius: 16px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+    width: 90%;
+    max-width: 900px;
+}
+
+.admin-formulario-header {
+
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}

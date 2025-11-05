@@ -1,0 +1,78 @@
+{% extends 'layout_form_admin.html' %}
+{% load static %}
+
+{% block title %}Registrar nuevo usuario - ZuluAris CRM{% endblock %}
+
+{% block form_content %}
+<form method="POST" class="admin-formulario">
+    {% csrf_token %}
+
+    <!-- 🧍 Información personal -->
+    <h3 class="subtitulo-form">Datos personales</h3>
+
+    <div class="grupo-doble">
+        <div class="form-group">
+            <label for="first_name">Nombre*</label>
+            <input type="text" id="first_name" name="first_name" placeholder="Ej: Juan" required>
+        </div>
+
+        <div class="form-group">
+            <label for="last_name">Apellido*</label>
+            <input type="text" id="last_name" name="last_name" placeholder="Ej: Pérez" required>
+        </div>
+    </div>
+
+    <div class="grupo-doble">
+        <div class="form-group">
+            <label for="email">Correo electrónico*</label>
+            <input type="email" id="email" name="email" placeholder="usuario@empresa.com" required>
+        </div>
+
+        <div class="form-group">
+            <label for="celular">Teléfono / Celular</label>
+            <input type="text" id="celular" name="celular" placeholder="+57 300 123 4567">
+        </div>
+    </div>
+
+    <!-- 🔐 Datos de acceso -->
+    <h3 class="subtitulo-form">Credenciales de acceso</h3>
+
+    <div class="grupo-doble">
+        <div class="form-group">
+            <label for="password">Contraseña*</label>
+            <input type="password" id="password" name="password" placeholder="********" required>
+        </div>
+
+        <div class="form-group">
+            <label for="confirm_password">Confirmar contraseña*</label>
+            <input type="password" id="confirm_password" name="confirm_password" placeholder="********" required>
+        </div>
+    </div>
+
+    <!-- 🧾 Información del documento -->
+    <h3 class="subtitulo-form">Identificación</h3>
+
+    <div class="grupo-doble">
+        <div class="form-group">
+            <label for="tipo_dni">Tipo de documento*</label>
+            <select id="tipo_dni" name="tipo_dni" required>
+                <option value="">Selecciona un tipo</option>
+                {% for tipo in tipos_dni %}
+                    <option value="{{ tipo.id }}">{{ tipo.nombre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="dni">Número de documento*</label>
+            <input type="text" id="dni" name="dni" placeholder="Ej: 1032456789" required>
+        </div>
+    </div>
+
+    <!-- ✅ Botones -->
+    <div class="acciones-formulario">
+        <a href="{% url 'gestionar_usuarios' %}" class="btn-cancelar">Cancelar</a>
+        <button type="submit" class="btn-guardar">Guardar usuario</button>
+    </div>
+</form>
+{% endblock %}

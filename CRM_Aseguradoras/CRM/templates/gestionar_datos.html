@@ -97,7 +97,7 @@
           {% for p in productos %}
           <tr>
             <td>{{ p.descripcion }}</td>
-            <td>{{ p.id_ramo|default:"-" }}</td>
+            <td>{{ p.id_ramo.descripcion|default:"-" }}</td>
             <td>
               <form method="POST" action="{% url 'eliminar_dato' 'producto' p.id %}" class="gd-inline-form">
                 {% csrf_token %}

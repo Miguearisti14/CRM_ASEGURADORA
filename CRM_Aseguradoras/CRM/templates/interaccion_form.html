@@ -11,7 +11,7 @@
             <select name="cliente" id="cliente" required>
                 <option value="">Selecciona un cliente</option>
                 {% for c in clientes %}
-                    <option value="{{ c.dni }}">{{ c.nombre }}</option>
+                    <option value="{{ c.dni }}">{{ c.nombre }} - DNI: {{ c.dni }}</option>
                 {% endfor %}
             </select>
         </div>

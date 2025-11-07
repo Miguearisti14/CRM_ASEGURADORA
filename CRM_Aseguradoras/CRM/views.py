@@ -818,115 +818,128 @@ def reportes_panel(request):
         return redirect("/login")
 
     try:
-        asesor = Usuarios.objects.get(user=request.user)
+        user_profile = Usuarios.objects.get(user=request.user)
     except Usuarios.DoesNotExist:
         messages.error(request, "Tu perfil no está asociado correctamente.")
         return redirect("/")
 
-    # Filtrar todos los datos SOLO del asesor actual
-    clientes = Clientes.objects.filter(
-        asesor=asesor
-    ).select_related('id_ciudad')
+    is_admin = (user_profile.id_rol.nombre.lower() == "administrador")
+    empresa = user_profile.empresa
 
-    polizas = Polizas.objects.filter(
-        dni_cliente__asesor=asesor
-    ).select_related('dni_cliente', 'id_producto', 'id_canal_venta')
-
-    interacciones = Interacciones.objects.filter(
-        dni_asesor=asesor
-    ).select_related('dni_cliente', 'id_tipo_interaccion')
-
-    reclamaciones = Reclamaciones.objects.filter(
-        dni_asesor=asesor
-    ).select_related('dni_cliente', 'id_estado')
+    # Si es admin: mostrar datos de toda la empresa; si no: solo del asesor
+    if is_admin:
+        clientes = Clientes.objects.filter(asesor__empresa=empresa).select_related('id_ciudad')
+        polizas = Polizas.objects.filter(dni_cliente__asesor__empresa=empresa).select_related('dni_cliente', 'id_producto', 'id_canal_venta')
+        interacciones = Interacciones.objects.filter(dni_asesor__empresa=empresa).select_related('dni_cliente', 'id_tipo_interaccion')
+        reclamaciones = Reclamaciones.objects.filter(dni_asesor__empresa=empresa).select_related('dni_cliente', 'id_estado')
+    else:
+        asesor = user_profile
+        clientes = Clientes.objects.filter(asesor=asesor).select_related('id_ciudad')
+        polizas = Polizas.objects.filter(dni_cliente__asesor=asesor).select_related('dni_cliente', 'id_producto', 'id_canal_venta')
+        interacciones = Interacciones.objects.filter(dni_asesor=asesor).select_related('dni_cliente', 'id_tipo_interaccion')
+        reclamaciones = Reclamaciones.objects.filter(dni_asesor=asesor).select_related('dni_cliente', 'id_estado')
 
     context = {
         'clientes': clientes,
         'polizas': polizas,
         'interacciones': interacciones,
         'reclamaciones': reclamaciones,
+        'is_admin': is_admin,
     }
 
     return render(request, 'reportes.html', context)
 
-from datetime import datetime
 
 def exportar_reporte(request, tipo):
     if not request.user.is_authenticated:
-        messages.error(request, "Debes iniciar sesión para exportar reportes.")
         return redirect("/login")
 
-    asesor = get_object_or_404(Usuarios, user=request.user)
-    empresa = asesor.empresa
+    try:
+        user_profile = Usuarios.objects.get(user=request.user)
+    except Usuarios.DoesNotExist:
+        messages.error(request, "Tu perfil no está asociado correctamente.")
+        return redirect("/")
 
-    # --- Armamos el dataset según el tipo ---
+    is_admin = (user_profile.id_rol.nombre.lower() == "administrador")
+    empresa = user_profile.empresa
+
+    # Preparar queryset según rol
     if tipo == "clientes":
-        queryset = Clientes.objects.filter(asesor__empresa=empresa)
+        if is_admin:
+            qs = Clientes.objects.filter(asesor__empresa=empresa)
+        else:
+            qs = Clientes.objects.filter(asesor=user_profile)
+        data = qs.values_list("nombre", "dni", "correo", "id_ciudad__descripcion")
         headers = ["Nombre", "DNI", "Correo", "Ciudad"]
-        rows = [[c.nombre, c.dni, c.correo, c.id_ciudad.descripcion] for c in queryset]
 
     elif tipo == "polizas":
-        queryset = Polizas.objects.filter(dni_cliente__asesor__empresa=empresa)
-        headers = ["Cliente", "Producto", "Canal", "Fecha inicio", "Fecha fin"]
-        rows = [
-            [
-                p.dni_cliente.nombre,
-                p.id_producto.descripcion,
-                p.id_canal_venta.descripcion,
-                p.fecha_inicio.strftime("%Y-%m-%d"),
-                p.fecha_fin.strftime("%Y-%m-%d"),
-            ]
-            for p in queryset
-        ]
-
-    elif tipo == "reclamaciones":
-        queryset = Reclamaciones.objects.filter(dni_cliente__asesor__empresa=empresa)
-        headers = ["Cliente", "Fecha", "Estado", "Descripción"]
-        rows = [
-            [
-                r.dni_cliente.nombre,
-                r.fecha.strftime("%Y-%m-%d"),
-                r.id_estado.descripcion,
-                r.descripcion,
-            ]
-            for r in queryset
-        ]
+        if is_admin:
+            qs = Polizas.objects.filter(dni_cliente__asesor__empresa=empresa)
+        else:
+            qs = Polizas.objects.filter(dni_cliente__asesor=user_profile)
+        data = qs.values_list(
+            "dni_cliente__nombre",
+            "id_producto__descripcion",
+            "id_canal_venta__descripcion",
+            "fecha_inicio",
+            "fecha_fin",
+        )
+        headers = ["Cliente", "Producto", "Canal", "Inicio", "Fin"]
 
     elif tipo == "interacciones":
-        queryset = Interacciones.objects.filter(dni_cliente__asesor__empresa=empresa)
+        if is_admin:
+            qs = Interacciones.objects.filter(dni_asesor__empresa=empresa)
+        else:
+            qs = Interacciones.objects.filter(dni_asesor=user_profile)
+        data = qs.values_list(
+            "dni_cliente__nombre",
+            "id_tipo_interaccion__descripcion",
+            "asunto",
+            "fecha",
+        )
         headers = ["Cliente", "Tipo", "Asunto", "Fecha"]
-        rows = []
-        for i in queryset:
-            fecha = i.fecha
-            if hasattr(fecha, "tzinfo") and fecha.tzinfo is not None:
-                fecha = fecha.replace(tzinfo=None)  # ❗ Elimina la zona horaria
-            rows.append([
-                i.dni_cliente.nombre,
-                i.id_tipo_interaccion.descripcion,
-                i.asunto,
-                fecha.strftime("%Y-%m-%d %H:%M:%S"),
-            ])
+
+    elif tipo == "reclamaciones":
+        if is_admin:
+            qs = Reclamaciones.objects.filter(dni_asesor__empresa=empresa)
+        else:
+            qs = Reclamaciones.objects.filter(dni_asesor=user_profile)
+        data = qs.values_list(
+            "dni_cliente__nombre", "fecha", "id_estado__descripcion", "descripcion"
+        )
+        headers = ["Cliente", "Fecha", "Estado", "Descripción"]
+
     else:
-        messages.error(request, "Tipo de reporte no válido.")
         return redirect("reportes_panel")
 
-    formato = request.GET.get("formato", "xlsx")
+    # Procesar filas: convertir date/datetime a strings (Excel no maneja tz-aware)
+    from django.utils import timezone
+    from datetime import datetime, date as _date
 
-    # --- Exportar como CSV ---
-    if formato == "csv":
-        response = HttpResponse(content_type="text/csv")
-        response["Content-Disposition"] = f'attachment; filename="{tipo}_reporte.csv"'
-        writer = csv.writer(response)
-        writer.writerow(headers)
-        writer.writerows(rows)
-        return response
+    rows = list(data)
+    processed_rows = []
+    for row in rows:
+        new_row = []
+        for v in row:
+            if isinstance(v, datetime):
+                # pasar a hora local y formatear
+                try:
+                    v_local = timezone.localtime(v)
+                except Exception:
+                    v_local = v
+                new_row.append(v_local.strftime('%Y-%m-%d %H:%M:%S'))
+            elif isinstance(v, _date):
+                new_row.append(v.strftime('%Y-%m-%d'))
+            else:
+                new_row.append(v if v is not None else "")
+        processed_rows.append(new_row)
 
-    # --- Exportar como Excel ---
     wb = Workbook()
     ws = wb.active
     ws.append(headers)
-    for row in rows:
-        ws.append(row)
+    for prow in processed_rows:
+        ws.append(prow)
+
     response = HttpResponse(
         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
@@ -1254,6 +1267,11 @@ def crear_usuario(request):
 
         if User.objects.filter(username=email).exists():
             messages.error(request, "Ya existe un usuario con este correo.")
+            return redirect("crear_usuario")
+
+        # NUEVA VALIDACIÓN: evitar dni duplicado
+        if Usuarios.objects.filter(dni=dni).exists():
+            messages.error(request, "Ya existe un usuario registrado con ese DNI.")
             return redirect("crear_usuario")
 
         # Obtener rol "Usuario" por defecto

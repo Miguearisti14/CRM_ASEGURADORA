@@ -1,73 +1,77 @@
 {% extends "layout_panel.html" %}
+{% load static %}
+
+{% block title %}Resumen - ZuluAris CRM{% endblock %}
 
 {% block content %}
+<link rel="stylesheet" href="{% static 'css/resumen.css' %}">
+
 <div class="dashboard">
+    <div class="dashboard-header">
+        <h1 class="dashboard-title">Resumen general</h1>
+        <p class="dashboard-subtitle">Visualiza el estado actual de tu empresa y las métricas más relevantes.</p>
+    </div>
 
-    <p>Empresa actual: <strong>{{ empresa.nombre }}</strong></p>
+    <div class="empresa-info">
+        <p>Empresa actual:</p> <p id="empresa-actual"><strong>{{ empresa.nombre }}</strong></p>
+    </div>
 
-    <h1 class="dashboard-title">Resumen general</h1>
-    <p class="dashboard-subtitle">Visualiza el estado actual de tu empresa y las métricas más relevantes.</p>
-
-    <div class="cards-container">
-        <div class="card">
+    <!-- Grid 2x2 para métricas principales -->
+    <div class="cards-grid">
+        <div class="data-card">
             <h2>Clientes Activos</h2>
             <p class="card-number">{{ clientes_count }}</p>
             <span class="card-detail">Registrados en el sistema</span>
         </div>
 
-        <div class="card">
+        <div class="data-card">
             <h2>Reclamos Pendientes</h2>
             <p class="card-number">{{ reclamos_pendientes }}</p>
             <span class="card-detail warning">Actualizado al {{ now|date:"d/m/Y" }}</span>
         </div>
 
-        <div class="card">
-            <h2>Pólizas Vigentes</h2>
-            <p class="card-number">{{ polizas_vigentes }}</p>
-            <span class="card-detail">Con fecha de vencimiento futura</span>
-        </div>
-
-        <div class="card">
-            <h2>Ingresos del Mes</h2>
-            <p class="card-number">${{ ingresos_mes|floatformat:0 }}</p>
-            <span class="card-detail success">+9% respecto al mes pasado</span>
-        </div>
-    </div>
-
-    <div class="data-section">
         <div class="data-card">
             <h2>Actividad Reciente</h2>
-            <table>
+            <table class ="tabla_reclamaciones">
                 <thead>
                     <tr>
                         <th>Fecha</th>
-                        <th>Usuario</th>
-                        <th>Acción</th>
-                        <th>Detalle</th>
+                        <th>interacción</th>
+                        <th>Cliente</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for item in actividad_reciente %}
                     <tr>
                         <td>{{ item.fecha }}</td>
-                        <td>{{ item.usuario }}</td>
                         <td>{{ item.accion }}</td>
                         <td>{{ item.detalle }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" style="text-align:center; padding:20px; color:#94a3b8;">
+                            No hay actividad reciente
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
 
-        <div class="data-card">
-            <h2>Recordatorios</h2>
-            <ul class="reminders">
-                <li>🔹 Reunión semanal - 9:00 AM</li>
-                <li>🔹 Revisar reclamos nuevos</li>
-                <li>🔹 Enviar reporte financiero</li>
-                <li>🔹 Validar actualizaciones de pólizas</li>
-            </ul>
+        <div class="data-card" id="polizas-vigentes-card">
+            <h2>Pólizas Vigentes</h2>
+            <p class="card-number">{{ polizas_vigentes }}</p>
+            <span class="card-detail">Con fecha de vencimiento futura</span>
         </div>
+        
+
+    </div>
+
+    <!-- Grid 2 columnas para secciones de datos -->
+    <div class="data-grid">
+        
+
+
     </div>
 </div>
 {% endblock %}

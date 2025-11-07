@@ -457,18 +457,7 @@ def resumen(request):
         dni_cliente__asesor=asesor,
         fecha_fin__gte=hoy
     ).count()
-    
-    # Ingresos del mes (suma de primas de pólizas del asesor en el mes actual)
-    primer_dia_mes = hoy.replace(day=1)
-    ingresos_mes = Polizas.objects.filter(
-        dni_cliente__asesor=asesor,
-        fecha_inicio__gte=primer_dia_mes,
-        fecha_inicio__lte=hoy
-    ).aggregate(total=Count('id'))['total'] or 0
-    
-    # Si tienes un campo de monto/prima en Polizas, usa algo como:
-    # ingresos_mes = Polizas.objects.filter(...).aggregate(total=Sum('prima'))['total'] or 0
-    
+
     # Actividad reciente del asesor (últimas 5 interacciones)
     actividad_reciente = Interacciones.objects.filter(
         dni_asesor=asesor
@@ -477,9 +466,9 @@ def resumen(request):
     actividad_reciente = [
         {
             'fecha': interaccion.fecha.strftime('%d/%m/%Y'),
-            'usuario': asesor.nombre,
+            'usuario': asesor.user.username,
             'accion': interaccion.id_tipo_interaccion.descripcion if interaccion.id_tipo_interaccion else 'N/A',
-            'detalle': f"Cliente: {interaccion.dni_cliente.nombre}"
+            'detalle': interaccion.dni_cliente.nombre
         }
         for interaccion in actividad_reciente
     ]
@@ -489,7 +478,6 @@ def resumen(request):
         'clientes_count': clientes_count,
         'reclamos_pendientes': reclamos_pendientes,
         'polizas_vigentes': polizas_vigentes,
-        'ingresos_mes': ingresos_mes,
         'actividad_reciente': actividad_reciente,
         'now': hoy,
     }

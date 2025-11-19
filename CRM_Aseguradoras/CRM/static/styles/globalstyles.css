@@ -1052,6 +1052,15 @@ body {
     margin-bottom: 1rem;
 }
 
+#metodo_poliza {
+    width: 50%;
+}
+
+#estado_reclamacion {
+    width: 50%;
+}
+
+
 /* Tabla de datos */
 table {
     width: 100%;

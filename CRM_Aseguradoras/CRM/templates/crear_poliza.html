@@ -57,7 +57,7 @@
     <div class="grupo-doble">
         <div class="form-group">
             <label for="metodo">Metodo de pago*</label>
-            <select id="metodo" name="metodo" required>
+            <select id="metodo_poliza" name="metodo" required>
                 <option value="">Selecciona una opción</option>
                 {% for metodo in metodos %}
                     <option value="{{ metodo.id }}">{{ metodo.descripcion }}</option>
